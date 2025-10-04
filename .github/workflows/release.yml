@@ -40,7 +40,7 @@ jobs:
 
           if [ -z "$LAST_TAG" ]; then
             # Si no hay tags, usamos 0.0 para pruebas
-            NEW_TAG="v0.0"
+            NEW_TAG="v1.0"
           else
             # Incrementamos la versión principal (antes del punto)
             MAJOR=$(echo $LAST_TAG | cut -d. -f1 | sed 's/v//')
@@ -53,6 +53,7 @@ jobs:
 
       # 6. Crear GitHub Release
       - name: Crear GitHub Release
+        id: create_release
         uses: actions/create-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
