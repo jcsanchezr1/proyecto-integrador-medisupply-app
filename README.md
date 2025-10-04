@@ -1,4 +1,4 @@
-# medisupply_app
+# proyecto-integrador-medisupply-app
 
 A new Flutter project.
 
