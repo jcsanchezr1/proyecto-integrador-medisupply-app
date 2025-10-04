@@ -13,9 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MediSupply',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'MediSuppl - Gestiona tu inventario médico'),
     );
   }
 }
