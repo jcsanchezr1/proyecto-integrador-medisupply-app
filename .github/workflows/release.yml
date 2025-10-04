@@ -6,12 +6,12 @@ on:
       - develop
 
 jobs:
-  build-and-merge:
+  build-and-release:
     if: contains(github.event.head_commit.message, '[RELEASE]')
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar código
+      # 1. Descargar código completo con historial y usando PAT
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -26,15 +26,54 @@ jobs:
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 4. Crear carpeta apk/ si no existe
-      - name: Crear carpeta apk
-        run: mkdir -p apk
-
-      # 5. Compilar APK de release y guardarlo en apk/
+      # 4. Compilar APK de release
       - name: Compilar APK de release
-        run: flutter build apk --release --output=apk/app-release.apk
+        run: flutter build apk --release
 
-      # 6. Merge automático de develop → main
+      # 5. Determinar nuevo tag automáticamente
+      - name: Determinar tag
+        id: tag
+        run: |
+          # Obtener el último tag que empieza con "v"
+          LAST_TAG=$(git tag --list "v*" --sort=-v:refname | head -n1)
+          echo "Último tag: $LAST_TAG"
+
+          if [ -z "$LAST_TAG" ]; then
+            # Si no hay tags, usamos 0.0 para pruebas
+            NEW_TAG="v0.0"
+          else
+            # Incrementamos la versión principal (antes del punto)
+            MAJOR=$(echo $LAST_TAG | cut -d. -f1 | sed 's/v//')
+            NEW_MAJOR=$((MAJOR+1))
+            NEW_TAG="v${NEW_MAJOR}.0"
+          fi
+
+          echo "Nuevo tag: $NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      # 6. Crear GitHub Release
+      - name: Crear GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release ${{ steps.tag.outputs.tag }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+      # 7. Subir APK como asset
+      - name: Subir APK a Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+      # 8. Merge automático develop → main
       - name: Merge a main
         run: |
           git config user.name "CI Bot"
