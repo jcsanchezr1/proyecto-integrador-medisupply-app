@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const MyHomePage(title: 'MediSuppl - Gestiona tu inventario médico'),
+      home: const MyHomePage(title: 'MediSupply - Gestiona tu inventario médico'),
     );
   }
 }
