@@ -11,30 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 🔹 1. Descargar código
+      # 1. Descargar código
       - uses: actions/checkout@v4
 
-      # 🔹 2. Instalar Flutter
+      # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
 
-      # 🔹 3. Instalar dependencias
+      # 3. Instalar dependencias
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 🔹 4. Generar APK de release
+      # 4. Crear carpeta apk/ si no existe
+      - name: Crear carpeta apk
+        run: mkdir -p apk
+
+      # 5. Compilar APK de release y guardarlo en apk/
       - name: Compilar APK de release
-        run: flutter build apk --release
+        run: flutter build apk --release --output=apk/app-release.apk
 
-      # 🔹 5. Guardar APK como artefacto descargable
-      - name: Subir artefacto APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      # 🔹 6. Merge automático de develop → main
+      # 6. Merge automático de develop → main
       - name: Merge a main
         run: |
           git config user.name "CI Bot"

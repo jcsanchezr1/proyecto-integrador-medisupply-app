@@ -1,4 +1,4 @@
-name: CI - Integración Continua
+name: CI - Integración continua
 
 on:
   push:
@@ -10,23 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 🔹 1. Descargar el código
+      # 1. Descargar el código
       - uses: actions/checkout@v4
 
-      # 🔹 2. Instalar Flutter
+      # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.0'
 
-      # 🔹 3. Instalar dependencias
+      # 3. Instalar dependencias
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 🔹 4. Ejecutar tests
+      # 4. Ejecutar tests
       - name: Ejecutar tests
         run: flutter test
 
-      # 🔹 5. Merge automático a develop si todo pasa
+      # 5. Merge automático a develop si todo pasa
       - name: Merge a develop
         run: |
           git config user.name "CI Bot"
