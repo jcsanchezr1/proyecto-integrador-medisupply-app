@@ -13,6 +13,8 @@ jobs:
     steps:
       # 1. Descargar código
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
