@@ -38,5 +38,5 @@ jobs:
           git config user.email "ci@bot.com"
           git fetch origin main
           git checkout main
-          git merge develop --no-ff -m "Merge automático desde develop [RELEASE]"
+          git merge develop --no-ff --allow-unrelated-histories -m "Merge automático desde develop [RELEASE]"
           git push origin main

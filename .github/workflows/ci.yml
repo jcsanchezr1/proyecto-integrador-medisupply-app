@@ -33,5 +33,5 @@ jobs:
           git config user.email "ci@bot.com"
           git fetch origin develop
           git checkout develop
-          git merge ${{ github.ref_name }} --no-ff -m "Merge automático desde ${GITHUB_REF_NAME} [PIPELINE]"
+          git merge ${{ github.ref_name }} --no-ff --allow-unrelated-histories -m "Merge automático desde ${GITHUB_REF_NAME} [PIPELINE]"
           git push origin develop
