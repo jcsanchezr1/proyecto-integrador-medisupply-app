@@ -1,0 +1,45 @@
+name: Release - Build & Merge to Main
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-merge:
+    if: contains(github.event.head_commit.message, '[RELEASE]')
+    runs-on: ubuntu-latest
+
+    steps:
+      # 🔹 1. Descargar código
+      - uses: actions/checkout@v4
+
+      # 🔹 2. Instalar Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+
+      # 🔹 3. Instalar dependencias
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      # 🔹 4. Generar APK de release
+      - name: Compilar APK de release
+        run: flutter build apk --release
+
+      # 🔹 5. Guardar APK como artefacto descargable
+      - name: Subir artefacto APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # 🔹 6. Merge automático de develop → main
+      - name: Merge a main
+        run: |
+          git config user.name "CI Bot"
+          git config user.email "ci@bot.com"
+          git fetch origin main
+          git checkout main
+          git merge develop --no-ff -m "Merge automático desde develop [RELEASE]"
+          git push origin main
