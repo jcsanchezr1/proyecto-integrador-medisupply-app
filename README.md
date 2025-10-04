@@ -17,7 +17,8 @@ Aplicación móvil desarrollada con Flutter como parte del proyecto integrador M
 Para la revisión de entregas del app, se recomienda usar el **APK** para instalar la app directamente en un dispositivo Android.
 
 ### Pasos para instalar el APK
-1. Descargar el archivo `app-release.apk` desde la carpeta `/apk` ubicada en la raíz del repositorio.  
+1. Descargar el archivo `app-release.apk` desde el GitHub Release correspondiente al sprint que se está entregando.
+> **Ejemplo:** Si es la entrega del Sprint 01, el apk correspondiente estará en el Release v1.0 y así sucesivamente.
 2. Transferirlo al dispositivo Android (Vía WhatsApp, correo, etc).  
 3. En el dispositivo:
    - Habilitar la instalación desde **Fuentes desconocidas** si el sistema lo solicita.  
