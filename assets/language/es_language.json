@@ -1,0 +1,11 @@
+{
+    "login" : {
+        "title" : "¡Bienvenido!",
+        "subtitle" : "Inicia sesión para continuar",
+        "email" : "Correo electrónico",
+        "password" : "Contraseña",
+        "button" : "Iniciar sesión",
+        "error" : "Por favor, ingresa un valor",
+        "sign-up" : "Crear una cuenta"
+    }
+}

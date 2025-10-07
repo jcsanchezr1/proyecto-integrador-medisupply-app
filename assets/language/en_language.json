@@ -1,0 +1,11 @@
+{
+    "login" : {
+        "title" : "Welcome!",
+        "subtitle" : "Log in to continue",
+        "email" : "Email",
+        "password" : "Password",
+        "button" : "Log in",
+        "error" : "Please, enter a value",
+        "sign-up" : "Create an account"
+    }
+}

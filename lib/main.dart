@@ -1,66 +1,132 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MyApp extends StatelessWidget {
+import 'package:medisupply_app/src/pages/login_page.dart';
+
+import 'package:medisupply_app/src/utils/colors_app.dart';
+import 'package:medisupply_app/src/utils/texts_util.dart';
+import 'package:medisupply_app/src/utils/language_util.dart';
+import 'package:medisupply_app/src/utils/responsive_app.dart';
+
+Locale _getDeviceLocale() {
   
-  const MyApp( { super.key } );
+  final String sLanguageCode = PlatformDispatcher.instance.locale.languageCode;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MediSupply',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-      ),
-      home: const MyHomePage(title: 'MediSupply - Gestiona tu inventario médico'),
-    );
+  if ( sLanguageCode.startsWith( 'es' ) ) {
+    return Locale( 'es', 'CO' );
+  } else {
+    return Locale( 'en', 'US' );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  
-  const MyHomePage( { super.key, required this.title } );
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
 
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  
-  int _counter = 0;
+Future<Locale> _getInitialLocale() async {
 
-  void _incrementCounter() => setState( () => _counter++ );
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? savedLanguageCode = prefs.getString('languageCode');
+
+  if (savedLanguageCode != null) {
+    return Locale(savedLanguageCode);
+  }
+
+  return _getDeviceLocale();
+
+}
+
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  Locale deviceLocale = await _getInitialLocale();
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent
+    )
+  );
+
+  runApp( MyApp( locale: deviceLocale ) );
+
+}
+
+class MyApp extends StatefulWidget {
+
+  final Locale? locale;
+  
+  const MyApp( { super.key, this.locale } );
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Has oprimido el botón este número de veces:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium
-            )
-          ]
+  State<MyApp> createState() => _MyAppState();
+
+}
+
+class _MyAppState extends State<MyApp> {
+
+  late Locale _currentLocale;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentLocale = widget.locale!;
+    LanguageUtils().setCallBack( setLocale );
+  }
+
+  void setLocale( Locale locale ) => setState( () => _currentLocale = locale );
+
+  @override
+  void didChangeDependencies() {
+    
+    ResponsiveApp.init(context, 360, 800);
+
+    if (ResponsiveApp.bTablet()) {
+      ResponsiveApp.init(context, 900, 1220);
+    }
+
+    List<DeviceOrientation> lOrientations = ResponsiveApp.bTablet() ? [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ] : [
+      DeviceOrientation.portraitUp
+    ];
+
+    SystemChrome.setPreferredOrientations(lOrientations);
+
+    super.didChangeDependencies();
+
+  }
+
+  @override
+  Widget build( BuildContext context ) {
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'MediSupply',
+      home: const LoginPage(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: ColorsApp.backgroundColor,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: ColorsApp.secondaryColor,
+          selectionColor: ColorsApp.primaryColor.withValues( alpha: 0.2 ),
+          selectionHandleColor: ColorsApp.primaryColor
         )
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Incrementar',
-        child: const Icon(Icons.add)
-      )
+      locale: _currentLocale,
+      localizationsDelegates: [
+        TextsUtil.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [const Locale('en', 'US'), const Locale('es', 'CO')]
     );
+
   }
+
 }
