@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
+import '../../providers/login_provider.dart';
+
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
 
@@ -21,16 +25,25 @@ class MainButton extends StatelessWidget {
   @override
   Widget build( BuildContext context ) {
 
+    final loginProvider = Provider.of<LoginProvider>( context );
+
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: ColorsApp.primaryColor,
+        backgroundColor: loginProvider.bLoading ? ColorsApp.primaryColor.withValues( alpha: 0.5 ) : ColorsApp.primaryColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular( 12.0 ),
         ),
         fixedSize: Size( ResponsiveApp.dWidth( 312.0 ), ResponsiveApp.dHeight( 40.0 ) ),
       ),
-      onPressed: onPressed,
-      child: PoppinsText(
+      onPressed: loginProvider.bLoading ? null : onPressed,
+      child: loginProvider.bLoading ? SizedBox(
+        height: ResponsiveApp.dHeight( 24.0 ),
+        width: ResponsiveApp.dWidth( 24.0 ),
+        child: CircularProgressIndicator(
+          color: ColorsApp.backgroundColor
+        )
+      )
+      : PoppinsText(
         sText: sLabel,
          colorText: ColorsApp.secondaryTextColor,
          dFontSize: ResponsiveApp.dSize( 14.0 ),

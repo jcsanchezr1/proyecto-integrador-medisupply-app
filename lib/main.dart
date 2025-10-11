@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -12,6 +13,8 @@ import 'package:medisupply_app/src/utils/colors_app.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
 import 'package:medisupply_app/src/utils/language_util.dart';
 import 'package:medisupply_app/src/utils/responsive_app.dart';
+
+import 'src/providers/login_provider.dart';
 
 Locale _getDeviceLocale() {
   
@@ -105,26 +108,31 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build( BuildContext context ) {
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'MediSupply',
-      home: const LoginPage(),
-      theme: ThemeData(
-        scaffoldBackgroundColor: ColorsApp.backgroundColor,
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: ColorsApp.secondaryColor,
-          selectionColor: ColorsApp.primaryColor.withValues( alpha: 0.2 ),
-          selectionHandleColor: ColorsApp.primaryColor
-        )
-      ),
-      locale: _currentLocale,
-      localizationsDelegates: [
-        TextsUtil.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider( create: ( _ ) => LoginProvider() )
       ],
-      supportedLocales: [const Locale('en', 'US'), const Locale('es', 'CO')]
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'MediSupply',
+        home: const LoginPage(),
+        theme: ThemeData(
+          scaffoldBackgroundColor: ColorsApp.backgroundColor,
+          textSelectionTheme: TextSelectionThemeData(
+            cursorColor: ColorsApp.secondaryColor,
+            selectionColor: ColorsApp.primaryColor.withValues( alpha: 0.2 ),
+            selectionHandleColor: ColorsApp.primaryColor
+          )
+        ),
+        locale: _currentLocale,
+        localizationsDelegates: [
+          TextsUtil.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        supportedLocales: [const Locale('en', 'US'), const Locale('es', 'CO')]
+      ),
     );
 
   }

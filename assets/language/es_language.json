@@ -6,6 +6,7 @@
         "password" : "Contraseña",
         "button" : "Iniciar sesión",
         "error" : "Por favor, ingresa un valor",
-        "sign-up" : "Crear una cuenta"
+        "sign-up" : "Crear una cuenta",
+        "error_login" : "Ocurrió un error. Revisa tus credenciales o intenta más tarde."
     }
 }

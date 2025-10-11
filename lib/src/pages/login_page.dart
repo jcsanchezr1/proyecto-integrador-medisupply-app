@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medisupply_app/src/widgets/general_widgets/snackbar_widget.dart';
 
+import 'package:provider/provider.dart';
+
+import '../providers/login_provider.dart';
+
+import '../services/fetch_data.dart';
+
+import '../utils/slide_transition.dart';
 import '../utils/texts_util.dart';
 import '../utils/responsive_app.dart';
 
@@ -22,14 +30,46 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final controllerEmail = TextEditingController();
+  final oFetchData = FetchData();
 
+  final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
   bool bEmailError = false;
   bool bPassError = false;
+
+  login() async {
+
+    final loginProvider = Provider.of<LoginProvider>( context, listen: false );
+
+    if( _formKey.currentState!.validate() ) {
+
+      loginProvider.bLoading = true;
+
+      final oUser = await oFetchData.login( controllerEmail.text, controllerPassword.text );
+
+      loginProvider.bLoading = false;
+
+      if(!mounted) return;
+
+      if( oUser.sAccessToken != null ) {
+        Navigator.pushReplacement(
+          context,
+          SlidePageRoute( page:  HomePage() )
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          snackBarWidget(
+            sMessage: TextsUtil.of(context)!.getText( 'login.error_login' )
+          )
+        );
+      }
+
+    }
+
+  }
 
   @override
   Widget build( BuildContext context ) {
@@ -73,14 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox( height: ResponsiveApp.dHeight( 48.0 ) ),
                 MainButton(
                   sLabel: TextsUtil.of(context)!.getText( 'login.button' ),
-                  onPressed: () {
-                    if( _formKey.currentState!.validate() ) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute( builder: ( _ ) => HomePage() )
-                      );
-                    }
-                  }
+                  onPressed: login
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
                 const CreateAccountButton()

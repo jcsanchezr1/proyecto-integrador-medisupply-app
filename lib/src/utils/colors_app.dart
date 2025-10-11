@@ -14,5 +14,6 @@ class ColorsApp {
   static const cardBackgroundColor = Color(0xffF5F5F5);
   static const closeButtonColor = Color(0xff031833);
   static const errorColor = Color(0xffFF5A5A);
+  static const sucessColor = Color(0xff28D094);
 
 }

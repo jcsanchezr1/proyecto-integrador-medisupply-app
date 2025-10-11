@@ -6,6 +6,7 @@
         "password" : "Password",
         "button" : "Log in",
         "error" : "Please, enter a value",
-        "sign-up" : "Create an account"
+        "sign-up" : "Create an account",
+        "error_login" : "An error occurred. Check your credentials or try again later."
     }
 }
