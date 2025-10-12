@@ -13,7 +13,10 @@ import 'login_page.dart';
 
 class SplashPage extends StatefulWidget {
 
-  const SplashPage( { super.key } );
+  final bool skipDelay;
+  final bool skipNavigation;
+  
+  const SplashPage( { super.key, this.skipDelay = false, this.skipNavigation = false } );
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -28,9 +31,15 @@ class _SplashPageState extends State<SplashPage> {
 
     final accessToken = prefs.getString('accessToken');
 
-    await Future.delayed( const Duration( seconds: 3 ) );
+    if (!widget.skipDelay) {
+      await Future.delayed( const Duration( seconds: 3 ) );
+    }
 
     if(!mounted) return;
+
+    if (widget.skipNavigation) {
+      return;
+    }
 
     if( accessToken != null ) {
       Navigator.pushReplacement(

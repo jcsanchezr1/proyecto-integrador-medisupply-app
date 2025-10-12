@@ -2,11 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:medisupply_app/main.dart' as app;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> waitForWidget(WidgetTester tester, Finder finder, {int maxTries = 20}) async {
+Future<void> waitForWidget(WidgetTester tester, Finder finder, {int maxTries = 50}) async {
   int tries = 0;
   while (finder.evaluate().isEmpty && tries < maxTries) {
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 200));
     tries++;
   }
   if (finder.evaluate().isEmpty) {
@@ -18,9 +19,21 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Login Flow Integration', () {
+    setUp(() async {
+      // Limpiar SharedPreferences antes de cada test para evitar auto-login
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+    });
+
+    tearDown(() async {
+      // Limpiar SharedPreferences después de cada test
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+    });
+
     testWidgets('Login exitoso navega a HomePage', (WidgetTester tester) async {
       app.main();
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       const email = 'clinica.merced@medisupply.com';
       const password = 'AugustoCelis13*';
@@ -44,7 +57,7 @@ void main() {
 
     testWidgets('Login fallido muestra SnackBar de error', (WidgetTester tester) async {
       app.main();
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       await waitForWidget(tester, find.byKey(const Key('email_field')));
       await waitForWidget(tester, find.byKey(const Key('password_field')));
@@ -63,4 +76,6 @@ void main() {
       expect(find.byType(SnackBar), findsOneWidget);
     });
   });
+
+
 }

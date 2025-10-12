@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/colors_app.dart';
@@ -164,54 +163,25 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                       borderRadius: BorderRadius.circular( 12.0 ),
                       border: Border.all( color: ColorsApp.secondaryColor ),
                     ),
-                    child: DropdownMenu<String>(
-                      width: ResponsiveApp.dWidth( 232.0 ),
-                      enableSearch: true,
-                      enableFilter: true,
-                      requestFocusOnTap: false,
-                      initialSelection: (lLanguages.isNotEmpty ?
-                        lLanguages.firstWhere(
-                          (language) => language["selected"] == true, orElse: () => lLanguages.first
-                        )["id"] : "es") ?? "es",
-                      key: UniqueKey(),
-                      trailingIcon: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: ColorsApp.secondaryColor,
-                        semanticLabel: 'Expand language options'
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric( horizontal: ResponsiveApp.dWidth( 16.0 ) ),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
                       ),
-                      selectedTrailingIcon: Icon(
-                        Icons.keyboard_arrow_up_rounded,
-                        color: ColorsApp.secondaryColor,
-                        semanticLabel: 'Collapse language options'
-                      ),
-                      textStyle: GoogleFonts.poppins(
-                        fontSize: ResponsiveApp.dSize( 12.0 ),
-                        color: ColorsApp.secondaryColor,
-                        fontWeight: FontWeight.w500
-                      ),
-                      inputDecorationTheme: InputDecorationTheme(
-                        isCollapsed: true,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveApp.dWidth( 12.0 ),
-                          vertical: ResponsiveApp.dHeight( 8.0 )
-                        ),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular( 12.0 ), borderSide: BorderSide.none),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular( 12.0 ),
-                          borderSide: BorderSide.none
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular( 12.0 ),
-                          borderSide: BorderSide.none
+                      items: lLanguages.where((language) => language["id"] != null && language["language"] != null).map((language) => DropdownMenuItem<String>(
+                          value: language["id"]!,
+                          child: PoppinsText(
+                            sText: language["language"]!,
+                            dFontSize: ResponsiveApp.dSize(12.0),
+                            colorText: ColorsApp.textColor
+                          )
                         )
-                      ),
-                      menuStyle: MenuStyle(
-                        backgroundColor: WidgetStatePropertyAll(ColorsApp.backgroundColor),
-                        fixedSize: WidgetStatePropertyAll(
-                          Size.fromWidth(ResponsiveApp.dWidth( 200.0 ))
-                        )
-                      ),
-                      onSelected: (String? value) {
+                      ).toList(),
+                      onChanged: (value) {
                         if (value != null) {
                           setState( () {
                             for (var language in lLanguages) {
@@ -222,32 +192,8 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                           });
                           _savedSelectedLanguage(value);
                         }
-                      },
-                      dropdownMenuEntries: lLanguages.where((language) => language["id"] != null && language["language"] != null).map((language) => DropdownMenuEntry<String>(
-                          value: language["id"]!,
-                          label: language["language"]!,
-                          style: ButtonStyle(
-                            textStyle: WidgetStatePropertyAll(
-                              GoogleFonts.poppins(
-                                fontSize: ResponsiveApp.dSize( 12.0 ),
-                                color: ColorsApp.textColor,
-                              )
-                            ),
-                            backgroundColor: WidgetStateProperty.resolveWith((states) {
-                              if (language["selected"] == true) {
-                                return ColorsApp.primaryColor.withValues( alpha: 0.1 );
-                              }
-                              return Colors.transparent;
-                            }),
-                            foregroundColor: WidgetStateProperty.resolveWith((states) {
-                              if (language["selected"] == true) {
-                                return ColorsApp.primaryColor;
-                              }
-                              return ColorsApp.textColor;
-                            })
-                          )
-                        )
-                      ).toList()
+                      } ,
+                      value: selectedLanguage
                     )
                   )
                 ]

@@ -8,8 +8,8 @@ import '../providers/login_provider.dart';
 
 import '../services/fetch_data.dart';
 
-import '../utils/slide_transition.dart';
 import '../utils/texts_util.dart';
+import '../utils/slide_transition.dart';
 import '../utils/responsive_app.dart';
 
 import '../widgets/login_widgets/login_header.dart';
@@ -25,8 +25,16 @@ class LoginPage extends StatefulWidget {
 
   final FetchData? fetchData;
   final TextsUtil? textsUtil;
+  final SharedPreferences? sharedPreferences;
+  final void Function(BuildContext context, String message)? onShowSnackBar;
 
-  const LoginPage( { super.key, this.fetchData, this.textsUtil } );
+  const LoginPage({
+    super.key,
+    this.fetchData,
+    this.textsUtil,
+    this.sharedPreferences,
+    this.onShowSnackBar,
+  });
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -45,44 +53,49 @@ class _LoginPageState extends State<LoginPage> {
   bool bEmailError = false;
   bool bPassError = false;
 
+  void showErrorSnackBar(BuildContext context, String message) {
+    if (widget.onShowSnackBar != null) {
+      widget.onShowSnackBar!(context, message);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        snackBarWidget(sMessage: message),
+      );
+    }
+  }
+
   login() async {
 
-    final loginProvider = Provider.of<LoginProvider>( context, listen: false );
-    final prefs = await SharedPreferences.getInstance();
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+    final prefs = widget.sharedPreferences ?? await SharedPreferences.getInstance();
+    final isValid = _formKey.currentState!.validate();
 
-    if( _formKey.currentState!.validate() ) {
+    if (isValid) {
 
       loginProvider.bLoading = true;
 
-      final oUser = await oFetchData.login( controllerEmail.text, controllerPassword.text );
+      final oUser = await oFetchData.login(controllerEmail.text, controllerPassword.text);
 
       loginProvider.bLoading = false;
 
-      if(!mounted) return;
-
+      if (!mounted) return;
       final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
 
-      if( oUser.sAccessToken != null ) {
+      if (oUser.sAccessToken != null) {
 
         await prefs.setString('accessToken', oUser.sAccessToken!);
         await prefs.setString('refreshToken', oUser.sRefreshToken!);
-
-        if(!mounted) return;
-
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          SlidePageRoute( page:  HomePage() )
+          SlidePageRoute(page: HomePage()),
         );
+
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          snackBarWidget(
-            sMessage: textsUtil.getText('login.error_login')
-          )
-        );
+
+        showErrorSnackBar(context, textsUtil.getText('login.error_login'));
+
       }
-
     }
-
   }
 
   @override
@@ -93,7 +106,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build( BuildContext context ) {
-
     final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -111,13 +123,13 @@ class _LoginPageState extends State<LoginPage> {
                   controller: controllerEmail,
                   sLabel: textsUtil.getText('login.email'),
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       setState(() => bEmailError = true);
                       return textsUtil.getText('login.error');
                     }
                     return null;
                   },
-                  bError: bEmailError,
+                  bError: bEmailError
                 ),
                 SizedBox(height: ResponsiveApp.dHeight(32.0)),
                 TextFormFieldWidget(
@@ -126,28 +138,27 @@ class _LoginPageState extends State<LoginPage> {
                   sLabel: textsUtil.getText('login.password'),
                   bIsPassword: true,
                   validator: (value) {
-                    if (value!.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       setState(() => bPassError = true);
                       return textsUtil.getText('login.error');
                     }
                     return null;
                   },
-                  bError: bPassError,
+                  bError: bPassError
                 ),
                 SizedBox(height: ResponsiveApp.dHeight(48.0)),
                 MainButton(
                   key: const Key('login_button'),
                   sLabel: textsUtil.getText('login.button'),
-                  onPressed: login,
+                  onPressed: login
                 ),
                 SizedBox(height: ResponsiveApp.dHeight(16.0)),
                 CreateAccountButton(textsUtil: textsUtil),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ]
+            )
+          )
+        )
+      )
     );
-
   }
 }
