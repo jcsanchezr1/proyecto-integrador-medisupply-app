@@ -17,5 +17,12 @@
             {"id": "en", "language": "English", "selected": false},
             {"id": "es", "language": "Spanish", "selected": false}
         ]
+    },
+    "logout": {
+        "title_dialog": "Log out",
+        "message_dialog": "Are you sure you want to log out?",
+        "confirm_dialog": "Accept",
+        "cancel_dialog": "Cancel",
+        "error_logout": "An error occurred while logging out. Please try again later."
     }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:medisupply_app/src/widgets/general_widgets/snackbar_widget.dart';
 
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/login_provider.dart';
 
@@ -14,6 +14,7 @@ import '../utils/responsive_app.dart';
 
 import '../widgets/login_widgets/login_header.dart';
 import '../widgets/general_widgets/main_button.dart';
+import '../widgets/general_widgets/snackbar_widget.dart';
 import '../widgets/login_widgets/create_account_button.dart';
 import '../widgets/general_widgets/text_form_field_widget.dart';
 
@@ -21,13 +22,15 @@ import 'home_page.dart';
 
 
 class LoginPage extends StatefulWidget {
-  final FetchData? fetchData;
-  final TextsUtil? textsUtil; // Nuevo parámetro opcional para pruebas
 
-  const LoginPage({super.key, this.fetchData, this.textsUtil});
+  final FetchData? fetchData;
+  final TextsUtil? textsUtil;
+
+  const LoginPage( { super.key, this.fetchData, this.textsUtil } );
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -45,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
   login() async {
 
     final loginProvider = Provider.of<LoginProvider>( context, listen: false );
+    final prefs = await SharedPreferences.getInstance();
 
     if( _formKey.currentState!.validate() ) {
 
@@ -57,7 +61,14 @@ class _LoginPageState extends State<LoginPage> {
       if(!mounted) return;
 
       final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
+
       if( oUser.sAccessToken != null ) {
+
+        await prefs.setString('accessToken', oUser.sAccessToken!);
+        await prefs.setString('refreshToken', oUser.sRefreshToken!);
+
+        if(!mounted) return;
+
         Navigator.pushReplacement(
           context,
           SlidePageRoute( page:  HomePage() )
@@ -84,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build( BuildContext context ) {
 
     final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(

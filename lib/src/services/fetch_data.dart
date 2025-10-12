@@ -38,4 +38,23 @@ class FetchData {
 
   }
 
+  Future<bool> logout( String sRefreshToken ) async {
+    
+    bool bSuccess = false;
+    
+    final response = await client.post(
+      Uri.parse( '$baseUrl/auth/logout' ),
+      body: {
+        'refresh_token' : sRefreshToken
+      }
+    );
+
+    if( response.statusCode == 204 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
+  }
+
 }

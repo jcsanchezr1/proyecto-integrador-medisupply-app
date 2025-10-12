@@ -17,5 +17,12 @@
             {"id": "en", "language": "Inglés", "selected": false},
             {"id": "es", "language": "Español", "selected": false}
         ]
+    },
+    "logout": {
+        "title_dialog": "Cerrar sesión",
+        "message_dialog": "¿Estás seguro de que deseas cerrar sesión?",
+        "confirm_dialog": "Aceptar",
+        "cancel_dialog": "Cancelar",
+        "error_logout": "Ocurrió un error al cerrar sesión. Por favor, intenta más tarde."
     }
 }

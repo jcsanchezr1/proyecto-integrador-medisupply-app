@@ -8,6 +8,7 @@ import '../../utils/texts_util.dart';
 import '../../utils/language_util.dart';
 import '../../utils/responsive_app.dart';
 
+import '../dialog_widgets/logout_alert_dialog.dart';
 import 'poppins_text.dart';
 
 class DrawerMenuWidget extends StatefulWidget {
@@ -263,7 +264,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                   Icon(
                     Icons.logout_rounded,
                     color: ColorsApp.primaryColor,
-                    semanticLabel: 'Logout'
+                    semanticLabel: 'Logout',
                   ),
                   SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ),
                   PoppinsText(
@@ -273,7 +274,10 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                   )
                 ]
               ),
-              onTap: null
+              onTap: () => showDialog(
+                context: context,
+                builder: ( _ ) => LogoutAlertDialog()
+              )
             )
           ]
         )

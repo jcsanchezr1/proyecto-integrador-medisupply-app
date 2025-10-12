@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:medisupply_app/src/pages/login_page.dart';
+import 'package:medisupply_app/src/pages/splash_page.dart';
 
 import 'package:medisupply_app/src/utils/colors_app.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'MediSupply',
-        home: const LoginPage(),
+        home: const SplashPage(),
         theme: ThemeData(
           scaffoldBackgroundColor: ColorsApp.backgroundColor,
           textSelectionTheme: TextSelectionThemeData(

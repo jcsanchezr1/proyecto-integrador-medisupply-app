@@ -13,12 +13,14 @@ class MainButton extends StatelessWidget {
 
   final String sLabel;
   final Function() onPressed;
+  final Color color;
 
   const MainButton(
     { 
       super.key,
       required this.sLabel,
-      required this.onPressed
+      required this.onPressed,
+      this.color = ColorsApp.primaryColor
     }
   );
 
@@ -29,7 +31,7 @@ class MainButton extends StatelessWidget {
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: loginProvider.bLoading ? ColorsApp.primaryColor.withValues( alpha: 0.5 ) : ColorsApp.primaryColor,
+        backgroundColor: loginProvider.bLoading ? color.withValues( alpha: 0.5 ) : color,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular( 12.0 ),
         ),
