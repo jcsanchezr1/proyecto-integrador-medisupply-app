@@ -74,7 +74,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      # 8. Merge automático develop → main
+      # 8. Commit local changes (pubspec.lock)
+      - name: Commit local changes (pubspec.lock)
+        run: |
+          git add pubspec.lock
+          git commit -m "Update pubspec.lock from Release CI" || echo "No changes to commit"
+
+      # 9. Merge automático develop → main
       - name: Merge a main
         run: |
           git config user.name "CI Bot"
