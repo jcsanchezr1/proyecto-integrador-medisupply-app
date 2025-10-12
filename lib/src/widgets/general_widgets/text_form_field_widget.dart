@@ -59,15 +59,15 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
           contentPadding: EdgeInsets.symmetric( horizontal: ResponsiveApp.dWidth( 16.0 ), vertical: ResponsiveApp.dHeight( 18.0 ) ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular( 8.0 ),
-            borderSide: const BorderSide( color: ColorsApp.borderColor)
+            borderSide: const BorderSide( color: ColorsApp.secondaryColor)
           ),
           disabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular( 8.0 ),
-            borderSide: const BorderSide( color: ColorsApp.borderColor)
+            borderSide: const BorderSide( color: ColorsApp.secondaryColor)
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular( 8.0 ),
-            borderSide: const BorderSide( color: ColorsApp.borderColor)
+            borderSide: const BorderSide( color: ColorsApp.secondaryColor)
           ),
           errorStyle: GoogleFonts.poppins(),
           focusedBorder: OutlineInputBorder(
@@ -87,7 +87,8 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
             onPressed: () => setState(() => bObscure = !bObscure ),
             icon: Icon(
               bObscure ? Icons.visibility_off : Icons.visibility,
-              color: ColorsApp.primaryColor
+              color: ColorsApp.primaryColor,
+              semanticLabel: bObscure ? 'Show password' : 'Hide password',
             )
           ) : widget.bError ? Icon(
             Icons.error_rounded,
