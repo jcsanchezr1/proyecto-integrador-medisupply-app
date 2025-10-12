@@ -8,5 +8,14 @@
         "error" : "Please, enter a value",
         "sign-up" : "Create an account",
         "error_login" : "An error occurred. Check your credentials or try again later."
+    },
+    "menu" : {
+        "greeting" : "Hello",
+        "language" : "Language",
+        "logout" : "Log out",
+        "languages":[
+            {"id": "en", "language": "English", "selected": false},
+            {"id": "es", "language": "Spanish", "selected": false}
+        ]
     }
 }

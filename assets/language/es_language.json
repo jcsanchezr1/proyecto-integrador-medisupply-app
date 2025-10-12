@@ -8,5 +8,14 @@
         "error" : "Por favor, ingresa un valor",
         "sign-up" : "Crear una cuenta",
         "error_login" : "Ocurrió un error. Revisa tus credenciales o intenta más tarde."
+    },
+    "menu" : {
+        "greeting" : "Hola",
+        "language" : "Idioma",
+        "logout" : "Cerrar sesión",
+        "languages":[
+            {"id": "en", "language": "Inglés", "selected": false},
+            {"id": "es", "language": "Español", "selected": false}
+        ]
     }
 }
