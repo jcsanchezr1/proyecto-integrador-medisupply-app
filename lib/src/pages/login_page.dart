@@ -19,18 +19,20 @@ import '../widgets/general_widgets/text_form_field_widget.dart';
 
 import 'home_page.dart';
 
-class LoginPage extends StatefulWidget {
 
-  const LoginPage( { super.key } );
+class LoginPage extends StatefulWidget {
+  final FetchData? fetchData;
+  final TextsUtil? textsUtil; // Nuevo parámetro opcional para pruebas
+
+  const LoginPage({super.key, this.fetchData, this.textsUtil});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
-
 }
 
 class _LoginPageState extends State<LoginPage> {
 
-  final oFetchData = FetchData();
+  late final FetchData oFetchData;
 
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
@@ -54,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if(!mounted) return;
 
+      final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
       if( oUser.sAccessToken != null ) {
         Navigator.pushReplacement(
           context,
@@ -62,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           snackBarWidget(
-            sMessage: TextsUtil.of(context)!.getText( 'login.error_login' )
+            sMessage: textsUtil.getText('login.error_login')
           )
         );
       }
@@ -72,8 +75,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    oFetchData = widget.fetchData ?? FetchData();
+  }
+
+  @override
   Widget build( BuildContext context ) {
 
+    final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
@@ -82,46 +92,49 @@ class _LoginPageState extends State<LoginPage> {
             key: _formKey,
             child: Column(
               children: [
-                const LoginHeader(),
-                SizedBox( height: ResponsiveApp.dHeight( 40.0 ) ),
+                LoginHeader(textsUtil: textsUtil),
+                SizedBox(height: ResponsiveApp.dHeight(40.0)),
                 TextFormFieldWidget(
+                  fieldKey: const Key('email_field'),
                   controller: controllerEmail,
-                  sLabel: TextsUtil.of(context)!.getText( 'login.email' ),
+                  sLabel: textsUtil.getText('login.email'),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      setState( () => bEmailError = true );
-                      return TextsUtil.of(context)!.getText( 'login.error' );
+                      setState(() => bEmailError = true);
+                      return textsUtil.getText('login.error');
                     }
                     return null;
                   },
-                  bError: bEmailError
+                  bError: bEmailError,
                 ),
-                SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
+                SizedBox(height: ResponsiveApp.dHeight(32.0)),
                 TextFormFieldWidget(
+                  fieldKey: const Key('password_field'),
                   controller: controllerPassword,
-                  sLabel: TextsUtil.of(context)!.getText( 'login.password' ),
+                  sLabel: textsUtil.getText('login.password'),
                   bIsPassword: true,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      setState( () => bPassError = true );
-                      return TextsUtil.of(context)!.getText( 'login.error' );
+                      setState(() => bPassError = true);
+                      return textsUtil.getText('login.error');
                     }
                     return null;
                   },
-                  bError: bPassError
+                  bError: bPassError,
                 ),
-                SizedBox( height: ResponsiveApp.dHeight( 48.0 ) ),
+                SizedBox(height: ResponsiveApp.dHeight(48.0)),
                 MainButton(
-                  sLabel: TextsUtil.of(context)!.getText( 'login.button' ),
-                  onPressed: login
+                  key: const Key('login_button'),
+                  sLabel: textsUtil.getText('login.button'),
+                  onPressed: login,
                 ),
-                SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
-                const CreateAccountButton()
-              ]
-            )
-          )
-        )
-      )
+                SizedBox(height: ResponsiveApp.dHeight(16.0)),
+                CreateAccountButton(textsUtil: textsUtil),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
 
   }

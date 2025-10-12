@@ -6,7 +6,11 @@ import '../utils/responsive_app.dart';
 import '../widgets/general_widgets/poppins_text.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage(
+    {
+      super.key = const Key('home_page')
+    }
+  );
 
   @override
   Widget build(BuildContext context) {

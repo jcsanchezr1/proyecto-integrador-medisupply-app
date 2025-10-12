@@ -16,6 +16,7 @@ class TextFormFieldWidget extends StatefulWidget {
   final String sLabel;
   final double dWidth;
   final String? Function(String?)? validator;
+  final Key? fieldKey;
 
   const TextFormFieldWidget(
     {
@@ -26,7 +27,8 @@ class TextFormFieldWidget extends StatefulWidget {
       this.dWidth = 312.0,
       this.bIsPassword = false,
       this.bEnabled = true,
-      this.bError = false
+      this.bError = false,
+      this.fieldKey
     }
   );
 
@@ -44,6 +46,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
     return SizedBox(
       width: ResponsiveApp.dWidth( widget.dWidth ),
       child: TextFormField(
+        key: widget.fieldKey,
         validator: widget.validator,
         enabled: widget.bEnabled,
         controller: widget.controller,

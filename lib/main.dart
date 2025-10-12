@@ -131,8 +131,8 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate
         ],
-        supportedLocales: [const Locale('en', 'US'), const Locale('es', 'CO')]
-      ),
+        supportedLocales: [const Locale('en', 'US'), const Locale('es', 'ES')]
+      )
     );
 
   }

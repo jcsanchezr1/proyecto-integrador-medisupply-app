@@ -8,11 +8,17 @@ class FetchData {
 
   final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
 
+  final http.Client client;
+
+  FetchData( { http.Client? client } ) : client = client ?? http.Client();
+
+  FetchData.withClient(this.client);
+
   Future<User> login( String sEmail, String sPassword ) async {
 
     User oUser = User();
 
-    final response = await http.post(
+    final response = await client.post(
       Uri.parse( '$baseUrl/auth/token' ),
       body: {
         'user' : sEmail,
