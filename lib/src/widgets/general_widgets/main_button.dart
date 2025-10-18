@@ -42,14 +42,14 @@ class MainButton extends StatelessWidget {
         height: ResponsiveApp.dHeight( 24.0 ),
         width: ResponsiveApp.dWidth( 24.0 ),
         child: CircularProgressIndicator(
-          color: ColorsApp.backgroundColor
+          color: ColorsApp.backgroundColor,
+          semanticsLabel: 'Loading'
         )
-      )
-      : PoppinsText(
+      ) : PoppinsText(
         sText: sLabel,
-         colorText: ColorsApp.secondaryTextColor,
-         dFontSize: ResponsiveApp.dSize( 14.0 ),
-         fontWeight: FontWeight.w500
+        colorText: ColorsApp.secondaryTextColor,
+        dFontSize: ResponsiveApp.dSize( 14.0 ),
+        fontWeight: FontWeight.w500
       )
     );
 

@@ -191,34 +191,39 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       TextFormFieldWidget(
                         controller: controllerName,
                         sLabel: TextsUtil.of(context)!.getText('create_account.name'),
-                        validator: fieldValidator                                                                                           
+                        validator: fieldValidator,
+                        fieldKey: const Key('name_field')                                                                                           
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerNIT,
                         sLabel: TextsUtil.of(context)!.getText('create_account.nit'),
                         validator: fieldValidator,
-                        keyboardType: TextInputType.number
+                        keyboardType: TextInputType.number,
+                        fieldKey: const Key('nit_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerEmail,
                         sLabel: TextsUtil.of(context)!.getText('create_account.email'),
                         validator: fieldValidator,
-                        keyboardType: TextInputType.emailAddress
+                        keyboardType: TextInputType.emailAddress,
+                        fieldKey: const Key('email_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerAdress,
                         sLabel: TextsUtil.of(context)!.getText('create_account.address'),
-                        validator: fieldValidator
+                        validator: fieldValidator,
+                        fieldKey: const Key('address_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerPhone,
                         sLabel: TextsUtil.of(context)!.getText('create_account.phone'),
                         validator: fieldValidator,
-                        keyboardType: TextInputType.phone
+                        keyboardType: TextInputType.phone,
+                        fieldKey: const Key('phone_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       DropDownWidget(
@@ -244,28 +249,32 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       TextFormFieldWidget(
                         controller: controllerNameApplicant,
                         sLabel: TextsUtil.of(context)!.getText('create_account.applicant_name'),
-                        validator: fieldValidator
+                        validator: fieldValidator,
+                        fieldKey: const Key('applicant_name_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerEmailApplicant,
                         sLabel: TextsUtil.of(context)!.getText('create_account.applicant_email'),
                         validator: fieldValidator,
-                        keyboardType: TextInputType.emailAddress
+                        keyboardType: TextInputType.emailAddress,
+                        fieldKey: const Key('applicant_email_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerPassword,
                         sLabel: TextsUtil.of(context)!.getText('create_account.password'),
                         bIsPassword: true,
-                        validator: passWordValidator
+                        validator: passWordValidator,
+                        fieldKey: const Key('password_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 32.0 ) ),
                       TextFormFieldWidget(
                         controller: controllerConfirmPassword,
                         sLabel: TextsUtil.of(context)!.getText('create_account.confirm_password'),
                         bIsPassword: true,
-                        validator: (value) => confirmPasswordValidator(value, controllerPassword.text)
+                        validator: (value) => confirmPasswordValidator(value, controllerPassword.text),
+                        fieldKey: const Key('confirm_password_field')
                       ),
                       SizedBox( height: ResponsiveApp.dHeight( 40.0 ) ),
                       MainButton(

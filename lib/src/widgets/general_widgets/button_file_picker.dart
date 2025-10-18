@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../providers/create_account_provider.dart';
 
+import '../../utils/texts_util.dart';
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
 
@@ -16,12 +17,17 @@ class ButtonFilePicker extends StatefulWidget {
 
   final String sLabel;
   final List<String> lAllowedExtensions;
+  final Future<FilePickerResult?> Function({
+    FileType type,
+    List<String>? allowedExtensions,
+  })? filePickerCallback;
 
   const ButtonFilePicker(
     {
       super.key,
       required this.sLabel,
-      required this.lAllowedExtensions
+      required this.lAllowedExtensions,
+      this.filePickerCallback
     } 
   );
 
@@ -44,8 +50,9 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PoppinsText(
                 sText: widget.sLabel, 
@@ -61,11 +68,16 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
                   )
                 ),
                 onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: widget.lAllowedExtensions
-                  );
-                  if ( result != null && result.files.isNotEmpty ) {
+                  final result = widget.filePickerCallback != null
+                    ? await widget.filePickerCallback!(
+                        type: FileType.custom,
+                        allowedExtensions: widget.lAllowedExtensions
+                      )
+                    : await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: widget.lAllowedExtensions
+                      );
+                  if ( result != null && result.files.isNotEmpty && result.files.first.path != null ) {
                     setState( () => selectedImage = File( result.files.first.path! ) );
                     createAccountProvider.logoFile = selectedImage!;
                   }
@@ -78,18 +90,21 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
                       color: ColorsApp.secondaryTextColor
                     ),
                     SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ), 
-                    PoppinsText(
-                      sText: 'Subir archivo',
-                       colorText: ColorsApp.secondaryTextColor,
-                       dFontSize: ResponsiveApp.dSize( 14.0 ),
-                       fontWeight: FontWeight.w500
+                    Flexible(
+                      child: PoppinsText(
+                        sText: TextsUtil.of( context )?.getText( 'transversal.upload_button' ) ?? 'Upload',
+                         colorText: ColorsApp.secondaryTextColor,
+                         dFontSize: ResponsiveApp.dSize( 14.0 ),
+                         fontWeight: FontWeight.w500
+                      ),
                     )
                   ]
                 )
               )
             ]
           ),
-          selectedImage != null ? Container(
+        ),
+          if (selectedImage?.path != null) Container(
             margin: EdgeInsets.only( left: ResponsiveApp.dWidth( 16.0 ) ),
             clipBehavior: Clip.antiAlias,
             width: ResponsiveApp.dWidth( 64.0 ),
@@ -101,7 +116,7 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
               selectedImage!,
               fit: BoxFit.cover
             )
-          ) : SizedBox()
+          ) else SizedBox()
         ]
       )
     );

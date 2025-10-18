@@ -31,7 +31,7 @@ class CreateAccountHeader extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only( left: ResponsiveApp.dWidth( 16.0 ) ),
                 child: PoppinsText(
-                  sText: TextsUtil.of(context)!.getText( 'create_account.title' ),
+                  sText: TextsUtil.of(context)?.getText( 'create_account.title' ) ?? 'Create Account',
                   dFontSize: ResponsiveApp.dSize( 32.0 ),
                   colorText: ColorsApp.secondaryTextColor
                 )

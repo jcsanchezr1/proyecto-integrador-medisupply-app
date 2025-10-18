@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class TextsUtil {
   
@@ -12,7 +13,18 @@ class TextsUtil {
 
   static const LocalizationsDelegate<TextsUtil> delegate = TextsUtilDelegate();
 
-  static TextsUtil? of( BuildContext context ) => Localizations.of<TextsUtil>( context, TextsUtil );
+  static TextsUtil? of( BuildContext context ) {
+    // First try Localizations
+    TextsUtil? result = Localizations.of<TextsUtil>( context, TextsUtil );
+    if (result != null) return result;
+    
+    // Fallback to Provider for testing
+    try {
+      return Provider.of<TextsUtil>(context, listen: false);
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<void> load() async {
     String sJsonString = await rootBundle.loadString('assets/language/${locale.languageCode}_language.json');

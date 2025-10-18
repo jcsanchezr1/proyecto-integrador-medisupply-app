@@ -52,14 +52,24 @@ class _DropDownWidgetState extends State<DropDownWidget> {
         selectedLanguage = sValue;
       } );
 
-      if( widget.bType ) {
-        final List<dynamic> typesEs = await TextsUtil.getSpanishText('create_account.types');
-        final selectedItem = typesEs.firstWhere((item) => item["id"] == sValue);
-        createAccountProvider.sSelectedType = selectedItem["name"];
-      } else {
-        final List<dynamic> specialitiesEs = await TextsUtil.getSpanishText('create_account.specialities');
-        final selectedItem = specialitiesEs.firstWhere((item) => item["id"] == sValue);
-        createAccountProvider.sSelectedSpeciality = selectedItem["name"];
+      try {
+        if( widget.bType ) {
+          final List<dynamic> typesEs = await TextsUtil.getSpanishText('create_account.types');
+          final selectedItem = typesEs.firstWhere((item) => item["id"] == sValue);
+          createAccountProvider.sSelectedType = selectedItem["name"];
+        } else {
+          final List<dynamic> specialitiesEs = await TextsUtil.getSpanishText('create_account.specialities');
+          final selectedItem = specialitiesEs.firstWhere((item) => item["id"] == sValue);
+          createAccountProvider.sSelectedSpeciality = selectedItem["name"];
+        }
+      } catch (e) {
+        // Fallback for tests where assets are not available
+        final selectedItem = widget.lItems.firstWhere((item) => item["id"] == sValue);
+        if( widget.bType ) {
+          createAccountProvider.sSelectedType = selectedItem["name"];
+        } else {
+          createAccountProvider.sSelectedSpeciality = selectedItem["name"];
+        }
       }
 
     }

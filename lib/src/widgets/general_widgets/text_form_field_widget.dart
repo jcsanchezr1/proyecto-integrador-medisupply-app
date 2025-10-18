@@ -92,7 +92,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
             icon: Icon(
               bObscure ? Icons.visibility_off : Icons.visibility,
               color: ColorsApp.primaryColor,
-              semanticLabel: bObscure ? 'Show password' : 'Hide password',
+              semanticLabel: bObscure ? 'Show ${widget.sLabel}' : 'Hide ${widget.sLabel}',
             )
           ) : widget.bError ? Icon(
             Icons.error_rounded,

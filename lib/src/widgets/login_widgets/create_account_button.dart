@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../pages/create_account_page.dart';
 
+import '../../providers/create_account_provider.dart';
 import '../../utils/texts_util.dart';
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
@@ -16,7 +18,10 @@ class CreateAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final texts = textsUtil ?? TextsUtil.of(context)!;
+    final createAccountProvider = Provider.of<CreateAccountProvider>(context);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: ResponsiveApp.dWidth(24.0)),
       child: Row(
@@ -29,7 +34,10 @@ class CreateAccountButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
               ),
             ),
-            onPressed: () => Navigator.push(context, SlidePageRoute(page: CreateAccountPage())),
+            onPressed: () {
+              createAccountProvider.logoFile = null;
+              Navigator.push(context, SlidePageRoute(page: CreateAccountPage()));
+            },
             child: PoppinsText(
               sText: texts.getText('login.sign-up'),
               dFontSize: ResponsiveApp.dSize(14.0),

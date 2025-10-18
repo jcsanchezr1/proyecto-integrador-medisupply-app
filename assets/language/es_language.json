@@ -1,4 +1,7 @@
 {
+    "transversal" : {
+        "upload_button" : "Subir archivo"
+    },
     "login" : {
         "title" : "¡Bienvenido!",
         "subtitle" : "Inicia sesión para continuar",

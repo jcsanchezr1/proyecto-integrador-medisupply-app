@@ -1,4 +1,7 @@
 {
+    "transversal" : {
+        "upload_button" : "Upload file"
+    },
     "login" : {
         "title" : "Welcome!",
         "subtitle" : "Log in to continue",
@@ -41,7 +44,7 @@
         "applicant_email": "Applicant email",
         "password": "Password",
         "confirm_password": "Confirm password",
-        "button": "Create account",
+        "button": "Sign up",
         "error": "Please, enter a value",
         "error_create_account": "An error occurred. Check the entered data or try again later.",
         "error_get_coordinates": "Please enter a valid address.",

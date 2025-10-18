@@ -5,6 +5,7 @@ import 'package:medisupply_app/src/pages/login_page.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:provider/provider.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
+import 'package:medisupply_app/src/providers/create_account_provider.dart';
 import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,8 +43,11 @@ class MockFetchData extends FetchData {
 
 void main() {
   Widget makeTestableWidget({required Widget child, FetchData? fetchData, TextsUtil? textsUtil}) {
-    return ChangeNotifierProvider(
-      create: (_) => LoginProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ChangeNotifierProvider(create: (_) => CreateAccountProvider()),
+      ],
       child: MaterialApp(
         home: ScaffoldMessenger(
           child: Scaffold(

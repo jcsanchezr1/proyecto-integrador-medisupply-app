@@ -16,14 +16,15 @@ class BackButtonWidget extends StatelessWidget {
     return TextButton.icon(
       onPressed: () => Navigator.pop( context ),
       label: PoppinsText(
-        sText: TextsUtil.of(context)!.getText( 'create_account.back_button' ),
+        sText: TextsUtil.of(context)?.getText( 'create_account.back_button' ) ?? 'Back',
         dFontSize: ResponsiveApp.dSize( 13.0 ),
         colorText: ColorsApp.secondaryTextColor
       ),
       icon: Icon(
         Icons.arrow_back_rounded,
         color: ColorsApp.secondaryTextColor,
-        size: ResponsiveApp.dSize( 24.0 )
+        size: ResponsiveApp.dSize( 24.0 ),
+        semanticLabel: 'Back'
       )
     );
 

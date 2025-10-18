@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 class FetchData {
 
   final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
+  //final baseUrl = 'http://192.168.18.23:8082';
   final baseUrlMaps = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
   final http.Client client;
