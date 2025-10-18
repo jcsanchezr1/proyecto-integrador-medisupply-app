@@ -24,5 +24,36 @@
         "confirm_dialog": "Accept",
         "cancel_dialog": "Cancel",
         "error_logout": "An error occurred while logging out. Please try again later."
+    },
+    "create_account": {
+        "title": "Create account",
+        "back_button": "Back",
+        "name": "Name",
+        "nit": "Tax identification",
+        "email": "Email",
+        "address": "Address",
+        "phone": "Phone",
+        "institution_type": "Institution type",
+        "hint_dropdown": "Select an option",
+        "logo": "Logo",
+        "speciality": "Product categories of interest",
+        "applicant_name": "Applicant name",
+        "applicant_email": "Applicant email",
+        "password": "Password",
+        "confirm_password": "Confirm password",
+        "button": "Create account",
+        "error": "Please, enter a value",
+        "error_create_account": "An error occurred. Check the entered data or try again later.",
+        "success_create_account": "Account created successfully.",
+        "types": [
+            {"id": "clinic", "name": "Clinic", "selected": false},
+            {"id": "hospital", "name": "Hospital", "selected": false},
+            {"id": "laboratory", "name": "Laboratory", "selected": false}
+        ],
+        "specialities": [
+            {"id": "cold_chain", "name": "Cold chain", "selected": false},
+            {"id": "high_value", "name": "High value", "selected": false},
+            {"id": "security", "name": "Security", "selected": false}
+        ]
     }
 }

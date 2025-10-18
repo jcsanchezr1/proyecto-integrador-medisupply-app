@@ -192,7 +192,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                           });
                           _savedSelectedLanguage(value);
                         }
-                      } ,
+                      },
                       value: selectedLanguage
                     )
                   )

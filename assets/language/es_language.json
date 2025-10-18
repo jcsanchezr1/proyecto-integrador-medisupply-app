@@ -24,5 +24,36 @@
         "confirm_dialog": "Aceptar",
         "cancel_dialog": "Cancelar",
         "error_logout": "Ocurrió un error al cerrar sesión. Por favor, intenta más tarde."
+    },
+    "create_account": {
+        "title" : "Crea tu cuenta",
+        "back_button" : "Volver",
+        "name" : "Nombre",
+        "nit" : "Identificación tributaria",
+        "email" : "Correo electrónico",
+        "address" : "Dirección",
+        "phone" : "Teléfono",
+        "institution_type" : "Tipo de institución",
+        "hint_dropdown" : "Selecciona una opción",
+        "logo" : "Logo",
+        "speciality" : "Categorías de productos de interés",
+        "applicant_name" : "Nombre del solicitante",
+        "applicant_email" : "Email del solicitante",
+        "password" : "Contraseña",
+        "confirm_password" : "Confirmar contraseña",
+        "button" : "Crear cuenta",
+        "error" : "Por favor, ingresa un valor",
+        "error_create_account" : "Ocurrió un error. Revisa los datos ingresados o intenta más tarde.",
+        "success_create_account" : "Cuenta creada exitosamente.",
+        "types": [
+            {"id": "clinic", "name": "Clínica", "selected": false},
+            {"id": "hospital", "name": "Hospital", "selected": false},
+            {"id": "laboratory", "name": "Laboratorio", "selected": false}
+        ],
+        "specialities": [
+            {"id": "cold_chain", "name": "Cadena de frío", "selected": false},
+            {"id": "high_value", "name": "Alto valor", "selected": false},
+            {"id": "security", "name": "Seguridad", "selected": false}
+        ]
     }
 }

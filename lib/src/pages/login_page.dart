@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: login
                 ),
                 SizedBox(height: ResponsiveApp.dHeight(16.0)),
-                CreateAccountButton(textsUtil: textsUtil),
+                CreateAccountButton(textsUtil: textsUtil)
               ]
             )
           )

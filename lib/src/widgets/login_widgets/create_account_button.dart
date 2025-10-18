@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../pages/home_page.dart';
+import '../../pages/create_account_page.dart';
 
 import '../../utils/texts_util.dart';
 import '../../utils/colors_app.dart';
@@ -29,16 +29,16 @@ class CreateAccountButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.0),
               ),
             ),
-            onPressed: () => Navigator.push(context, SlidePageRoute(page: HomePage())),
+            onPressed: () => Navigator.push(context, SlidePageRoute(page: CreateAccountPage())),
             child: PoppinsText(
               sText: texts.getText('login.sign-up'),
               dFontSize: ResponsiveApp.dSize(14.0),
               colorText: ColorsApp.textColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+              fontWeight: FontWeight.w500
+            )
+          )
+        ]
+      )
     );
   }
 }
