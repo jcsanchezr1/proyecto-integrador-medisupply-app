@@ -44,7 +44,11 @@
         "button": "Create account",
         "error": "Please, enter a value",
         "error_create_account": "An error occurred. Check the entered data or try again later.",
+        "error_get_coordinates": "Please enter a valid address.",
         "success_create_account": "Account created successfully.",
+        "error_password": "The password must be at least 8 characters long, alphanumeric, and contain a special character.",
+        "error_logo": "Please upload a logo.",
+        "error_confirm_password": "Passwords do not match.",
         "types": [
             {"id": "clinic", "name": "Clinic", "selected": false},
             {"id": "hospital", "name": "Hospital", "selected": false},

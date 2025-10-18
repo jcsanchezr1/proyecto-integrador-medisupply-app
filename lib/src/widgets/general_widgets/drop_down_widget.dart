@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../providers/create_account_provider.dart';
 
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
 
+import '../../utils/texts_util.dart';
 import 'poppins_text.dart';
 
 class DropDownWidget extends StatefulWidget {
@@ -13,6 +17,7 @@ class DropDownWidget extends StatefulWidget {
   final String sLabel;
   final String? Function(String?)? validator;
   final List<dynamic> lItems;
+  final bool bType;
 
   const DropDownWidget(
     {
@@ -20,6 +25,7 @@ class DropDownWidget extends StatefulWidget {
       required this.sHintText,
       required this.sLabel,
       required this.lItems,
+      this.bType = true,
       this.validator
     }
   );
@@ -32,6 +38,33 @@ class DropDownWidget extends StatefulWidget {
 class _DropDownWidgetState extends State<DropDownWidget> {
 
   String? selectedLanguage;
+
+  onChanged( String? sValue ) async {
+
+    final createAccountProvider = Provider.of<CreateAccountProvider>( context, listen: false );
+
+    if (sValue != null) {
+      setState( () {
+        for ( var item in widget.lItems ) {
+          item["selected"] = false;
+        }
+        widget.lItems.firstWhere((item) => item["id"] == sValue)["selected"] = true;
+        selectedLanguage = sValue;
+      } );
+
+      if( widget.bType ) {
+        final List<dynamic> typesEs = await TextsUtil.getSpanishText('create_account.types');
+        final selectedItem = typesEs.firstWhere((item) => item["id"] == sValue);
+        createAccountProvider.sSelectedType = selectedItem["name"];
+      } else {
+        final List<dynamic> specialitiesEs = await TextsUtil.getSpanishText('create_account.specialities');
+        final selectedItem = specialitiesEs.firstWhere((item) => item["id"] == sValue);
+        createAccountProvider.sSelectedSpeciality = selectedItem["name"];
+      }
+
+    }
+
+  }
 
   @override
   Widget build( BuildContext context ) {
@@ -81,22 +114,12 @@ class _DropDownWidgetState extends State<DropDownWidget> {
             value: item["id"],
             child: PoppinsText(
               sText: item["name"],
-              dFontSize: ResponsiveApp.dSize(12.0),
+              dFontSize: ResponsiveApp.dSize(13.0),
               colorText: ColorsApp.textColor
             )
           )
         ).toList(),
-        onChanged: (value) {
-          if (value != null) {
-            setState( () {
-              for ( var item in widget.lItems ) {
-                item["selected"] = false;
-              }
-              widget.lItems.firstWhere((item) => item["id"] == value)["selected"] = true;
-              selectedLanguage = value;
-            } );
-          }
-        },
+        onChanged: onChanged,
         value: selectedLanguage
       )
     );

@@ -17,6 +17,7 @@ class TextFormFieldWidget extends StatefulWidget {
   final double dWidth;
   final String? Function(String?)? validator;
   final Key? fieldKey;
+  final TextInputType keyboardType;
 
   const TextFormFieldWidget(
     {
@@ -28,7 +29,8 @@ class TextFormFieldWidget extends StatefulWidget {
       this.bIsPassword = false,
       this.bEnabled = true,
       this.bError = false,
-      this.fieldKey
+      this.fieldKey,
+      this.keyboardType = TextInputType.text
     }
   );
 
@@ -46,6 +48,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
     return SizedBox(
       width: ResponsiveApp.dWidth( widget.dWidth ),
       child: TextFormField(
+        keyboardType: widget.keyboardType,
         key: widget.fieldKey,
         validator: widget.validator,
         enabled: widget.bEnabled,
@@ -70,6 +73,7 @@ class _TextFormFieldWidgetState extends State<TextFormFieldWidget> {
             borderSide: const BorderSide( color: ColorsApp.secondaryColor)
           ),
           errorStyle: GoogleFonts.poppins(),
+          errorMaxLines: 3,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular( 8.0 ),
             borderSide: const BorderSide( color: ColorsApp.secondaryColor)

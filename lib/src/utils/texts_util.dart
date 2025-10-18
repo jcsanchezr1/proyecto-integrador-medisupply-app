@@ -14,7 +14,6 @@ class TextsUtil {
 
   static TextsUtil? of( BuildContext context ) => Localizations.of<TextsUtil>( context, TextsUtil );
 
-
   Future<void> load() async {
     String sJsonString = await rootBundle.loadString('assets/language/${locale.languageCode}_language.json');
     mLocalizedStrings = json.decode(sJsonString);
@@ -23,6 +22,23 @@ class TextsUtil {
   dynamic getText(String sKey) {
     List<String> lKeys = sKey.split('.');
     dynamic value = mLocalizedStrings;
+    for (var k in lKeys) {
+      if (value is Map<String, dynamic> && value.containsKey(k)) {
+        value = value[k];
+      } else {
+        return null;
+      }
+    }
+    return value;
+  }
+
+  static Future<dynamic> getSpanishText(String sKey) async {
+    String sJsonString = await rootBundle.loadString('assets/language/es_language.json');
+    Map<String, dynamic> localizedStrings = json.decode(sJsonString);
+
+    List<String> lKeys = sKey.split('.');
+    dynamic value = localizedStrings;
+
     for (var k in lKeys) {
       if (value is Map<String, dynamic> && value.containsKey(k)) {
         value = value[k];

@@ -45,6 +45,10 @@
         "error" : "Por favor, ingresa un valor",
         "error_create_account" : "Ocurrió un error. Revisa los datos ingresados o intenta más tarde.",
         "success_create_account" : "Cuenta creada exitosamente.",
+        "error_get_coordinates": "Por favor, ingresa una dirección válida.",
+        "error_password": "La contraseña debe tener mínimo 8 caracteres, ser alfanumérica y contener un carácter especial.",
+        "error_logo": "Por favor, cargue un logo.",
+        "error_confirm_password": "Las contraseñas no coinciden.",
         "types": [
             {"id": "clinic", "name": "Clínica", "selected": false},
             {"id": "hospital", "name": "Hospital", "selected": false},

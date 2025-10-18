@@ -41,6 +41,7 @@ dependencies:
   http: ^1.5.0
   provider: ^6.1.5+1
   file_picker: ^10.3.3
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
   assets:
     - assets/images/
     - assets/language/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

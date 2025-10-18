@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
+
+import '../../providers/create_account_provider.dart';
 
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
@@ -34,6 +37,8 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
   @override
   Widget build( BuildContext context ) {
 
+    final createAccountProvider = Provider.of<CreateAccountProvider>(context);
+
     return SizedBox(
       width: ResponsiveApp.dWidth( 312.0 ),
       child: Row(
@@ -62,6 +67,7 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
                   );
                   if ( result != null && result.files.isNotEmpty ) {
                     setState( () => selectedImage = File( result.files.first.path! ) );
+                    createAccountProvider.logoFile = selectedImage!;
                   }
                 },
                 child: Row(
