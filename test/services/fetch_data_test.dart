@@ -320,4 +320,173 @@ void main() {
       expect(result, isTrue);
     }
   );
+
+  test(
+    'FetchData.getProductsbyProvider devuelve lista de ProductsGroup cuando la API responde 200', () async {
+      final mockResponse = {
+        'data': {
+          'groups': [
+            {
+              'provider': 'Provider 1',
+              'products': [
+                {
+                  'name': 'Product 1',
+                  'photo_url': 'https://example.com/image1.jpg',
+                  'quantity': 10,
+                  'price': 15.99,
+                },
+                {
+                  'name': 'Product 2',
+                  'photo_url': 'https://example.com/image2.jpg',
+                  'quantity': 5,
+                  'price': 25.50,
+                },
+              ],
+            },
+            {
+              'provider': 'Provider 2',
+              'products': [
+                {
+                  'name': 'Product 3',
+                  'photo_url': 'https://example.com/image3.jpg',
+                  'quantity': 20,
+                  'price': 30.00,
+                },
+              ],
+            },
+          ],
+        },
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/inventory/providers/products'), true);
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getProductsbyProvider('test_access_token');
+
+      expect(result, isA<List>());
+      expect(result.length, equals(2));
+
+      final group1 = result[0];
+      expect(group1.sProviderName, equals('Provider 1'));
+      expect(group1.lProducts, isNotNull);
+      expect(group1.lProducts!.length, equals(2));
+
+      final product1 = group1.lProducts![0];
+      expect(product1.sName, equals('Product 1'));
+      expect(product1.sImage, equals('https://example.com/image1.jpg'));
+      expect(product1.dQuantity, equals(10.0));
+      expect(product1.dPrice, equals(15.99));
+
+      final group2 = result[1];
+      expect(group2.sProviderName, equals('Provider 2'));
+      expect(group2.lProducts, isNotNull);
+      expect(group2.lProducts!.length, equals(1));
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider devuelve lista vacía cuando la API devuelve grupos vacíos', () async {
+      final mockResponse = {
+        'data': {
+          'groups': [],
+        },
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getProductsbyProvider('test_access_token');
+
+      expect(result, isA<List>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider devuelve lista vacía cuando la API falla', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Unauthorized', 401)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getProductsbyProvider('invalid_token');
+
+      expect(result, isA<List>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider devuelve lista vacía cuando status != 200', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Internal Server Error', 500)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getProductsbyProvider('test_access_token');
+
+      expect(result, isA<List>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider maneja JSON malformado', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Invalid JSON', 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getProductsbyProvider('test_access_token'),
+        throwsA(isA<FormatException>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider maneja respuesta sin campo data', () async {
+      final mockResponse = {'status': 'success'};
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getProductsbyProvider('test_access_token'),
+        throwsA(isA<NoSuchMethodError>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.getProductsbyProvider maneja respuesta sin campo groups', () async {
+      final mockResponse = {
+        'data': {'status': 'success'}
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getProductsbyProvider('test_access_token'),
+        throwsA(isA<TypeError>()),
+      );
+    }
+  );
 }

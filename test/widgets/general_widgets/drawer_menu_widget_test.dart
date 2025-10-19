@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
 import 'package:medisupply_app/src/utils/language_util.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
@@ -116,8 +118,11 @@ void _installAssetMock() {
 }
 
 Widget _buildApp({Locale? locale}) {
-  return ChangeNotifierProvider(
-    create: (_) => LoginProvider(),
+  final loginProvider = LoginProvider();
+  loginProvider.oUser = User(sEmail: 'test@example.com', sName: 'Test User');
+  
+  return ChangeNotifierProvider.value(
+    value: loginProvider,
     child: MaterialApp(
       locale: locale,
       supportedLocales: const [Locale('es'), Locale('en')],
@@ -127,38 +132,11 @@ Widget _buildApp({Locale? locale}) {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: Scaffold(
-        drawer: const DrawerMenuWidget(),
-        body: Builder(
-          builder: (context) => Center(
-            child: ElevatedButton(
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              child: const Text('open'),
-            ),
-          ),
-        ),
+      home: const Scaffold(
+        body: DrawerMenuWidget(),
       ),
     ),
   );
-}
-
-Future<void> _openDrawer(WidgetTester tester) async {
-  await tester.pumpAndSettle();
-
-  final openBtn = find.text('open');
-  if (openBtn.evaluate().isNotEmpty) {
-    await tester.tap(openBtn);
-    await tester.pumpAndSettle();
-    return;
-  }
-
-  // Find any Scaffold and open its drawer
-  final scaffoldFinder = find.byType(Scaffold);
-  if (scaffoldFinder.evaluate().isNotEmpty) {
-    final scaffoldState = tester.state<ScaffoldState>(scaffoldFinder.first);
-    scaffoldState.openDrawer();
-    await tester.pumpAndSettle();
-  }
 }
 
 void main() {
@@ -175,14 +153,13 @@ void main() {
 
   testWidgets('Debug: verificar estructura del drawer', (tester) async {
     await tester.pumpWidget(_buildApp(locale: const Locale('es')));
-    await _openDrawer(tester);
-    await tester.pumpAndSettle(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
 
     // Check if DrawerMenuWidget is present
     expect(find.byType(DrawerMenuWidget), findsOneWidget);
     
-    // Check basic UI elements
-    expect(find.text('Hola'), findsOneWidget);
+    // Check basic UI elements - look for the greeting text directly in the widget
+    expect(find.textContaining('Hola'), findsOneWidget);
     expect(find.text('Idioma'), findsOneWidget);
     expect(find.text('Cerrar sesión'), findsOneWidget);
   });

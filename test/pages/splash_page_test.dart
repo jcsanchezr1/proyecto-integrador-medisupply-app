@@ -1,15 +1,137 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medisupply_app/src/pages/splash_page.dart';
+import 'package:medisupply_app/src/providers/login_provider.dart';
+
+/// PNG de 1x1 transparente para simular assets en tests.
+const List<int> _kTransparentPng = <int>[
+  0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+  0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+  0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00,
+  0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0xDA, 0x63, 0xF8, 0x0F, 0x00, 0x01,
+  0x01, 0x01, 0x00, 0x18, 0xDD, 0x8D, 0xE1, 0x00, 0x00, 0x00, 0x00, 0x49,
+  0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+];
+
+final String _esJson = jsonEncode({
+  "menu": {
+    "greeting": "Hola",
+    "language": "Idioma",
+    "languages": [
+      {"id": "es", "language": "Español", "selected": true},
+      {"id": "en", "language": "English", "selected": false},
+      {"id": null, "language": "Invalid"},
+      {"id": "xx", "language": null}
+    ],
+    "logout": "Cerrar sesión"
+  },
+  "logout": {
+    "title_dialog": "Cerrar sesión",
+    "message_dialog": "¿Seguro que quieres salir?",
+    "cancel_dialog": "Cancelar",
+    "confirm_dialog": "Salir",
+    "error_logout": "No se pudo cerrar sesión"
+  },
+  "login": {
+    "button": "Entrar",
+    "email": "Correo",
+    "password": "Contraseña",
+    "error": "Requerido",
+    "error_login": "Credenciales inválidas"
+  },
+  "home": {
+    "welcome": "Bienvenido a MediSupply",
+    "title": "MediSupply"
+  }
+});
+
+final String _enJson = jsonEncode({
+  "menu": {
+    "greeting": "Hello",
+    "language": "Language",
+    "languages": [],
+    "logout": "Logout"
+  },
+  "logout": {
+    "title_dialog": "Logout",
+    "message_dialog": "Are you sure you want to log out?",
+    "cancel_dialog": "Cancel",
+    "confirm_dialog": "Logout",
+    "error_logout": "Logout failed"
+  },
+  "login": {
+    "button": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "error": "Required",
+    "error_login": "Invalid credentials"
+  },
+  "home": {
+    "welcome": "Welcome to MediSupply",
+    "title": "MediSupply"
+  }
+});
+
+void _installAssetMock() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+    'flutter/assets',
+    (ByteData? message) async {
+      final String key = utf8.decode(message!.buffer.asUint8List());
+
+      // 1) Mock del AssetManifest.bin (google_fonts lo lee en tests)
+      if (key == 'AssetManifest.bin') {
+        // Mapa vacío pero válido, codificado con StandardMessageCodec
+        final ByteData? data = const StandardMessageCodec().encodeMessage(<String, Object?>{});
+        return data;
+      }
+
+      // 2) Compatibilidad: algunos entornos consultan también el JSON
+      if (key == 'AssetManifest.json') {
+        final bytes = utf8.encode('{}');
+        return ByteData.view(Uint8List.fromList(bytes).buffer);
+      }
+
+      // 3) Localizaciones usadas por TextsUtil
+      if (key == 'assets/language/es_language.json') {
+        final bytes = utf8.encode(_esJson);
+        return ByteData.view(Uint8List.fromList(bytes).buffer);
+      }
+      if (key == 'assets/language/en_language.json') {
+        final bytes = utf8.encode(_enJson);
+        return ByteData.view(Uint8List.fromList(bytes).buffer);
+      }
+
+      // 4) Cualquier .png (logo) -> PNG transparente
+      if (key.endsWith('.png')) {
+        return ByteData.view(Uint8List.fromList(_kTransparentPng).buffer);
+      }
+
+      return null;
+    },
+  );
+}
 
 void main() {
-  group('SplashPage Tests', () {
-    setUp(() {
-      // Reset SharedPreferences before each test
-      SharedPreferences.setMockInitialValues({});
-    });
+  setUpAll(() {
+    _installAssetMock();
+    // Desactiva la descarga dinámica de fuentes en tests
+    GoogleFonts.config.allowRuntimeFetching = false;
+  });
 
+  setUp(() {
+    // Reset SharedPreferences before each test
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  group('SplashPage Tests', () {
     // Tests unitarios básicos
     test('SplashPage constructor funciona', () {
       const splashPage = SplashPage();
@@ -36,10 +158,15 @@ void main() {
         'languageCode': 'en',
       });
 
+      final loginProvider = LoginProvider();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SplashPage(skipDelay: true, skipNavigation: true),
-        ),  
+        ChangeNotifierProvider<LoginProvider>.value(
+          value: loginProvider,
+          child: const MaterialApp(
+            home: SplashPage(skipDelay: true, skipNavigation: true),
+          ),
+        ),
       );
 
       await tester.pump();
@@ -72,9 +199,14 @@ void main() {
         'accessToken': 'test_token',
       });
 
+      final loginProvider = LoginProvider();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SplashPage(skipDelay: true, skipNavigation: true),
+        ChangeNotifierProvider<LoginProvider>.value(
+          value: loginProvider,
+          child: const MaterialApp(
+            home: SplashPage(skipDelay: true, skipNavigation: true),
+          ),
         ),
       );
 
@@ -84,7 +216,7 @@ void main() {
       expect(find.byType(SplashPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
       expect(find.byType(Center), findsOneWidget);
-      
+
       // En este punto se ejecutó initApp() con accessToken (rama if)
     });
 
@@ -95,9 +227,14 @@ void main() {
         // No incluir accessToken para que sea null
       });
 
+      final loginProvider = LoginProvider();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SplashPage(skipDelay: true, skipNavigation: true),
+        ChangeNotifierProvider<LoginProvider>.value(
+          value: loginProvider,
+          child: const MaterialApp(
+            home: SplashPage(skipDelay: true, skipNavigation: true),
+          ),
         ),
       );
 
@@ -107,16 +244,21 @@ void main() {
       expect(find.byType(SplashPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
       expect(find.byType(Center), findsOneWidget);
-      
+
       // En este punto se ejecutó initApp() sin accessToken (rama else)
     });
 
     testWidgets('SplashPage elementos UI tienen propiedades correctas', (WidgetTester tester) async {
       SharedPreferences.setMockInitialValues({});
 
+      final loginProvider = LoginProvider();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: SplashPage(skipDelay: true, skipNavigation: true),
+        ChangeNotifierProvider<LoginProvider>.value(
+          value: loginProvider,
+          child: const MaterialApp(
+            home: SplashPage(skipDelay: true, skipNavigation: true),
+          ),
         ),
       );
 
@@ -143,14 +285,19 @@ void main() {
         'accessToken': 'valid_token',
       });
 
+      final loginProvider = LoginProvider();
+
       await tester.pumpWidget(
-        MaterialApp(
-          home: const SplashPage(skipDelay: true),
-          // Agregar rutas para evitar errores de navegación
-          routes: {
-            '/home': (context) => const Scaffold(body: Text('Home')),
-            '/login': (context) => const Scaffold(body: Text('Login')),
-          },
+        ChangeNotifierProvider<LoginProvider>.value(
+          value: loginProvider,
+          child: MaterialApp(
+            home: const SplashPage(skipDelay: true),
+            // Agregar rutas para evitar errores de navegación
+            routes: {
+              '/home': (context) => const Scaffold(body: Text('Home')),
+              '/login': (context) => const Scaffold(body: Text('Login')),
+            },
+          ),
         ),
       );
 
@@ -164,7 +311,7 @@ void main() {
       // ✓ Se leyó SharedPreferences
       // ✓ Se evaluó la condición del token
       // ✓ Se ejecutó el build() completo
-      
+
       expect(find.byType(MaterialApp), findsOneWidget);
     });
   });

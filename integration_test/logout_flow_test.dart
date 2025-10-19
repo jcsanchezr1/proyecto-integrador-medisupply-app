@@ -21,16 +21,40 @@ Future<void> clearSharedPreferences() async {
   await prefs.clear();
 }
 
-/// Función para hacer login completo
-Future<void> performLogin(WidgetTester tester) async {
-  const email = 'clinica.merced@medisupply.com';
-  const password = 'AugustoCelis13*';
+/// Función para hacer login completo y verificar que fue exitoso
+Future<void> performLoginAndVerify(WidgetTester tester) async {
+  const email = 'ventas@correo.com';
+  const password = 'Password123.';
 
   await waitForWidget(tester, find.byKey(const Key('email_field')));
   await tester.enterText(find.byKey(const Key('email_field')), email);
   await tester.enterText(find.byKey(const Key('password_field')), password);
   await tester.tap(find.byKey(const Key('login_button')));
-  await tester.pumpAndSettle(const Duration(seconds: 8));
+  await tester.pumpAndSettle();
+
+  // Esperar un poco más para que el login se procese
+  await tester.pump(const Duration(seconds: 5));
+
+  // Verificar si hay SnackBar de error
+  final errorSnackBar = find.byType(SnackBar);
+  if (errorSnackBar.evaluate().isNotEmpty) {
+    // Si hay error, esperar un poco más y verificar de nuevo (puede ser un error temporal)
+    await tester.pump(const Duration(seconds: 3));
+    final errorSnackBarRetry = find.byType(SnackBar);
+    if (errorSnackBarRetry.evaluate().isNotEmpty) {
+      await tester.tap(find.byKey(const Key('login_button')));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 5));
+    }
+  }
+
+  // Verificar que llegamos a la HomePage
+  try {
+    await waitForWidget(tester, find.byKey(const Key('home_page')), maxTries: 200);
+    expect(find.byKey(const Key('home_page')), findsOneWidget);
+  } catch (e) {
+    rethrow;
+  }
 }
 
 void main() {
@@ -62,21 +86,22 @@ void main() {
 
     testWidgets('Login completo y verificar HomePage', (WidgetTester tester) async {
       app.main();
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para splash
 
-      // Realizar login
-      await performLogin(tester);
+      // Realizar login y verificar que fue exitoso
+      await performLoginAndVerify(tester);
 
-      // Verificar que llegamos a alguna página post-login (hay AppBar)
+      // Verificar que estamos en HomePage con AppBar
       expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byKey(const Key('home_page')), findsOneWidget);
     });
 
     testWidgets('Test completo de logout flow', (WidgetTester tester) async {
       app.main();
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 5));
 
-      // Login
-      await performLogin(tester);
+      // Login y verificar
+      await performLoginAndVerify(tester);
 
       // Verificar que estamos loggeados (hay AppBar)
       expect(find.byType(AppBar), findsOneWidget);
@@ -180,10 +205,10 @@ void main() {
 
     testWidgets('Test de logout con cancelación', (WidgetTester tester) async {
       app.main();
-      await tester.pumpAndSettle(const Duration(seconds: 3));
+      await tester.pumpAndSettle(const Duration(seconds: 5));
 
-      // Login
-      await performLogin(tester);
+      // Login y verificar
+      await performLoginAndVerify(tester);
 
       // Verificar que estamos loggeados
       expect(find.byType(AppBar), findsOneWidget);

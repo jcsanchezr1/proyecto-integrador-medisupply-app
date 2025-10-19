@@ -16,7 +16,9 @@ import '../../widgets/new_order_widgets/product_card.dart';
 
 class NewOrderPage extends StatefulWidget {
 
-  const NewOrderPage( { super.key } );
+  const NewOrderPage( { super.key = const Key('new_order_page'), this.fetchData } );
+
+  final FetchData? fetchData;
 
   @override
   State<NewOrderPage> createState() => _NewOrderPageState();
@@ -28,13 +30,17 @@ class _NewOrderPageState extends State<NewOrderPage> {
   bool bIsLoading = true;
   List<ProductsGroup> lProductsGroups = [];
 
-  getProductsbyProvider() async {
+  Future<void> getProductsbyProvider() async {
 
     final loginPrvovider = Provider.of<LoginProvider>(context, listen: false);
 
-    final oFetchData = FetchData();
+    final oFetchData = widget.fetchData ?? FetchData();
 
-    lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken! );
+    try {
+      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken! );
+    } catch (e) {
+      lProductsGroups = [];
+    }
 
     setState( () => bIsLoading = false );
 
@@ -79,8 +85,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
         child: PoppinsText(
           sText: TextsUtil.of(context)?.getText( 'new_order.empty_state' ) ?? 'No Products Available',
           dFontSize: ResponsiveApp.dSize( 16.0 ),
-          colorText: ColorsApp.secondaryColor,
-          fontWeight: FontWeight.w500
+          colorText: ColorsApp.textColor
         )
       ) : Column(
         children: [
@@ -92,7 +97,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
               ),
               itemCount: lProductsGroups.length,
               itemBuilder: (context, index) => Padding(
-                padding: EdgeInsets.only( bottom: 32.0 ),
+                padding: EdgeInsets.only( bottom: ResponsiveApp.dHeight( 32.0 ) ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

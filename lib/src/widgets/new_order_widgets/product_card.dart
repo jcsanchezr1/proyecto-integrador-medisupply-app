@@ -42,30 +42,30 @@ class ProductCard extends StatelessWidget {
                 image: NetworkImage( oProduct.sImage ?? '' )
               )
             ),
-            SizedBox( height: ResponsiveApp.dHeight( 4.0 ) ),
+            SizedBox( height: ResponsiveApp.dHeight( 1.0 ) ),
             PoppinsText(
               sText: '\$${ oProduct.dPrice!.toInt().toString() }',
-              dFontSize: ResponsiveApp.dSize( 14.0 ),
+              dFontSize: ResponsiveApp.dSize( 13.0 ),
               colorText: ColorsApp.secondaryColor,
               fontWeight: FontWeight.bold
             ),
-            SizedBox( height: ResponsiveApp.dHeight( 4.0 ) ),
+            SizedBox( height: ResponsiveApp.dHeight( 2.0 ) ),
             PoppinsText(
               sText: oProduct.sName!,
-              dFontSize: ResponsiveApp.dSize( 13.0 ),
+              dFontSize: ResponsiveApp.dSize( 11.0 ),
               colorText: ColorsApp.secondaryColor,
               iMaxLines: 2,
               fontWeight: FontWeight.w500
             ),
-            SizedBox( height: ResponsiveApp.dHeight( 2.0 ) ),
+            SizedBox( height: ResponsiveApp.dHeight( 0.5 ) ),
             PoppinsText(
               sText: '${ oProduct.dQuantity!.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity! == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
-              dFontSize: ResponsiveApp.dSize( 12.0 ),
+              dFontSize: ResponsiveApp.dSize( 11.0 ),
               colorText: ColorsApp.textColor
             )
           ]
-        ),
-      ),
+        )
+      )
     );
   
   }

@@ -73,17 +73,17 @@ class _HomePageState extends State<HomePage> {
           NavigationDestination(
             selectedIcon: Icon( Icons.local_shipping_outlined, color: ColorsApp.secondaryTextColor, size: ResponsiveApp.dSize( 24.0 ) ),
             icon: Icon( Icons.local_shipping_outlined, color: ColorsApp.textColor, size: ResponsiveApp.dSize( 24.0 ) ),
-            label: TextsUtil.of(context)?.getText( 'tabs.orders' )
+            label: TextsUtil.of(context)?.getText( 'tabs.orders' ) ?? 'Orders'
           ),
           NavigationDestination(
             selectedIcon: Icon( Icons.person_outline, color: ColorsApp.secondaryTextColor, size: ResponsiveApp.dSize( 24.0 ) ),
             icon: Icon( Icons.person_outline, color: ColorsApp.textColor, size: ResponsiveApp.dSize( 24.0 ) ),
-            label: TextsUtil.of(context)?.getText( 'tabs.clients' )
+            label: TextsUtil.of(context)?.getText( 'tabs.clients' ) ?? 'Clients'
           ),
           NavigationDestination(
             selectedIcon: Icon( Icons.groups_outlined, color: ColorsApp.secondaryTextColor, size: ResponsiveApp.dSize( 24.0 ) ),
             icon: Icon( Icons.groups_outlined, color: ColorsApp.textColor, size: ResponsiveApp.dSize( 24.0 ) ),
-            label: TextsUtil.of(context)?.getText( 'tabs.visits' )
+            label: TextsUtil.of(context)?.getText( 'tabs.visits' ) ?? 'Visits'
           )
         ]
       ),
