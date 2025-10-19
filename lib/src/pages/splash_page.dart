@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../classes/user.dart';
+import '../providers/login_provider.dart';
 
 import '../utils/colors_app.dart';
 import '../utils/responsive_app.dart';
@@ -27,9 +31,19 @@ class _SplashPageState extends State<SplashPage> {
 
   initApp() async {
 
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+
     final prefs = await SharedPreferences.getInstance();
 
     final accessToken = prefs.getString('accessToken');
+
+    loginProvider.oUser = User(
+      sAccessToken: accessToken,
+      sRefreshToken: prefs.getString('refreshToken'),
+      sName: prefs.getString('userName'),
+      sEmail: prefs.getString('userEmail'),
+      sRole: prefs.getString('userRole')
+    );
 
     if (!widget.skipDelay) {
       await Future.delayed( const Duration( seconds: 3 ) );

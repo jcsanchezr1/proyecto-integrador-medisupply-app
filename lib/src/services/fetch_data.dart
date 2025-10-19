@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:medisupply_app/src/classes/products_group.dart';
 
 import '../classes/user.dart';
 
@@ -141,6 +142,31 @@ class FetchData {
 
     return bSuccess;
 
+  }
+
+  Future<List<ProductsGroup>> getProductsbyProvider( String sAccessToken ) async {
+
+    List<ProductsGroup> lProductsGroups = [];
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/inventory/providers/products' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      for( var mProduct in mResponse['data']['groups'] ) {
+        lProductsGroups.add( ProductsGroup.fromJson( mProduct ) );
+      }
+
+    }
+
+    return lProductsGroups;
+    
   }
 
 }

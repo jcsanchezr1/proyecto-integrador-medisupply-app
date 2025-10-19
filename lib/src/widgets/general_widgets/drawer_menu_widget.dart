@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../providers/login_provider.dart';
 
 import '../../utils/colors_app.dart';
 import '../../utils/texts_util.dart';
@@ -99,6 +102,8 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
   @override
   Widget build( BuildContext context ) {
 
+    final loginProvider = Provider.of<LoginProvider>(context);
+
     return SizedBox(
       width: ResponsiveApp.dWidth( 264.0 ),
       child: Drawer(
@@ -124,10 +129,22 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                 top: ResponsiveApp.dHeight( 16.0 ),
               ),
               child: PoppinsText(
-                sText: (TextsUtil.of(context)!.getText('menu.greeting') ),
+                sText: ( '${TextsUtil.of(context)!.getText('menu.greeting')} ${loginProvider.oUser!.sName}' ),
                 colorText: ColorsApp.textColor,
                 dFontSize: ResponsiveApp.dSize( 14.0 ),
                 fontWeight: FontWeight.w600
+              )
+            ),
+            Padding(
+              padding: EdgeInsets.only(
+                left: ResponsiveApp.dWidth( 16.0 ),
+                right: ResponsiveApp.dWidth( 16.0 ),
+                top: ResponsiveApp.dHeight( 8.0 ),
+              ),
+              child: PoppinsText(
+                sText: loginProvider.oUser!.sEmail!,
+                colorText: ColorsApp.textColor,
+                dFontSize: ResponsiveApp.dSize( 12.0 )
               )
             ),
             Divider(

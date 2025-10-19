@@ -75,15 +75,20 @@ class _LoginPageState extends State<LoginPage> {
 
       final oUser = await oFetchData.login(controllerEmail.text, controllerPassword.text);
 
-      loginProvider.bLoading = false;
-
       if (!mounted) return;
       final textsUtil = widget.textsUtil ?? TextsUtil.of(context)!;
 
+      loginProvider.bLoading = false;
+
       if (oUser.sAccessToken != null) {
+
+        loginProvider.oUser = oUser;
 
         await prefs.setString('accessToken', oUser.sAccessToken!);
         await prefs.setString('refreshToken', oUser.sRefreshToken!);
+        await prefs.setString('userName', oUser.sName!);
+        await prefs.setString('userEmail', oUser.sEmail!);
+        await prefs.setString('userRole', oUser.sRole!);
         if (!mounted) return;
         Navigator.pushReplacement(
           context,

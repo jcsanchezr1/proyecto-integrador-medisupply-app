@@ -2,10 +2,9 @@ class User {
 
   final String? sAccessToken;
   final String? sRefreshToken;
-  
-  String? sName;
-  String? sEmail;
-  String? sRole;
+  final String? sName;
+  final String? sEmail;
+  final String? sRole;
 
   User(
     {
@@ -19,8 +18,11 @@ class User {
 
   factory User.fromJson( Map<String, dynamic> json )
     => User(
+      sName: json['name'],
+      sEmail: json['email'],
       sAccessToken: json['access_token'],
-      sRefreshToken: json['refresh_token']
+      sRefreshToken: json['refresh_token'],
+      sRole: json['role']
     );
 
 }

@@ -62,5 +62,20 @@
             {"id": "high_value", "name": "Alto valor", "selected": false},
             {"id": "security", "name": "Seguridad", "selected": false}
         ]
+    },
+    "tabs": {
+        "orders": "Pedidos",
+        "clients": "Clientes",
+        "visits": "Visitas"
+    },
+    "orders": {
+        "title": "Mis pedidos",
+        "no_orders": "No has realizado ningún pedido aún."
+    },
+    "new_order": {
+        "title": "Crear pedido",
+        "availabes": "disponibles",
+        "availabe": "disponible",
+        "empty_state": "No hay productos disponibles"
     }
 }
