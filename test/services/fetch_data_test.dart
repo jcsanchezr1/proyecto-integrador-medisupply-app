@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'dart:io';
 
 import 'package:medisupply_app/src/classes/user.dart';
+import 'package:medisupply_app/src/classes/order.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 
 void main() {
@@ -472,10 +473,223 @@ void main() {
   );
 
   test(
-    'FetchData.getProductsbyProvider maneja respuesta sin campo groups', () async {
+    'FetchData.withClient constructor funciona correctamente', () {
+      final mockClient = MockClient((request) async => http.Response('', 200));
+      final fetchData = FetchData.withClient(mockClient);
+      expect(fetchData, isA<FetchData>());
+      expect(fetchData.client, equals(mockClient));
+      expect(fetchData.baseUrl, equals('https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev'));
+    }
+  );
+
+  test(
+    'FetchData.getCoordinates filtra dirección de Bogota Colombia', () async {
       final mockResponse = {
-        'data': {'status': 'success'}
+        'results': [
+          {
+            'geometry': {
+              'location': {
+                'lat': 4.7110,
+                'lng': -74.0721
+              }
+            },
+            'formatted_address': 'Bogota, Bogota, Colombia'
+          }
+        ]
       };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final coordinates = await fetchData.getCoordinates('Bogota, Colombia');
+
+      expect(coordinates, isNotEmpty);
+      expect(coordinates['lat'], 4.7110);
+      expect(coordinates['lng'], -74.0721);
+    }
+  );
+
+  test(
+    'FetchData.getCoordinates devuelve coordenadas para direcciones válidas', () async {
+      final mockResponse = {
+        'results': [
+          {
+            'geometry': {
+              'location': {
+                'lat': 6.2442,
+                'lng': -75.5812
+              }
+            },
+            'formatted_address': 'Medellin, Antioquia, Colombia'
+          }
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final coordinates = await fetchData.getCoordinates('Medellin, Colombia');
+
+      expect(coordinates, isNotEmpty);
+      expect(coordinates['lat'], 6.2442);
+      expect(coordinates['lng'], -75.5812);
+    }
+  );
+
+  test(
+    'FetchData.getOrders devuelve lista de pedidos para rol Ventas cuando API responde 200', () async {
+      final mockResponse = {
+        'data': [
+          {
+            'id': 1,
+            'client_id': 'client123',
+            'vendor_id': 'vendor456',
+            'status': 'pending',
+            'created_at': '2024-01-15T10:30:00Z',
+            'products': [
+              {
+                'product_id': 'prod1',
+                'quantity': 2,
+                'price': 75.50
+              }
+            ]
+          },
+          {
+            'id': 2,
+            'client_id': 'client789',
+            'vendor_id': 'vendor456',
+            'status': 'completed',
+            'created_at': '2024-01-14T15:45:00Z',
+            'products': [
+              {
+                'product_id': 'prod2',
+                'quantity': 1,
+                'price': 89.99
+              }
+            ]
+          }
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/orders?vendor_id=test_user_id'), true);
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getOrders('test_access_token', 'test_user_id', 'Ventas');
+
+      expect(result, isA<List<Order>>());
+      expect(result.length, equals(2));
+
+      final order1 = result[0];
+      expect(order1.iId, equals(1));
+      expect(order1.sClientId, equals('client123'));
+      expect(order1.sVendorId, equals('vendor456'));
+      expect(order1.sStatus, equals('pending'));
+
+      final order2 = result[1];
+      expect(order2.iId, equals(2));
+      expect(order2.sStatus, equals('completed'));
+    }
+  );
+
+  test(
+    'FetchData.getOrders devuelve lista de pedidos para rol Cliente cuando API responde 200', () async {
+      final mockResponse = {
+        'data': [
+          {
+            'id': 1,
+            'client_id': 'client123',
+            'vendor_id': 'vendor456',
+            'status': 'pending',
+            'created_at': '2024-01-15T10:30:00Z',
+            'products': [
+              {
+                'product_id': 'prod1',
+                'quantity': 2,
+                'price': 75.50
+              }
+            ]
+          }
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/orders?client_id=test_user_id'), true);
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getOrders('test_access_token', 'test_user_id', 'Cliente');
+
+      expect(result, isA<List<Order>>());
+      expect(result.length, equals(1));
+
+      final order = result[0];
+      expect(order.iId, equals(1));
+      expect(order.sClientId, equals('client123'));
+    }
+  );
+
+  test(
+    'FetchData.getOrders devuelve lista vacía cuando API falla', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Unauthorized', 401)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getOrders('invalid_token', 'test_user_id', 'Ventas');
+
+      expect(result, isA<List<Order>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getOrders devuelve lista vacía cuando status != 200', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Internal Server Error', 500)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getOrders('test_access_token', 'test_user_id', 'Cliente');
+
+      expect(result, isA<List<Order>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getOrders maneja JSON malformado', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Invalid JSON', 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getOrders('test_access_token', 'test_user_id', 'Ventas'),
+        throwsA(isA<FormatException>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.getOrders maneja respuesta sin campo data', () async {
+      final mockResponse = {'status': 'success'};
 
       final mockClient = MockClient(
         ( request ) async => http.Response(jsonEncode(mockResponse), 200)
@@ -484,9 +698,53 @@ void main() {
       final fetchData = FetchData.withClient(mockClient);
 
       expect(
-        () => fetchData.getProductsbyProvider('test_access_token'),
+        () => fetchData.getOrders('test_access_token', 'test_user_id', 'Ventas'),
         throwsA(isA<TypeError>()),
       );
+    }
+  );
+
+  test(
+    'FetchData.getOrders devuelve lista vacía cuando data está vacío', () async {
+      final mockResponse = {'data': []};
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getOrders('test_access_token', 'test_user_id', 'Ventas');
+
+      expect(result, isA<List<Order>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getOrders maneja diferentes roles correctamente', () async {
+      final mockResponse = {'data': []};
+
+      // Test para rol 'Ventas'
+      final mockClientVentas = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/orders?vendor_id='), true);
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchDataVentas = FetchData.withClient(mockClientVentas);
+      await fetchDataVentas.getOrders('token', 'user_id', 'Ventas');
+
+      // Test para rol diferente (cliente)
+      final mockClientCliente = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/orders?client_id='), true);
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchDataCliente = FetchData.withClient(mockClientCliente);
+      await fetchDataCliente.getOrders('token', 'user_id', 'Cliente');
     }
   );
 }
