@@ -79,17 +79,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      # 9. Commit local changes (pubspec.lock)
+      # 9. Configurar identidad de Git (nuevo paso para evitar error de autor desconocido)
+      - name: Configurar identidad de Git
+        run: |
+          git config user.name "CI Bot"
+          git config user.email "ci@bot.com"
+
+      # 10. Commit local changes (pubspec.lock)
       - name: Commit local changes (pubspec.lock)
         run: |
           git add pubspec.lock
-          git commit --allow-empty -m "Update pubspec.lock from Release CI"
+          git commit --allow-empty -m "Update pubspec.lock from Release CI" || echo "No changes to commit"
 
-      # 10. Limpiar cambios locales antes del merge
+      # 11. Limpiar cambios locales antes del merge
       - name: Limpiar cambios locales
         run: git reset --hard
 
-      # 11. Merge automático develop → main
+      # 12. Merge automático develop → main
       - name: Merge a main
         run: |
           git config user.name "CI Bot"
