@@ -20,21 +20,30 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.5'
+      
+      # 3. Crear .env temporal
+      - name: Crear .env temporal
+        run: |
+          echo "API_KEY=${{ secrets.MAPS_API_KEY }}" > .env
 
-      # 3. Instalar dependencias
+      # 4. Instalar dependencias
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 4. Ejecutar tests
+      # 5. Ejecutar tests
       - name: Ejecutar tests
         run: flutter test
 
-      # 5. Merge automático a develop si todo pasa
+      # 6. Hacer commit automático de cambios en pubspec.lock
+      - name: Commit local changes (pubspec.lock)
+        run: |
+          git add pubspec.lock
+          git commit -m "Update pubspec.lock from CI" || echo "No changes to commit"
+
+      # 7. Merge automático a develop si todo pasa
       - name: Merge a develop
         run: |
           git config user.name "CI Bot"
           git config user.email "ci@bot.com"
-          git fetch origin develop
-          git checkout develop
-          git merge ${{ github.ref_name }} --no-ff --allow-unrelated-histories -m "Merge automático desde ${GITHUB_REF_NAME} [PIPELINE]"
-          git push origin develop
+          # Empujar los commits de la rama actual directamente a develop
+          git push origin HEAD:develop

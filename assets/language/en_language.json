@@ -1,0 +1,82 @@
+{
+    "transversal" : {
+        "upload_button" : "Upload file"
+    },
+    "login" : {
+        "title" : "Welcome!",
+        "subtitle" : "Log in to continue",
+        "email" : "Email",
+        "password" : "Password",
+        "button" : "Log in",
+        "error" : "Please, enter a value",
+        "sign-up" : "Create an account",
+        "error_login" : "An error occurred. Check your credentials or try again later."
+    },
+    "menu" : {
+        "greeting" : "Hello",
+        "language" : "Language",
+        "logout" : "Log out",
+        "languages":[
+            {"id": "en", "language": "English", "selected": false},
+            {"id": "es", "language": "Spanish", "selected": false}
+        ]
+    },
+    "logout": {
+        "title_dialog": "Log out",
+        "message_dialog": "Are you sure you want to log out?",
+        "confirm_dialog": "Accept",
+        "cancel_dialog": "Cancel",
+        "error_logout": "An error occurred while logging out. Please try again later."
+    },
+    "create_account": {
+        "title": "Create account",
+        "back_button": "Back",
+        "name": "Name",
+        "nit": "Tax identification",
+        "email": "Email",
+        "address": "Address",
+        "phone": "Phone",
+        "institution_type": "Institution type",
+        "hint_dropdown": "Select an option",
+        "logo": "Logo",
+        "speciality": "Product categories of interest",
+        "applicant_name": "Applicant name",
+        "applicant_email": "Applicant email",
+        "password": "Password",
+        "confirm_password": "Confirm password",
+        "button": "Sign up",
+        "error": "Please, enter a value",
+        "error_create_account": "An error occurred. Check the entered data or try again later.",
+        "error_get_coordinates": "Please enter a valid address.",
+        "success_create_account": "Account created successfully.",
+        "error_password": "The password must be at least 8 characters long, alphanumeric, and contain a special character.",
+        "error_logo": "Please upload a logo.",
+        "error_confirm_password": "Passwords do not match.",
+        "types": [
+            {"id": "clinic", "name": "Clinic", "selected": false},
+            {"id": "hospital", "name": "Hospital", "selected": false},
+            {"id": "laboratory", "name": "Laboratory", "selected": false}
+        ],
+        "specialities": [
+            {"id": "cold_chain", "name": "Cold chain", "selected": false},
+            {"id": "high_value", "name": "High value", "selected": false},
+            {"id": "security", "name": "Security", "selected": false}
+        ]
+    },
+    "tabs": {
+        "orders": "Orders",
+        "clients": "Clients",
+        "visits": "Visits"
+    },
+    "orders": {
+        "title": "My orders",
+        "tab": "Orders",
+        "no_orders": "You have not placed any orders yet."
+    },
+    "new_order": {
+        "title": "Create order",
+        "availabes": "availabes",
+        "availabe": "availabe",
+        "empty_state": "No products available"
+    }
+}

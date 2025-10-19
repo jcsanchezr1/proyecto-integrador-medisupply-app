@@ -1,0 +1,81 @@
+{
+    "transversal" : {
+        "upload_button" : "Subir archivo"
+    },
+    "login" : {
+        "title" : "¡Bienvenido!",
+        "subtitle" : "Inicia sesión para continuar",
+        "email" : "Correo electrónico",
+        "password" : "Contraseña",
+        "button" : "Iniciar sesión",
+        "error" : "Por favor, ingresa un valor",
+        "sign-up" : "Crear una cuenta",
+        "error_login" : "Ocurrió un error. Revisa tus credenciales o intenta más tarde."
+    },
+    "menu" : {
+        "greeting" : "Hola",
+        "language" : "Idioma",
+        "logout" : "Cerrar sesión",
+        "languages":[
+            {"id": "en", "language": "Inglés", "selected": false},
+            {"id": "es", "language": "Español", "selected": false}
+        ]
+    },
+    "logout": {
+        "title_dialog": "Cerrar sesión",
+        "message_dialog": "¿Estás seguro de que deseas cerrar sesión?",
+        "confirm_dialog": "Aceptar",
+        "cancel_dialog": "Cancelar",
+        "error_logout": "Ocurrió un error al cerrar sesión. Por favor, intenta más tarde."
+    },
+    "create_account": {
+        "title" : "Crea tu cuenta",
+        "back_button" : "Volver",
+        "name" : "Nombre",
+        "nit" : "Identificación tributaria",
+        "email" : "Correo electrónico",
+        "address" : "Dirección",
+        "phone" : "Teléfono",
+        "institution_type" : "Tipo de institución",
+        "hint_dropdown" : "Selecciona una opción",
+        "logo" : "Logo",
+        "speciality" : "Categorías de productos de interés",
+        "applicant_name" : "Nombre del solicitante",
+        "applicant_email" : "Email del solicitante",
+        "password" : "Contraseña",
+        "confirm_password" : "Confirmar contraseña",
+        "button" : "Crear cuenta",
+        "error" : "Por favor, ingresa un valor",
+        "error_create_account" : "Ocurrió un error. Revisa los datos ingresados o intenta más tarde.",
+        "success_create_account" : "Cuenta creada exitosamente.",
+        "error_get_coordinates": "Por favor, ingresa una dirección válida.",
+        "error_password": "La contraseña debe tener mínimo 8 caracteres, ser alfanumérica y contener un carácter especial.",
+        "error_logo": "Por favor, cargue un logo.",
+        "error_confirm_password": "Las contraseñas no coinciden.",
+        "types": [
+            {"id": "clinic", "name": "Clínica", "selected": false},
+            {"id": "hospital", "name": "Hospital", "selected": false},
+            {"id": "laboratory", "name": "Laboratorio", "selected": false}
+        ],
+        "specialities": [
+            {"id": "cold_chain", "name": "Cadena de frío", "selected": false},
+            {"id": "high_value", "name": "Alto valor", "selected": false},
+            {"id": "security", "name": "Seguridad", "selected": false}
+        ]
+    },
+    "tabs": {
+        "orders": "Pedidos",
+        "clients": "Clientes",
+        "visits": "Visitas"
+    },
+    "orders": {
+        "title": "Mis pedidos",
+        "no_orders": "No has realizado ningún pedido aún."
+    },
+    "new_order": {
+        "title": "Crear pedido",
+        "availabes": "disponibles",
+        "availabe": "disponible",
+        "empty_state": "No hay productos disponibles"
+    }
+}

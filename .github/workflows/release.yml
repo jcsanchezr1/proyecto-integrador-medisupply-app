@@ -22,15 +22,20 @@ jobs:
         with:
           flutter-version: '3.35.5'
 
-      # 3. Instalar dependencias
+      # 3. Crear .env temporal
+      - name: Crear .env temporal
+        run: |
+          echo "API_KEY=${{ secrets.MAPS_API_KEY }}" > .env
+
+      # 4. Instalar dependencias
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 4. Compilar APK de release
+      # 5. Compilar APK de release
       - name: Compilar APK de release
         run: flutter build apk --release
 
-      # 5. Determinar nuevo tag automáticamente
+      # 6. Determinar nuevo tag automáticamente
       - name: Determinar tag
         id: tag
         run: |
@@ -51,7 +56,7 @@ jobs:
           echo "Nuevo tag: $NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
 
-      # 6. Crear GitHub Release
+      # 7. Crear GitHub Release
       - name: Crear GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -63,7 +68,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      # 7. Subir APK como asset
+      # 8. Subir APK como asset
       - name: Subir APK a Release
         uses: actions/upload-release-asset@v1
         with:
@@ -74,7 +79,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
-      # 8. Merge automático develop → main
+      # 9. Configurar identidad de Git (nuevo paso para evitar error de autor desconocido)
+      - name: Configurar identidad de Git
+        run: |
+          git config user.name "CI Bot"
+          git config user.email "ci@bot.com"
+
+      # 10. Commit local changes (pubspec.lock)
+      - name: Commit local changes (pubspec.lock)
+        run: |
+          git add pubspec.lock
+          git commit --allow-empty -m "Update pubspec.lock from Release CI" || echo "No changes to commit"
+
+      # 11. Limpiar cambios locales antes del merge
+      - name: Limpiar cambios locales
+        run: git reset --hard
+
+      # 12. Merge automático develop → main
       - name: Merge a main
         run: |
           git config user.name "CI Bot"
