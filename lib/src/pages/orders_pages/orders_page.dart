@@ -20,7 +20,9 @@ import 'new_order_page.dart';
 
 class OrdersPage extends StatefulWidget {
 
-  const OrdersPage( { super.key } );
+  const OrdersPage( { super.key, this.fetchData } );
+
+  final FetchData? fetchData;
 
   @override
   State<OrdersPage> createState() => _OrdersPageState();
@@ -34,16 +36,22 @@ class _OrdersPageState extends State<OrdersPage> {
 
   getOrdersByRol() async {
 
-    final oFetchData = FetchData();
+    final oFetchData = widget.fetchData ?? FetchData();
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    lOrders = await oFetchData.getOrders(
-      loginProvider.oUser!.sAccessToken!,
-      loginProvider.oUser!.sId!,
-      loginProvider.oUser!.sRole!
-    );
+    try {
+      lOrders = await oFetchData.getOrders(
+        loginProvider.oUser!.sAccessToken!,
+        loginProvider.oUser!.sId!,
+        loginProvider.oUser!.sRole!
+      );
+    } catch (e) {
+      lOrders = [];
+    }
 
-    setState( () => bIsLoading = false );
+    if (mounted) {
+      setState( () => bIsLoading = false );
+    }
 
   }
 
