@@ -42,7 +42,8 @@ class _SplashPageState extends State<SplashPage> {
       sRefreshToken: prefs.getString('refreshToken'),
       sName: prefs.getString('userName'),
       sEmail: prefs.getString('userEmail'),
-      sRole: prefs.getString('userRole')
+      sRole: prefs.getString('userRole'),
+      sId: prefs.getString('userId')
     );
 
     if (!widget.skipDelay) {

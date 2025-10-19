@@ -5,6 +5,7 @@ class ColorsApp {
   static const primaryColor = Color(0xff1078FF);
   static const primaryDarkColor = Color(0xff063066);
   static const primaryLightColor = Color(0xff4783FA);
+  static const accentColor = Color(0xff6971E8);
   static const textColor = Color(0xff6D7183);
   static const secondaryTextColor = Colors.white;
   static const secondaryColor = Color(0xff41444F);
@@ -15,5 +16,6 @@ class ColorsApp {
   static const closeButtonColor = Color(0xff031833);
   static const errorColor = Color(0xffFF5A5A);
   static const sucessColor = Color(0xff28D094);
+  static const transitColor = Color(0xffFF6900);
 
 }

@@ -89,6 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('userName', oUser.sName!);
         await prefs.setString('userEmail', oUser.sEmail!);
         await prefs.setString('userRole', oUser.sRole!);
+        await prefs.setString('userId', oUser.sId!);
         if (!mounted) return;
         Navigator.pushReplacement(
           context,

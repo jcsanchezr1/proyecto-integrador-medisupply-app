@@ -129,7 +129,7 @@ class _DrawerMenuWidgetState extends State<DrawerMenuWidget> {
                 top: ResponsiveApp.dHeight( 16.0 ),
               ),
               child: PoppinsText(
-                sText: ( '${TextsUtil.of(context)!.getText('menu.greeting')} ${loginProvider.oUser!.sName}' ),
+                sText: ( '${TextsUtil.of(context)!.getText('menu.greeting')}, ${loginProvider.oUser!.sName}' ),
                 colorText: ColorsApp.textColor,
                 dFontSize: ResponsiveApp.dSize( 14.0 ),
                 fontWeight: FontWeight.w600

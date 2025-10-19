@@ -5,6 +5,7 @@ class User {
   final String? sName;
   final String? sEmail;
   final String? sRole;
+  final String? sId;
 
   User(
     {
@@ -12,7 +13,8 @@ class User {
       this.sEmail,
       this.sAccessToken,
       this.sRefreshToken,
-      this.sRole
+      this.sRole,
+      this.sId
     }
   );
 
@@ -22,7 +24,8 @@ class User {
       sEmail: json['email'],
       sAccessToken: json['access_token'],
       sRefreshToken: json['refresh_token'],
-      sRole: json['role']
+      sRole: json['role'],
+      sId: json['id']
     );
 
 }

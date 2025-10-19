@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:medisupply_app/src/classes/order.dart';
 import 'package:medisupply_app/src/classes/products_group.dart';
 
 import '../classes/user.dart';
@@ -166,6 +167,33 @@ class FetchData {
     }
 
     return lProductsGroups;
+    
+  }
+
+  Future<List<Order>> getOrders( String sAccessToken, String sUserId, String sRole ) async {
+
+    List<Order> lOrders = [];
+
+    final response = await client.get(
+      Uri.parse(
+        sRole == 'Ventas' ?'$baseUrl/orders?vendor_id=$sUserId' : '$baseUrl/orders?client_id=$sUserId'
+      ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      for( var mOrder in mResponse['data'] ) {
+        lOrders.add( Order.fromJson( mOrder ) );
+      }
+
+    }
+
+    return lOrders;
     
   }
 
