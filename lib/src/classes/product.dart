@@ -4,13 +4,17 @@ class Product {
   final String? sImage;
   final double? dQuantity;
   final double? dPrice;
+  final String? sDescription;
+  final double? sDate;
 
   Product(
     {
       this.sName,
       this.sImage,
       this.dQuantity,
-      this.dPrice
+      this.dPrice,
+      this.sDescription,
+      this.sDate
     }
   );
 

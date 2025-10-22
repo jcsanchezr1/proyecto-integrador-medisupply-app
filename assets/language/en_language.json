@@ -77,6 +77,8 @@
         "title": "Create order",
         "availabes": "availabes",
         "availabe": "availabe",
-        "empty_state": "No products available"
+        "empty_state": "No products available",
+        "add_button": "Add",
+        "expiry": "Expires: "
     }
 }

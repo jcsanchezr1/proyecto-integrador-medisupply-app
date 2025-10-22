@@ -76,6 +76,8 @@
         "title": "Crear pedido",
         "availabes": "disponibles",
         "availabe": "disponible",
-        "empty_state": "No hay productos disponibles"
+        "empty_state": "No hay productos disponibles",
+        "add_button": "Añadir",
+        "expiry": "Vence: "
     }
 }

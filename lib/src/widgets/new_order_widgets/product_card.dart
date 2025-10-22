@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../classes/product.dart';
 
+import '../../pages/orders_pages/product_detail_page.dart';
+
+import '../../utils/slide_transition.dart';
 import '../../utils/texts_util.dart';
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
@@ -17,55 +20,58 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build( BuildContext context ) {
 
-    return Padding(
-      padding: EdgeInsets.only( right: 24.0 ),
-      child: SizedBox(
-        width: ResponsiveApp.dHeight( 112.0 ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              clipBehavior: Clip.antiAlias,
-              height: ResponsiveApp.dHeight( 112.0 ),
-              width: ResponsiveApp.dHeight( 112.0 ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular( 16.0 ),
-                image: const DecorationImage(
-                  image: AssetImage( 'assets/images/placeholder.png' ),
-                  fit: BoxFit.cover
+    return GestureDetector(
+      child: Padding(
+        padding: EdgeInsets.only( right: 24.0 ),
+        child: SizedBox(
+          width: ResponsiveApp.dHeight( 112.0 ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                clipBehavior: Clip.antiAlias,
+                height: ResponsiveApp.dHeight( 112.0 ),
+                width: ResponsiveApp.dHeight( 112.0 ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular( 16.0 ),
+                  image: const DecorationImage(
+                    image: AssetImage( 'assets/images/placeholder.png' ),
+                    fit: BoxFit.cover
+                  )
+                ),
+                child: FadeInImage(
+                  fit: BoxFit.cover,
+                  placeholder: const AssetImage( 'assets/images/placeholder.png' ),
+                  imageErrorBuilder: (context, error, stackTrace) => Image.asset( 'assets/images/placeholder.png', fit: BoxFit.cover ),
+                  image: NetworkImage( oProduct.sImage ?? '' )
                 )
               ),
-              child: FadeInImage(
-                fit: BoxFit.cover,
-                placeholder: const AssetImage( 'assets/images/placeholder.png' ),
-                imageErrorBuilder: (context, error, stackTrace) => Image.asset( 'assets/images/placeholder.png', fit: BoxFit.cover ),
-                image: NetworkImage( oProduct.sImage ?? '' )
+              SizedBox( height: ResponsiveApp.dHeight( 1.0 ) ),
+              PoppinsText(
+                sText: '\$${ TextsUtil.of(context)?.formatNumber( oProduct.dPrice!.toInt() ) }',
+                dFontSize: ResponsiveApp.dSize( 13.0 ),
+                colorText: ColorsApp.secondaryColor,
+                fontWeight: FontWeight.bold
+              ),
+              SizedBox( height: ResponsiveApp.dHeight( 2.0 ) ),
+              PoppinsText(
+                sText: oProduct.sName!,
+                dFontSize: ResponsiveApp.dSize( 11.0 ),
+                colorText: ColorsApp.secondaryColor,
+                iMaxLines: 2,
+                fontWeight: FontWeight.w500
+              ),
+              SizedBox( height: ResponsiveApp.dHeight( 0.5 ) ),
+              PoppinsText(
+                sText: '${ oProduct.dQuantity!.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity! == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
+                dFontSize: ResponsiveApp.dSize( 11.0 ),
+                colorText: ColorsApp.textColor
               )
-            ),
-            SizedBox( height: ResponsiveApp.dHeight( 1.0 ) ),
-            PoppinsText(
-              sText: '\$${ oProduct.dPrice!.toInt().toString() }',
-              dFontSize: ResponsiveApp.dSize( 13.0 ),
-              colorText: ColorsApp.secondaryColor,
-              fontWeight: FontWeight.bold
-            ),
-            SizedBox( height: ResponsiveApp.dHeight( 2.0 ) ),
-            PoppinsText(
-              sText: oProduct.sName!,
-              dFontSize: ResponsiveApp.dSize( 11.0 ),
-              colorText: ColorsApp.secondaryColor,
-              iMaxLines: 2,
-              fontWeight: FontWeight.w500
-            ),
-            SizedBox( height: ResponsiveApp.dHeight( 0.5 ) ),
-            PoppinsText(
-              sText: '${ oProduct.dQuantity!.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity! == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
-              dFontSize: ResponsiveApp.dSize( 11.0 ),
-              colorText: ColorsApp.textColor
-            )
-          ]
+            ]
+          )
         )
-      )
+      ),
+      onTap: () => Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) )
     );
   
   }

@@ -109,7 +109,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
                     ),
                     SizedBox( height: ResponsiveApp.dHeight( 24.0 ) ),
                     SizedBox(
-                      height: ResponsiveApp.dHeight( 180.0 ),
+                      height: ResponsiveApp.dHeight( 188.0 ),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: lProductsGroups[index].lProducts!.length,

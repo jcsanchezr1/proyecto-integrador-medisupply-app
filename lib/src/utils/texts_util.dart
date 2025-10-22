@@ -98,6 +98,13 @@ class TextsUtil {
     }
   }
 
+  String formatNumber(int iNumber) {
+    return iNumber.toString().replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
+  }
+
 }
 
 class TextsUtilDelegate extends LocalizationsDelegate<TextsUtil> {

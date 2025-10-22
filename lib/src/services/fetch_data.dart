@@ -11,8 +11,8 @@ import 'package:http/http.dart' as http;
 
 class FetchData {
 
-  final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
-  //final baseUrl = 'http://192.168.18.23:8082';
+  //final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
+  final baseUrl = 'http://192.168.18.23:';
   final baseUrlMaps = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
   final http.Client client;
@@ -26,7 +26,7 @@ class FetchData {
     User oUser = User();
 
     final response = await client.post(
-      Uri.parse( '$baseUrl/auth/token' ),
+      Uri.parse( '${baseUrl}8082/auth/token' ),
       body: {
         'user' : sEmail,
         'password' : sPassword
@@ -50,7 +50,7 @@ class FetchData {
     bool bSuccess = false;
     
     final response = await client.post(
-      Uri.parse( '$baseUrl/auth/logout' ),
+      Uri.parse( '${baseUrl}8082/auth/logout' ),
       body: {
         'refresh_token' : sRefreshToken
       }
@@ -111,7 +111,7 @@ class FetchData {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse( '$baseUrl/auth/user' ),
+      Uri.parse( '{$baseUrl}8082/auth/user' ),
     );
 
     request.fields.addAll( {
@@ -150,7 +150,7 @@ class FetchData {
     List<ProductsGroup> lProductsGroups = [];
 
     final response = await client.get(
-      Uri.parse( '$baseUrl/inventory/providers/products' ),
+      Uri.parse( '${baseUrl}8084/inventory/providers/products' ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
       }
@@ -176,7 +176,7 @@ class FetchData {
 
     final response = await client.get(
       Uri.parse(
-        sRole == 'Ventas' ?'$baseUrl/orders?vendor_id=$sUserId' : '$baseUrl/orders?client_id=$sUserId'
+        sRole == 'Ventas' ? '${baseUrl}8085/orders?vendor_id=$sUserId' : '${baseUrl}8085/orders?client_id=$sUserId'
       ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
