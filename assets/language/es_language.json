@@ -79,5 +79,14 @@
         "empty_state": "No hay productos disponibles",
         "add_button": "Añadir",
         "expiry": "Vence: "
+    },
+    "order_summary": {
+        "title": "Resumen del pedido",
+        "total": "Total",
+        "delivery_time": "Tiempo de entrega",
+        "finish_button": "Finalizar",
+        "days": "días",
+        "units": "unidades",
+        "unit": "unidad"
     }
 }

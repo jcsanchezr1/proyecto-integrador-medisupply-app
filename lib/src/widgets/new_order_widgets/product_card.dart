@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import '../../classes/product.dart';
 
 import '../../pages/orders_pages/product_detail_page.dart';
+
+import '../../providers/order_provider.dart';
 
 import '../../utils/slide_transition.dart';
 import '../../utils/texts_util.dart';
@@ -19,6 +23,8 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build( BuildContext context ) {
+
+    final orderProvider = Provider.of<OrderProvider>( context );
 
     return GestureDetector(
       child: Padding(
@@ -63,7 +69,7 @@ class ProductCard extends StatelessWidget {
               ),
               SizedBox( height: ResponsiveApp.dHeight( 0.5 ) ),
               PoppinsText(
-                sText: '${ oProduct.dQuantity!.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity! == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
+                sText: '${ oProduct.dQuantity.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
                 dFontSize: ResponsiveApp.dSize( 11.0 ),
                 colorText: ColorsApp.textColor
               )
@@ -71,7 +77,20 @@ class ProductCard extends StatelessWidget {
           )
         )
       ),
-      onTap: () => Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) )
+      onTap: () {
+
+        final existingProduct = orderProvider.lOrderProducts.firstWhere(
+          (item) => item.sName == oProduct.sName,
+          orElse: () => Product()
+        );
+
+        if (existingProduct.sName != null) {
+          orderProvider.dQuantity = existingProduct.dQuantity;
+        }
+
+        Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) );
+
+      }
     );
   
   }

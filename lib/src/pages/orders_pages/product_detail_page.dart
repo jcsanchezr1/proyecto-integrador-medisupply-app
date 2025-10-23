@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:medisupply_app/src/widgets/general_widgets/main_button.dart';
+
+import 'package:provider/provider.dart';
 
 import '../../classes/product.dart';
 
+import '../../providers/order_provider.dart';
+
 import '../../utils/colors_app.dart';
+import '../../utils/texts_util.dart';
 import '../../utils/responsive_app.dart';
 
-import '../../utils/texts_util.dart';
+import '../../widgets/general_widgets/main_button.dart';
 import '../../widgets/general_widgets/poppins_text.dart';
+import '../../widgets/new_order_widgets/quantity_product.dart';
 
 class ProductDetailPage extends StatefulWidget {
 
@@ -22,22 +27,10 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
 
-  double dQuantity = 1.0;
-
-  decreaseWQuantity() {
-    if ( dQuantity > 1 ) {
-      setState( () => dQuantity-- );
-    }
-  }
-
-  increaseQuantity() {
-    if ( dQuantity < widget.oProduct.dQuantity! ) {
-      setState( () => dQuantity++ );
-    }
-  }
-
   @override
   Widget build( BuildContext context ) {
+
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -103,49 +96,24 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: ResponsiveApp.dWidth( 128.0 ),
-                  height: ResponsiveApp.dHeight( 40.0 ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular( 12.0 ),
-                    border: Border.all( color: ColorsApp.secondaryColor )
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        onPressed: dQuantity > 1 ? decreaseWQuantity : null,
-                        icon: Icon(
-                          Icons.remove,
-                          color: dQuantity > 1 ? ColorsApp.secondaryColor : ColorsApp.borderColor,
-                          semanticLabel: 'Decrease Quantity',
-                        )
-                      ),
-                      SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ),
-                      PoppinsText(
-                        sText: dQuantity.toInt().toString(),
-                        dFontSize: ResponsiveApp.dSize( 16.0 ),
-                        colorText: ColorsApp.secondaryColor,
-                        fontWeight: FontWeight.bold
-                      ),
-                      SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ),
-                      IconButton(
-                        onPressed: dQuantity < widget.oProduct.dQuantity! ? increaseQuantity : null,
-                        icon: Icon(
-                          Icons.add,
-                          color: dQuantity < widget.oProduct.dQuantity! ? ColorsApp.secondaryColor : ColorsApp.borderColor,
-                          semanticLabel: 'Increase Quantity',
-                        )
-                      )
-                    ]
-                  )
-                ),
+                QuantityProduct( dQuantity: widget.oProduct.dQuantity ),
                 SizedBox(
                   width: ResponsiveApp.dWidth( 128.0 ),
                   height: ResponsiveApp.dHeight( 40.0 ),
                   child: MainButton(
                     sLabel: TextsUtil.of(context)?.getText( 'new_order.add_button' ) ?? 'Add to Cart',
-                    onPressed: (){}
+                    onPressed: () {
+                      orderProvider.addProduct(
+                        Product(
+                          sName: widget.oProduct.sName,
+                          sImage: widget.oProduct.sImage,
+                          dPrice: widget.oProduct.dPrice,
+                          dQuantity: orderProvider.dQuantity
+                        )
+                      );
+                      orderProvider.resetQuantity();
+                      Navigator.pop(context);
+                    }
                   )
                 )
               ]

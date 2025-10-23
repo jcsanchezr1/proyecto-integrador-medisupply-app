@@ -2,16 +2,17 @@ class Product {
 
   final String? sName;
   final String? sImage;
-  final double? dQuantity;
   final double? dPrice;
   final String? sDescription;
   final double? sDate;
+
+  double dQuantity;
 
   Product(
     {
       this.sName,
       this.sImage,
-      this.dQuantity,
+      this.dQuantity = 0.0,
       this.dPrice,
       this.sDescription,
       this.sDate

@@ -80,5 +80,14 @@
         "empty_state": "No products available",
         "add_button": "Add",
         "expiry": "Expires: "
+    },
+    "order_summary": {
+        "title": "Order summary",
+        "total": "Total",
+        "delivery_time": "Delivery time",
+        "finish_button": "Finish order",
+        "days": "days",
+        "units": "units",
+        "unit": "unit"
     }
 }
