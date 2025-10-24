@@ -54,7 +54,7 @@ class ProductCard extends StatelessWidget {
               ),
               SizedBox( height: ResponsiveApp.dHeight( 1.0 ) ),
               PoppinsText(
-                sText: '\$${ TextsUtil.of(context)?.formatNumber( oProduct.dPrice!.toInt() ) }',
+                sText: '\$${ TextsUtil.of(context)?.formatNumber( oProduct.dPrice! ) }',
                 dFontSize: ResponsiveApp.dSize( 13.0 ),
                 colorText: ColorsApp.secondaryColor,
                 fontWeight: FontWeight.bold
@@ -80,12 +80,14 @@ class ProductCard extends StatelessWidget {
       onTap: () {
 
         final existingProduct = orderProvider.lOrderProducts.firstWhere(
-          (item) => item.sName == oProduct.sName,
+          (item) => item.iId == oProduct.iId,
           orElse: () => Product()
         );
 
         if (existingProduct.sName != null) {
           orderProvider.dQuantity = existingProduct.dQuantity;
+        } else {
+          orderProvider.resetQuantity();
         }
 
         Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) );

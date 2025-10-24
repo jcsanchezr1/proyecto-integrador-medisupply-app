@@ -2,17 +2,17 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:medisupply_app/src/classes/order.dart';
-import 'package:medisupply_app/src/classes/products_group.dart';
 
 import '../classes/user.dart';
+import '../classes/order.dart';
+import '../classes/products_group.dart';
 
 import 'package:http/http.dart' as http;
 
 class FetchData {
 
-  //final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
-  final baseUrl = 'http://192.168.18.23:';
+  final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
+  //final baseUrl = 'http://192.168.18.23:8082';
   final baseUrlMaps = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 
   final http.Client client;
@@ -26,7 +26,7 @@ class FetchData {
     User oUser = User();
 
     final response = await client.post(
-      Uri.parse( '${baseUrl}8082/auth/token' ),
+      Uri.parse( '$baseUrl/auth/token' ),
       body: {
         'user' : sEmail,
         'password' : sPassword
@@ -50,7 +50,7 @@ class FetchData {
     bool bSuccess = false;
     
     final response = await client.post(
-      Uri.parse( '${baseUrl}8082/auth/logout' ),
+      Uri.parse( '$baseUrl/auth/logout' ),
       body: {
         'refresh_token' : sRefreshToken
       }
@@ -111,7 +111,7 @@ class FetchData {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse( '{$baseUrl}8082/auth/user' ),
+      Uri.parse( '$baseUrl/auth/user' ),
     );
 
     request.fields.addAll( {
@@ -150,7 +150,7 @@ class FetchData {
     List<ProductsGroup> lProductsGroups = [];
 
     final response = await client.get(
-      Uri.parse( '${baseUrl}8084/inventory/providers/products' ),
+      Uri.parse( '$baseUrl/inventory/providers/products' ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
       }
@@ -176,7 +176,7 @@ class FetchData {
 
     final response = await client.get(
       Uri.parse(
-        sRole == 'Ventas' ? '${baseUrl}8085/orders?vendor_id=$sUserId' : '${baseUrl}8085/orders?client_id=$sUserId'
+        sRole == 'Ventas' ? '$baseUrl/orders?vendor_id=$sUserId' : '$baseUrl/orders?client_id=$sUserId'
       ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
@@ -195,6 +195,27 @@ class FetchData {
 
     return lOrders;
     
+  }
+
+  Future<bool> createOrder( String sAccessToken, Map<String, dynamic> mOrder ) async {
+
+    bool bSuccess = false;
+
+    final response = await client.post(
+      Uri.parse( '$baseUrl/orders/create' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken',
+        'Content-Type' : 'application/json'
+      },
+      body: jsonEncode( mOrder )
+    );
+
+    if( response.statusCode == 201 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
   }
 
 }

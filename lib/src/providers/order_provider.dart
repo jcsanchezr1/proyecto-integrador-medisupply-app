@@ -7,14 +7,14 @@ class OrderProvider with ChangeNotifier {
   final List<Product> _lOrderProducts = [];
 
   double _dQuantity = 1.0;
-  double get dTotalPrice => _lOrderProducts.fold(0, (sum, item) => sum + item.dPrice! * _dQuantity);
+  double get dTotalPrice => _lOrderProducts.fold(0, (sum, item) => sum + item.dPrice! * item.dQuantity);
 
   List<Product> get lOrderProducts => _lOrderProducts;
   double get dQuantity => _dQuantity;
 
   void addProduct( Product oProduct ) {
-    
-    final index = _lOrderProducts.indexWhere((item) => item.sName == oProduct.sName);
+
+    final index = _lOrderProducts.indexWhere((item) => item.iId == oProduct.iId);
 
     if (index >= 0) {
       _lOrderProducts[index].dQuantity = _dQuantity;

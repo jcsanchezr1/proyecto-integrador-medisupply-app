@@ -98,11 +98,9 @@ class TextsUtil {
     }
   }
 
-  String formatNumber(int iNumber) {
-    return iNumber.toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
+  String formatNumber(double dNumber) {
+    final formatter = NumberFormat("#,##0.##", "es_ES");
+    return formatter.format(dNumber);
   }
 
 }

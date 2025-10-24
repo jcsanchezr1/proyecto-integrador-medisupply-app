@@ -59,7 +59,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
                 PoppinsText(
-                  sText: '\$${ TextsUtil.of(context)?.formatNumber( widget.oProduct.dPrice!.toInt() ) }',
+                  sText: '\$${ TextsUtil.of(context)?.formatNumber( widget.oProduct.dPrice! ) }',
                   dFontSize: ResponsiveApp.dSize( 16.0 ),
                   colorText: ColorsApp.secondaryColor,
                   fontWeight: FontWeight.bold
@@ -73,14 +73,14 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 4.0 ) ),
                 PoppinsText(
-                  sText: '${TextsUtil.of(context)?.getText( 'new_order.expiry' )} ${TextsUtil.of(context)?.formatLocalizedDate(context, '21/10/2025')}',
+                  sText: '${TextsUtil.of(context)?.getText( 'new_order.expiry' )} ${TextsUtil.of(context)?.formatLocalizedDate(context, widget.oProduct.sExpirationDate!)}',
                   dFontSize: ResponsiveApp.dSize( 12.0 ),
                   colorText: ColorsApp.secondaryColor,
                   fontWeight: FontWeight.w500
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
                 PoppinsText(
-                  sText: 'REGISTRO INVIMA: MH2019-0000784-R1 RX - Este producto requiere fórmula médica. Productos de prescripción Médica. Por su seguridad NO se automedique. Este producto es un medicamento. No exceder su consumo. Leer indicaciones y contraindicaciones. Si los síntomas persisten, consultar al médico.',
+                  sText: widget.oProduct.sDescription ?? '',
                   dFontSize: ResponsiveApp.dSize( 13.0 ),
                   colorText: ColorsApp.textColor,
                   iMaxLines: 100
@@ -105,10 +105,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     onPressed: () {
                       orderProvider.addProduct(
                         Product(
+                          iId: widget.oProduct.iId,
                           sName: widget.oProduct.sName,
                           sImage: widget.oProduct.sImage,
                           dPrice: widget.oProduct.dPrice,
-                          dQuantity: orderProvider.dQuantity
+                          dQuantity: orderProvider.dQuantity,
+                          sExpirationDate: widget.oProduct.sExpirationDate,
+                          sDescription: widget.oProduct.sDescription
                         )
                       );
                       orderProvider.resetQuantity();

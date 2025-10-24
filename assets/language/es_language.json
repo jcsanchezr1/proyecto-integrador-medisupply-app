@@ -78,7 +78,9 @@
         "availabe": "disponible",
         "empty_state": "No hay productos disponibles",
         "add_button": "Añadir",
-        "expiry": "Vence: "
+        "expiry": "Vence: ",
+        "success_order": "Pedido creado exitosamente.",
+        "error_order": "Ocurrió un error al crear el pedido. Por favor, intenta más tarde."
     },
     "order_summary": {
         "title": "Resumen del pedido",
