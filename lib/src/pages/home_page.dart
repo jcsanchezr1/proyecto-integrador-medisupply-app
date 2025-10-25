@@ -53,7 +53,8 @@ class _HomePageState extends State<HomePage> {
           fontWeight: FontWeight.w500
         ),
         backgroundColor: ColorsApp.backgroundColor,
-        elevation: 0
+        elevation: 0.0,
+        scrolledUnderElevation: 0.0,
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {

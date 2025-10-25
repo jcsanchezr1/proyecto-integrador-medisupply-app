@@ -15,12 +15,14 @@ import '../general_widgets/poppins_text.dart';
 class OrderProductCard extends StatelessWidget {
 
   final bool bDelete;
+  final bool bCompact;
   final Product oProduct;
 
   const OrderProductCard(
     {
       super.key,
       this.bDelete = true,
+      this.bCompact = true,
       required this.oProduct
     }
   );
@@ -32,11 +34,11 @@ class OrderProductCard extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: ResponsiveApp.dWidth( 16.0 ),
+        horizontal: ResponsiveApp.dWidth( bCompact ? 16.0 : 0.0 ),
         vertical: ResponsiveApp.dHeight( 8.0 )
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveApp.dWidth( 8.0 ),
+        horizontal: ResponsiveApp.dWidth( bCompact ? 8.0 : 0.0 ),
         vertical: ResponsiveApp.dHeight( 8.0 )
       ),
       child: Row(

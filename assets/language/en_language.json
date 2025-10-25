@@ -71,7 +71,10 @@
     "orders": {
         "title": "My orders",
         "tab": "Orders",
-        "no_orders": "You have not placed any orders yet."
+        "no_orders": "You have not placed any orders yet.",
+        "delivery": "Scheduled delivery: ",
+        "truck": "Assigned truck: ",
+        "products": "Products"
     },
     "new_order": {
         "title": "Create order",

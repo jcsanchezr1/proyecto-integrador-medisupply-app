@@ -45,6 +45,9 @@ class _OrdersPageState extends State<OrdersPage> {
         loginProvider.oUser!.sId!,
         loginProvider.oUser!.sRole!
       );
+
+      lOrders.sort( ( a, b ) => b.sCreatedAt!.compareTo( a.sCreatedAt! ) );
+
     } catch (e) {
       lOrders = [];
     }

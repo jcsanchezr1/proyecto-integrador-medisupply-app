@@ -70,7 +70,10 @@
     },
     "orders": {
         "title": "Mis pedidos",
-        "no_orders": "No has realizado ningún pedido aún."
+        "no_orders": "No has realizado ningún pedido aún.",
+        "delivery": "Entrega programada: ",
+        "truck": "Camión asignado: ",
+        "products": "Productos"
     },
     "new_order": {
         "title": "Crear pedido",

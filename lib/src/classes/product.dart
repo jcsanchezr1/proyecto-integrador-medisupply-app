@@ -31,5 +31,12 @@ class Product {
       sExpirationDate: json['expiration_date'],
       sDescription: json['description']
     );
+  
+  factory Product.fromOrderJson( Map<String, dynamic > json )
+    => Product(
+      sName: json['product_name'],
+      sImage: json['product_image_url'],
+      dQuantity: json['quantity']?.toDouble()
+    );
 
 }
