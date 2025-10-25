@@ -49,7 +49,7 @@ class OrderProductCard extends StatelessWidget {
             ),
             child: FadeInImage(
               placeholder: AssetImage( 'assets/images/placeholder.png' ),
-              image: NetworkImage( oProduct.sImage?? '' ),
+              image: NetworkImage( oProduct.sImage ?? '' ),
               imageErrorBuilder: (context, error, stackTrace) => Image.asset( 'assets/images/placeholder.png' )
             )
           ),
@@ -59,14 +59,14 @@ class OrderProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 PoppinsText(
-                  sText: oProduct.sName!,
+                  sText: oProduct.sName ?? 'Unknown Product',
                   dFontSize: ResponsiveApp.dSize( 14.0 ),
                   colorText: ColorsApp.secondaryColor,
                   fontWeight: FontWeight.w500
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 2.0 ) ),
                 PoppinsText(
-                  sText: '${oProduct.dQuantity.toInt().toString()} ${TextsUtil.of(context)?.getText( oProduct.dQuantity > 1 ? 'order_summary.units' : 'order_summary.unit' ) ?? 'units'}',
+                  sText: '${(oProduct.dQuantity ?? 0).toInt().toString()} ${TextsUtil.of(context)?.getText( (oProduct.dQuantity ?? 0) > 1 ? 'order_summary.units' : 'order_summary.unit' ) ?? 'units'}',
                   dFontSize: ResponsiveApp.dSize( 12.0 ),
                   colorText: ColorsApp.textColor
                 )

@@ -14,6 +14,7 @@ import 'package:medisupply_app/src/classes/products_group.dart';
 import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/pages/orders_pages/new_order_page.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
+import 'package:medisupply_app/src/providers/order_provider.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
 import 'package:medisupply_app/src/widgets/new_order_widgets/product_card.dart';
@@ -99,6 +100,9 @@ Widget _buildTestAppWithMock(FetchData mockFetchData) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<LoginProvider>.value(value: loginProvider),
+      ChangeNotifierProvider<OrderProvider>(
+        create: (context) => OrderProvider(),
+      ),
       Provider<TextsUtil>(
         create: (context) => MockTextsUtil(),
       ),

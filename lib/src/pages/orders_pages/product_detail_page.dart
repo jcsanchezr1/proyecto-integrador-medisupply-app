@@ -59,21 +59,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
                 PoppinsText(
-                  sText: '\$${ TextsUtil.of(context)?.formatNumber( widget.oProduct.dPrice! ) }',
+                  sText: '\$${ TextsUtil.of(context)?.formatNumber( widget.oProduct.dPrice ?? 0.0 ) }',
                   dFontSize: ResponsiveApp.dSize( 16.0 ),
                   colorText: ColorsApp.secondaryColor,
                   fontWeight: FontWeight.bold
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 8.0 ) ),
                 PoppinsText(
-                  sText: widget.oProduct.sName!,
+                  sText: widget.oProduct.sName ?? 'Unknown Product',
                   dFontSize: ResponsiveApp.dSize( 24.0 ),
                   colorText: ColorsApp.secondaryColor,
                   iMaxLines: 5
                 ),
                 SizedBox( height: ResponsiveApp.dHeight( 4.0 ) ),
                 PoppinsText(
-                  sText: '${TextsUtil.of(context)?.getText( 'new_order.expiry' )} ${TextsUtil.of(context)?.formatLocalizedDate(context, widget.oProduct.sExpirationDate!)}',
+                  sText: '${TextsUtil.of(context)?.getText( 'new_order.expiry' )} ${widget.oProduct.sExpirationDate != null ? TextsUtil.of(context)?.formatLocalizedDate(context, widget.oProduct.sExpirationDate!) : 'N/A'}',
                   dFontSize: ResponsiveApp.dSize( 12.0 ),
                   colorText: ColorsApp.secondaryColor,
                   fontWeight: FontWeight.w500
@@ -96,10 +96,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                QuantityProduct( dQuantity: widget.oProduct.dQuantity ),
+                QuantityProduct( dQuantity: widget.oProduct.dQuantity ?? 999 ),
                 SizedBox(
                   width: ResponsiveApp.dWidth( 128.0 ),
-                  height: ResponsiveApp.dHeight( 40.0 ),
+                  height: ResponsiveApp.dHeight( 48.0 ),
                   child: MainButton(
                     sLabel: TextsUtil.of(context)?.getText( 'new_order.add_button' ) ?? 'Add to Cart',
                     onPressed: () {

@@ -37,8 +37,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para splash
 
       // === PASO 1: LOGIN ===
-      const email = 'ventas@correo.com';
-      const password = 'Password123.';
+      const email = 'cliente@correo.com';
+      const password = 'AugustoCelis13*';
 
       // Esperar campos de login
       await waitForWidget(tester, find.byKey(const Key('email_field')));
@@ -132,7 +132,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // === LOGIN CON USUARIO CLIENTE ===
-      const email = 'hospital.universitario@gmail.com'; // Usuario cliente
+      const email = 'cliente@correo.com'; // Usuario cliente
       const password = 'AugustoCelis13*';
 
       await waitForWidget(tester, find.byKey(const Key('email_field')));
@@ -180,8 +180,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // === LOGIN ===
-      const email = 'ventas@correo.com';
-      const password = 'Password123.';
+      const email = 'cliente@correo.com';
+      const password = 'AugustoCelis13*';
 
       await waitForWidget(tester, find.byKey(const Key('email_field')));
       await tester.enterText(find.byKey(const Key('email_field')), email);
@@ -219,8 +219,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // === LOGIN ===
-      const email = 'ventas@correo.com';
-      const password = 'Password123.';
+      const email = 'cliente@correo.com';
+      const password = 'AugustoCelis13*';
 
       await waitForWidget(tester, find.byKey(const Key('email_field')));
       await tester.enterText(find.byKey(const Key('email_field')), email);

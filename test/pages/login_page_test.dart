@@ -32,9 +32,9 @@ class MockFetchData extends FetchData {
 
   @override
   Future<User> login(String sEmail, String sPassword) async {
-    await Future.delayed(const Duration(milliseconds: 10));
+    // No delay for faster tests
     return shouldSucceed
-        ? User(sAccessToken: 'token')
+        ? User(sAccessToken: 'token', sRefreshToken: 'refresh', sName: 'name', sEmail: 'email', sRole: 'role', sId: 'id')
         : User(sAccessToken: null);
   }
 }
@@ -69,7 +69,7 @@ void main() {
     );
   }
 
-  testWidgets('No se ingresa ningun campo', (WidgetTester tester) async {
+  testWidgets('Validación exitosa no muestra errores', (WidgetTester tester) async {
     tester.view.physicalSize = const Size(800, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() {
@@ -83,17 +83,17 @@ void main() {
       ),
     ));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('login_button')));
-    await tester.pumpAndSettle();
-    // Activar la validación manualmente
+    await tester.enterText(find.byKey(const Key('email_field')), 'test@mail.com');
+    await tester.enterText(find.byKey(const Key('password_field')), '123456');
+    // Forzar la validación
     final formFinder = find.byType(Form);
     final formState = tester.state<FormState>(formFinder);
-    formState.validate();
+    final isValid = formState.validate();
     await tester.pumpAndSettle();
-    // Buscar el mensaje de error en todo el árbol de widgets
-    final errorText = 'Por favor, ingresa un valor';
-    final errorTextFinder = find.text(errorText);
-    expect(errorTextFinder, findsAtLeastNWidgets(1));
+    // Verificar que la validación sea exitosa
+    expect(isValid, isTrue);
+    // Verificar que no haya mensajes de error
+    expect(find.text('Por favor, ingresa un valor'), findsNothing);
   });
 
   testWidgets('Login exitoso navega a HomePage', (WidgetTester tester) async {
@@ -103,14 +103,29 @@ void main() {
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
     });
+    // Configurar SharedPreferences mock
+    SharedPreferences.setMockInitialValues({});
+    final mockPrefs = await SharedPreferences.getInstance();
+    
     await tester.pumpWidget(makeTestableWidget(
-      child: LoginPage(fetchData: MockFetchData(shouldSucceed: true), textsUtil: MockTextsUtil(const Locale('es'))),
+      child: LoginPage(
+        fetchData: MockFetchData(shouldSucceed: true),
+        textsUtil: MockTextsUtil(const Locale('es')),
+        sharedPreferences: mockPrefs,
+      ),
     ));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('email_field')), 'test@mail.com');
     await tester.enterText(find.byKey(const Key('password_field')), '123456');
     await tester.tap(find.byKey(const Key('login_button')));
     await tester.pumpAndSettle(const Duration(seconds: 1));
+    // Verificar que las preferencias se hayan guardado
+    expect(mockPrefs.getString('accessToken'), 'token');
+    expect(mockPrefs.getString('refreshToken'), 'refresh');
+    expect(mockPrefs.getString('userName'), 'name');
+    expect(mockPrefs.getString('userEmail'), 'email');
+    expect(mockPrefs.getString('userRole'), 'role');
+    expect(mockPrefs.getString('userId'), 'id');
   });
 
   testWidgets('Login con error muestra SnackBar y ejecuta flujo de error', (WidgetTester tester) async {
@@ -157,6 +172,27 @@ void main() {
     expect(loginProvider.bLoading, isFalse);
     expect(find.byKey(const Key('email_field')), findsOneWidget);
     expect(find.byKey(const Key('password_field')), findsOneWidget);
+  });
+
+  testWidgets('Validación con campos vacíos muestra errores', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+    await tester.pumpWidget(makeTestableWidget(
+      child: LoginPage(
+        fetchData: MockFetchData(shouldSucceed: true),
+        textsUtil: MockTextsUtil(const Locale('es')),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    // No ingresar texto en los campos (quedan vacíos)
+    await tester.tap(find.byKey(const Key('login_button')));
+    await tester.pumpAndSettle();
+    // Verificar que los mensajes de error se muestren
+    expect(find.text('Por favor, ingresa un valor'), findsNWidgets(2));
   });
 
 }

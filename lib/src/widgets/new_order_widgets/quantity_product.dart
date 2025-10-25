@@ -27,7 +27,7 @@ class _QuantityProductState extends State<QuantityProduct> {
     final orderProvider = Provider.of<OrderProvider>(context);
 
     return Container(
-      height: ResponsiveApp.dHeight( 40.0 ),
+      height: ResponsiveApp.dHeight( 50.0 ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular( 12.0 ),
         border: Border.all( color: ColorsApp.secondaryColor )

@@ -7,14 +7,14 @@ class Product {
   final String? sDescription;
   final String? sExpirationDate;
 
-  double dQuantity;
+  final double? dQuantity;
 
   Product(
     {
       this.iId,
       this.sName,
       this.sImage,
-      this.dQuantity = 0.0,
+      this.dQuantity,
       this.dPrice,
       this.sDescription,
       this.sExpirationDate

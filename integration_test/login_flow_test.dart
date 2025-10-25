@@ -35,8 +35,8 @@ void main() {
       app.main();
       await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para el splash
 
-      const email = 'ventas@correo.com';
-      const password = 'Password123.';
+      const email = 'cliente@correo.com';
+      const password = 'AugustoCelis13*';
 
       // Esperar a que aparezcan los campos de login
       await waitForWidget(tester, find.byKey(const Key('email_field')));

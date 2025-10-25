@@ -69,7 +69,7 @@ class ProductCard extends StatelessWidget {
               ),
               SizedBox( height: ResponsiveApp.dHeight( 0.5 ) ),
               PoppinsText(
-                sText: '${ oProduct.dQuantity.toInt().toString() } ${ TextsUtil.of(context)?.getText( oProduct.dQuantity == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
+                sText: '${ (oProduct.dQuantity ?? 0.0).toInt().toString() } ${ TextsUtil.of(context)?.getText( (oProduct.dQuantity ?? 0.0) == 1 ? 'new_order.availabe' : 'new_order.availabes' ) }',
                 dFontSize: ResponsiveApp.dSize( 11.0 ),
                 colorText: ColorsApp.textColor
               )
@@ -85,7 +85,7 @@ class ProductCard extends StatelessWidget {
         );
 
         if (existingProduct.sName != null) {
-          orderProvider.dQuantity = existingProduct.dQuantity;
+          orderProvider.dQuantity = existingProduct.dQuantity ?? 1.0;
         } else {
           orderProvider.resetQuantity();
         }
