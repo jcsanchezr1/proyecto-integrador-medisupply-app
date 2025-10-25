@@ -60,7 +60,7 @@ class OrderDetailPage extends StatelessWidget {
             SizedBox( height: ResponsiveApp.dHeight( 16.0 ) ),
             Expanded(
               child: ListView.builder(
-                itemCount: oOrder.lProducts?.length,
+                itemCount: oOrder.lProducts?.length ?? 0,
                 itemBuilder: (context, index) => OrderProductCard(
                   oProduct: oOrder.lProducts![index],
                   bDelete: false,

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:medisupply_app/src/classes/order.dart';
+import 'package:medisupply_app/src/classes/product.dart';
 
 void main() {
   group('Order Class Tests', () {
@@ -232,6 +233,181 @@ void main() {
       expect(order1.iId, equals(order2.iId));
       expect(order1.sOrderNumber, equals(order2.sOrderNumber));
       expect(order1.sStatus, equals(order2.sStatus));
+    });
+
+    group('Order.fromJson with items/products', () {
+      test('should parse items array into products list', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending',
+          'items': [
+            {
+              'product_name': 'Product A',
+              'product_image_url': 'https://example.com/a.jpg',
+              'quantity': 2,
+            },
+            {
+              'product_name': 'Product B',
+              'product_image_url': 'https://example.com/b.jpg',
+              'quantity': 3.5,
+            }
+          ]
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(2));
+
+        // Check first product
+        expect(order.lProducts![0].sName, equals('Product A'));
+        expect(order.lProducts![0].sImage, equals('https://example.com/a.jpg'));
+        expect(order.lProducts![0].dQuantity, equals(2.0));
+
+        // Check second product
+        expect(order.lProducts![1].sName, equals('Product B'));
+        expect(order.lProducts![1].sImage, equals('https://example.com/b.jpg'));
+        expect(order.lProducts![1].dQuantity, equals(3.5));
+      });
+
+      test('should handle empty items array', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending',
+          'items': []
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(0));
+      });
+
+      test('should handle null items', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending',
+          'items': null
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(0));
+      });
+
+      test('should handle missing items field', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending'
+          // items field is missing
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(0));
+      });
+
+      test('should handle items with missing fields', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending',
+          'items': [
+            <String, dynamic>{
+              'product_name': 'Product A',
+              // missing product_image_url and quantity
+            },
+            <String, dynamic>{
+              // empty item
+            }
+          ]
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(2));
+
+        // Check first product
+        expect(order.lProducts![0].sName, equals('Product A'));
+        expect(order.lProducts![0].sImage, isNull);
+        expect(order.lProducts![0].dQuantity, isNull);
+
+        // Check second product
+        expect(order.lProducts![1].sName, isNull);
+        expect(order.lProducts![1].sImage, isNull);
+        expect(order.lProducts![1].dQuantity, isNull);
+      });
+
+      test('should handle items with different quantity types', () {
+        final json = {
+          'id': 1,
+          'order_number': 'ORD-001',
+          'status': 'pending',
+          'items': [
+            {
+              'product_name': 'Product A',
+              'product_image_url': 'https://example.com/a.jpg',
+              'quantity': 2, // integer
+            },
+            {
+              'product_name': 'Product B',
+              'product_image_url': 'https://example.com/b.jpg',
+              'quantity': 3.5, // double
+            }
+          ]
+        };
+
+        final order = Order.fromJson(json);
+
+        expect(order.lProducts![0].dQuantity, equals(2.0));
+        expect(order.lProducts![1].dQuantity, equals(3.5));
+      });
+    });
+
+    group('Order with products list', () {
+      test('should create Order with products list', () {
+        final products = [
+          Product(sName: 'Product A', dQuantity: 2.0),
+          Product(sName: 'Product B', dQuantity: 3.0),
+        ];
+
+        final order = Order(
+          iId: 1,
+          sOrderNumber: 'ORD-001',
+          lProducts: products
+        );
+
+        expect(order.lProducts, equals(products));
+        expect(order.lProducts!.length, equals(2));
+      });
+
+      test('should create Order with empty products list', () {
+        final order = Order(
+          iId: 1,
+          sOrderNumber: 'ORD-001',
+          lProducts: []
+        );
+
+        expect(order.lProducts, isNotNull);
+        expect(order.lProducts!.length, equals(0));
+      });
+
+      test('should create Order with null products list', () {
+        final order = Order(
+          iId: 1,
+          sOrderNumber: 'ORD-001',
+          lProducts: null
+        );
+
+        expect(order.lProducts, isNull);
+      });
     });
   });
 }
