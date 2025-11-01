@@ -93,6 +93,7 @@ Widget _buildTestApp({
   final orderProvider = OrderProvider();
   // Add products to the order provider
   for (final product in orderProducts) {
+    orderProvider.dQuantity = product.dQuantity ?? 1.0;
     orderProvider.addProduct(product);
   }
 
@@ -285,7 +286,7 @@ void main() {
       final items = footerWidget.mOrder['items'] as List;
       expect(items.length, equals(1));
       expect(items[0]['product_id'], equals(1));
-      expect(items[0]['quantity'], equals(1.0)); // The quantity from OrderProvider, not from original product
+      expect(items[0]['quantity'], equals(2.0)); // The quantity from the product
     });
 
     testWidgets('OrderSummaryPage handles single product order', (WidgetTester tester) async {
@@ -439,6 +440,435 @@ void main() {
         listen: false,
       );
       expect(orderProvider.lOrderProducts.length, equals(10));
+    });
+
+    testWidgets('OrderSummaryPage handles Ventas role correctly', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_vendor_id',
+        sEmail: 'vendor@example.com',
+        sName: 'Test Vendor',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'Ventas'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Test Product',
+          sImage: 'test.jpg',
+          dQuantity: 2.0,
+          dPrice: 10.99,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Find FooterOrderSummary widget
+      final footerFinder = find.byType(FooterOrderSummary);
+      expect(footerFinder, findsOneWidget);
+
+      // Get the widget
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+
+      // For 'Ventas' role, should include vendor_id
+      expect(footerWidget.mOrder['client_id'], equals('test_client_id'));
+      expect(footerWidget.mOrder['vendor_id'], equals('test_vendor_id'));
+      expect(footerWidget.mOrder['total_amount'], isA<double>());
+      expect(footerWidget.mOrder['scheduled_delivery_date'], isA<String>());
+      expect(footerWidget.mOrder['items'], isA<List>());
+    });
+
+    testWidgets('OrderSummaryPage handles non-Ventas role correctly', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_client_id',
+        sEmail: 'client@example.com',
+        sName: 'Test Client',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'Cliente'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Test Product',
+          sImage: 'test.jpg',
+          dQuantity: 1.0,
+          dPrice: 15.50,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Find FooterOrderSummary widget
+      final footerFinder = find.byType(FooterOrderSummary);
+      expect(footerFinder, findsOneWidget);
+
+      // Get the widget
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+
+      // For non-'Ventas' role, should NOT include vendor_id
+      expect(footerWidget.mOrder['client_id'], equals('test_client_id'));
+      expect(footerWidget.mOrder.containsKey('vendor_id'), isFalse);
+      expect(footerWidget.mOrder['total_amount'], isA<double>());
+      expect(footerWidget.mOrder['scheduled_delivery_date'], isA<String>());
+      expect(footerWidget.mOrder['items'], isA<List>());
+    });
+
+    testWidgets('OrderSummaryPage calculates scheduled delivery date correctly', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Test Product',
+          sImage: 'test.jpg',
+          dQuantity: 1.0,
+          dPrice: 10.00,
+        ),
+      ];
+
+      final now = DateTime.now();
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Find FooterOrderSummary widget
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+
+      // Parse the scheduled delivery date
+      final scheduledDate = DateTime.parse(footerWidget.mOrder['scheduled_delivery_date']);
+      final expectedDate = now.add(const Duration(days: 2));
+
+      // Should be approximately 2 days from now (allowing for small time differences)
+      expect(scheduledDate.difference(expectedDate).inMinutes.abs(), lessThan(1));
+    });
+
+    testWidgets('OrderSummaryPage handles zero quantity products', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Zero Quantity Product',
+          sImage: 'zero.jpg',
+          dQuantity: 0.0,
+          dPrice: 5.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Should still display the product
+      expect(find.byType(OrderProductCard), findsOneWidget);
+      expect(find.text('Zero Quantity Product'), findsOneWidget);
+
+      // Check that the order data includes the zero quantity
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      final items = footerWidget.mOrder['items'] as List;
+      expect(items[0]['quantity'], equals(0.0));
+    });
+
+    testWidgets('OrderSummaryPage handles large quantity products', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Large Quantity Product',
+          sImage: 'large.jpg',
+          dQuantity: 1000.0,
+          dPrice: 1.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Should display the product
+      expect(find.byType(OrderProductCard), findsOneWidget);
+      expect(find.text('Large Quantity Product'), findsOneWidget);
+
+      // Check that the order data includes the large quantity
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      final items = footerWidget.mOrder['items'] as List;
+      expect(items[0]['quantity'], equals(1000.0));
+    });
+
+    testWidgets('OrderSummaryPage handles decimal quantities', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Decimal Quantity Product',
+          sImage: 'decimal.jpg',
+          dQuantity: 2.5,
+          dPrice: 10.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Check that the order data includes the decimal quantity
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      final items = footerWidget.mOrder['items'] as List;
+      expect(items[0]['quantity'], equals(2.5));
+    });
+
+    testWidgets('OrderSummaryPage displays correct total amount', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: 'Product 1',
+          sImage: 'p1.jpg',
+          dQuantity: 2.0,
+          dPrice: 10.00,
+        ),
+        Product(
+          iId: 2,
+          sName: 'Product 2',
+          sImage: 'p2.jpg',
+          dQuantity: 3.0,
+          dPrice: 5.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Calculate expected total: (2 * 10) + (3 * 5) = 20 + 15 = 35
+      const expectedTotal = 35.0;
+
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      expect(footerWidget.mOrder['total_amount'], equals(expectedTotal));
+    });
+
+    testWidgets('OrderSummaryPage handles empty product list gracefully', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: [],
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Should not crash
+      expect(find.byType(OrderSummaryPage), findsOneWidget);
+
+      // FooterOrderSummary should still be present
+      expect(find.byType(FooterOrderSummary), findsOneWidget);
+
+      // Total should be 0
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      expect(footerWidget.mOrder['total_amount'], equals(0.0));
+      expect(footerWidget.mOrder['items'], isEmpty);
+    });
+
+    testWidgets('OrderSummaryPage handles very long product names', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final longName = 'This is a very long product name that should test how the UI handles extremely long text that might cause layout issues or overflow problems in the display';
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: longName,
+          sImage: 'long.jpg',
+          dQuantity: 1.0,
+          dPrice: 1.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Should display the long name (Flutter handles text overflow automatically)
+      expect(find.text(longName), findsOneWidget);
+      expect(find.byType(OrderProductCard), findsOneWidget);
+    });
+
+    testWidgets('OrderSummaryPage has correct responsive layout', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      // Test with different screen sizes
+      await tester.pumpWidget(
+        MediaQuery(
+          data: const MediaQueryData(size: Size(375, 667)), // iPhone SE size
+          child: _buildTestApp(
+            orderProducts: [],
+            testUser: testUser,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Should still render correctly on small screens
+      expect(find.byType(OrderSummaryPage), findsOneWidget);
+      expect(find.byType(Scaffold), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(FooterOrderSummary), findsOneWidget);
+    });
+
+    testWidgets('OrderSummaryPage handles special characters in product names', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final specialName = 'Producto con caracteres especiales: test @#\$%^&*()';
+      final testProducts = [
+        Product(
+          iId: 1,
+          sName: specialName,
+          sImage: 'special.jpg',
+          dQuantity: 1.0,
+          dPrice: 10.00,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      // Should display the special characters correctly
+      expect(find.text(specialName), findsOneWidget);
+    });
+
+    testWidgets('OrderSummaryPage items list structure is correct', (WidgetTester tester) async {
+      final testUser = User(
+        sId: 'test_user_id',
+        sEmail: 'test@example.com',
+        sName: 'Test User',
+        sAccessToken: 'test_token',
+        sRefreshToken: 'refresh_token',
+        sRole: 'user'
+      );
+
+      final testProducts = [
+        Product(
+          iId: 123,
+          sName: 'Test Product',
+          sImage: 'test.jpg',
+          dQuantity: 5.0,
+          dPrice: 12.50,
+        ),
+      ];
+
+      await tester.pumpWidget(_buildTestApp(
+        orderProducts: testProducts,
+        testUser: testUser,
+      ));
+      await tester.pumpAndSettle();
+
+      final footerFinder = find.byType(FooterOrderSummary);
+      final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
+      final items = footerWidget.mOrder['items'] as List;
+
+      // Verify the structure of each item
+      expect(items.length, equals(1));
+      final item = items[0] as Map;
+      expect(item['product_id'], equals(123));
+      expect(item['quantity'], equals(5.0));
+      expect(item.containsKey('price'), isFalse); // Price should not be in items
+      expect(item.containsKey('name'), isFalse); // Name should not be in items
     });
 
     testWidgets('OrderSummaryPage constructor works correctly', (WidgetTester tester) async {
