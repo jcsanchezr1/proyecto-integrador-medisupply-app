@@ -98,6 +98,11 @@ class TextsUtil {
     }
   }
 
+  String formatNumber(double dNumber) {
+    final formatter = NumberFormat("#,##0.##", "es_ES");
+    return formatter.format(dNumber);
+  }
+
 }
 
 class TextsUtilDelegate extends LocalizationsDelegate<TextsUtil> {

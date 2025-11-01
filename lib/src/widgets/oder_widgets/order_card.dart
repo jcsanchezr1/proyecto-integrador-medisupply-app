@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../classes/order.dart';
 
+import '../../pages/orders_pages/order_detail_page.dart';
+
 import '../../utils/texts_util.dart';
 import '../../utils/colors_app.dart';
 import '../../utils/responsive_app.dart';
+import '../../utils/slide_transition.dart';
 
 import '../general_widgets/poppins_text.dart';
 import 'order_badge.dart';
@@ -19,7 +22,10 @@ class OrderCard extends StatelessWidget {
   Widget build(BuildContext context ) {
 
     return GestureDetector( 
-      onTap: () {},
+      onTap: () => Navigator.push(
+        context,
+        SlidePageRoute( page: OrderDetailPage( oOrder: oOrder ) )
+      ),
       child: Container(
         margin: EdgeInsets.symmetric(
           vertical: ResponsiveApp.dHeight( 8.0 ),

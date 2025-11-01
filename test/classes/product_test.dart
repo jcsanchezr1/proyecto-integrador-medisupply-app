@@ -122,5 +122,109 @@ void main() {
         expect(product.dPrice, equals(20.75));
       });
     });
+
+    group('fromOrderJson', () {
+      test('should create Product from order JSON with all fields', () {
+        // Arrange
+        final json = {
+          'product_name': 'Order Product',
+          'product_image_url': 'https://example.com/order-image.jpg',
+          'quantity': 3,
+        };
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.sName, equals('Order Product'));
+        expect(product.sImage, equals('https://example.com/order-image.jpg'));
+        expect(product.dQuantity, equals(3.0));
+        expect(product.iId, isNull);
+        expect(product.dPrice, isNull);
+        expect(product.sDescription, isNull);
+        expect(product.sExpirationDate, isNull);
+      });
+
+      test('should handle null values in order JSON', () {
+        // Arrange
+        final json = <String, dynamic>{};
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.sName, isNull);
+        expect(product.sImage, isNull);
+        expect(product.dQuantity, isNull);
+        expect(product.iId, isNull);
+        expect(product.dPrice, isNull);
+        expect(product.sDescription, isNull);
+        expect(product.sExpirationDate, isNull);
+      });
+
+      test('should handle integer quantity in order JSON', () {
+        // Arrange
+        final json = {
+          'product_name': 'Test Product',
+          'product_image_url': 'https://example.com/image.jpg',
+          'quantity': 5, // integer
+        };
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.dQuantity, equals(5.0));
+      });
+
+      test('should handle double quantity in order JSON', () {
+        // Arrange
+        final json = {
+          'product_name': 'Test Product',
+          'product_image_url': 'https://example.com/image.jpg',
+          'quantity': 2.5,
+        };
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.dQuantity, equals(2.5));
+      });
+
+      test('should handle missing quantity in order JSON', () {
+        // Arrange
+        final json = {
+          'product_name': 'Test Product',
+          'product_image_url': 'https://example.com/image.jpg',
+          // quantity is missing
+        };
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.sName, equals('Test Product'));
+        expect(product.sImage, equals('https://example.com/image.jpg'));
+        expect(product.dQuantity, isNull);
+      });
+
+      test('should handle empty strings in order JSON', () {
+        // Arrange
+        final json = {
+          'product_name': '',
+          'product_image_url': '',
+          'quantity': 0,
+        };
+
+        // Act
+        final product = Product.fromOrderJson(json);
+
+        // Assert
+        expect(product.sName, equals(''));
+        expect(product.sImage, equals(''));
+        expect(product.dQuantity, equals(0.0));
+      });
+    });
   });
 }

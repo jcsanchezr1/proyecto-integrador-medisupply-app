@@ -10,6 +10,7 @@ import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/pages/orders_pages/orders_page.dart';
 import 'package:medisupply_app/src/pages/orders_pages/new_order_page.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
+import 'package:medisupply_app/src/providers/order_provider.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:medisupply_app/src/utils/colors_app.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
@@ -58,13 +59,15 @@ void main() {
       sName: 'Test User',
       sAccessToken: 'test_token',
       sRefreshToken: 'refresh_token',
-      sRole: 'user'
+      sRole: 'Cliente'
     );
 
     // Setup default mocks
     when(mockLoginProvider.oUser).thenReturn(testUser);
     // Default stub for getOrders - returns empty list
     when(mockFetchData.getOrders(any, any, any)).thenAnswer((_) async => []);
+    // Default stub for getProductsbyProvider - returns empty list
+    when(mockFetchData.getProductsbyProvider(any, any)).thenAnswer((_) async => []);
   });
 
   tearDown(() {
@@ -328,6 +331,9 @@ Widget _buildTestApp(
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<LoginProvider>.value(value: mockLoginProvider),
+      ChangeNotifierProvider<OrderProvider>(
+        create: (context) => OrderProvider(),
+      ),
       Provider<TextsUtil>.value(value: mockTextsUtil),
       Provider<FetchData>.value(value: mockFetchData),
     ],

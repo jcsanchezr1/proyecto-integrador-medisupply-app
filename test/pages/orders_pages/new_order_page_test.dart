@@ -14,6 +14,7 @@ import 'package:medisupply_app/src/classes/products_group.dart';
 import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/pages/orders_pages/new_order_page.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
+import 'package:medisupply_app/src/providers/order_provider.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
 import 'package:medisupply_app/src/widgets/new_order_widgets/product_card.dart';
@@ -81,7 +82,7 @@ void _setupAssetMock() {
 Widget _buildTestApp() {
   final mockFetchData = MockFetchData();
   // Default mock returns empty list (simulates API failure)
-  when(() => mockFetchData.getProductsbyProvider(any())).thenAnswer((_) async => <ProductsGroup>[]);
+  when(() => mockFetchData.getProductsbyProvider(any(), any())).thenAnswer((_) async => <ProductsGroup>[]);
 
   return _buildTestAppWithMock(mockFetchData);
 }
@@ -93,12 +94,16 @@ Widget _buildTestAppWithMock(FetchData mockFetchData) {
     sName: 'Test User',
     sAccessToken: 'test_token',
     sRefreshToken: 'refresh_token',
-    sRole: 'user'
+    sRole: 'user',
+    sId: 'test_user_id'
   );
 
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<LoginProvider>.value(value: loginProvider),
+      ChangeNotifierProvider<OrderProvider>(
+        create: (context) => OrderProvider(),
+      ),
       Provider<TextsUtil>(
         create: (context) => MockTextsUtil(),
       ),
@@ -114,7 +119,7 @@ Widget _buildTestAppWithMock(FetchData mockFetchData) {
         Locale('es', 'ES'),
       ],
       locale: const Locale('en', 'US'),
-      home: NewOrderPage(fetchData: mockFetchData),
+      home: NewOrderPage(fetchData: mockFetchData, sClientId: 'test_client_id'),
     ),
   );
 }
@@ -295,7 +300,7 @@ void main() {
         ),
       ];
 
-      when(() => mockFetchData.getProductsbyProvider(any())).thenAnswer((_) async => mockProducts);
+      when(() => mockFetchData.getProductsbyProvider(any(), any())).thenAnswer((_) async => mockProducts);
 
       await tester.pumpWidget(_buildTestAppWithMock(mockFetchData));
 
@@ -325,7 +330,7 @@ void main() {
         ),
       ];
 
-      when(() => mockFetchData.getProductsbyProvider(any())).thenAnswer((_) async => mockProducts);
+      when(() => mockFetchData.getProductsbyProvider(any(), any())).thenAnswer((_) async => mockProducts);
 
       await tester.pumpWidget(_buildTestAppWithMock(mockFetchData));
 
@@ -346,22 +351,22 @@ void main() {
       final mockFetchData = MockFetchData();
       final mockProducts = <ProductsGroup>[];
 
-      when(() => mockFetchData.getProductsbyProvider(any())).thenAnswer((_) async => mockProducts);
+      when(() => mockFetchData.getProductsbyProvider(any(), any())).thenAnswer((_) async => mockProducts);
 
       await tester.pumpWidget(_buildTestAppWithMock(mockFetchData));
 
       // Wait for initState to complete
       await tester.pump();
 
-      // Verify that getProductsbyProvider was called with the access token
-      verify(() => mockFetchData.getProductsbyProvider('test_token')).called(1);
+      // Verify that getProductsbyProvider was called with the access token and client id
+      verify(() => mockFetchData.getProductsbyProvider('test_token', 'test_client_id')).called(1);
     });
 
     testWidgets('NewOrderPage handles API errors gracefully', (WidgetTester tester) async {
       // Mock API to throw error
       final mockFetchData = MockFetchData();
 
-      when(() => mockFetchData.getProductsbyProvider(any())).thenThrow(Exception('API Error'));
+      when(() => mockFetchData.getProductsbyProvider(any(), any())).thenThrow(Exception('API Error'));
 
       await tester.pumpWidget(_buildTestAppWithMock(mockFetchData));
 
@@ -390,7 +395,7 @@ void main() {
         ),
       ];
 
-      when(() => mockFetchData.getProductsbyProvider(any())).thenAnswer((_) async => mockProducts);
+      when(() => mockFetchData.getProductsbyProvider(any(), any())).thenAnswer((_) async => mockProducts);
 
       await tester.pumpWidget(_buildTestAppWithMock(mockFetchData));
 

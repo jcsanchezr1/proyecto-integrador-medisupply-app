@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:medisupply_app/src/classes/order.dart';
-import 'package:medisupply_app/src/classes/products_group.dart';
+import 'package:medisupply_app/src/classes/client.dart';
 
 import '../classes/user.dart';
+import '../classes/order.dart';
+import '../classes/products_group.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -145,12 +146,12 @@ class FetchData {
 
   }
 
-  Future<List<ProductsGroup>> getProductsbyProvider( String sAccessToken ) async {
+  Future<List<ProductsGroup>> getProductsbyProvider( String sAccessToken, String sUserId ) async {
 
     List<ProductsGroup> lProductsGroups = [];
 
     final response = await client.get(
-      Uri.parse( '$baseUrl/inventory/providers/products' ),
+      Uri.parse( '$baseUrl/inventory/providers/products?userId=$sUserId' ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
       }
@@ -176,7 +177,7 @@ class FetchData {
 
     final response = await client.get(
       Uri.parse(
-        sRole == 'Ventas' ?'$baseUrl/orders?vendor_id=$sUserId' : '$baseUrl/orders?client_id=$sUserId'
+        sRole == 'Ventas' ? '$baseUrl/orders?vendor_id=$sUserId' : '$baseUrl/orders?client_id=$sUserId'
       ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
@@ -187,6 +188,7 @@ class FetchData {
 
       final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
 
+
       for( var mOrder in mResponse['data'] ) {
         lOrders.add( Order.fromJson( mOrder ) );
       }
@@ -194,6 +196,54 @@ class FetchData {
     }
 
     return lOrders;
+    
+  }
+
+  Future<bool> createOrder( String sAccessToken, Map<String, dynamic> mOrder ) async {
+
+    bool bSuccess = false;
+
+    final response = await client.post(
+      Uri.parse( '$baseUrl/orders/create' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken',
+        'Content-Type' : 'application/json'
+      },
+      body: jsonEncode( mOrder )
+    );
+
+    if( response.statusCode == 201 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
+  }
+
+  Future<List<Client>> getAssignedClients( String sAccessToken, String sVendorId ) async {
+
+    List<Client> lClients = [];
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/auth/assigned-clients/$sVendorId' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      if( mResponse['data']['assigned_clients'] != null && mResponse['data']['assigned_clients'].isNotEmpty ){
+        for( var mClient in mResponse['data']['assigned_clients'] ) {
+          lClients.add( Client.fromJson( mClient ) );
+        }
+      }
+
+    }
+
+    return lClients;
     
   }
 

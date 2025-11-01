@@ -45,6 +45,9 @@ class _OrdersPageState extends State<OrdersPage> {
         loginProvider.oUser!.sId!,
         loginProvider.oUser!.sRole!
       );
+
+      lOrders.sort( ( a, b ) => b.sCreatedAt!.compareTo( a.sCreatedAt! ) );
+
     } catch (e) {
       lOrders = [];
     }
@@ -64,16 +67,18 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build( BuildContext context ) {
 
+    final loginProvider = Provider.of<LoginProvider>( context );
+
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: loginProvider.oUser!.sRole == 'Cliente' ? FloatingActionButton(
         backgroundColor: ColorsApp.backgroundColor,
-        onPressed: () => Navigator.push( context, SlidePageRoute( page: NewOrderPage() ) ),
+        onPressed: () => Navigator.push( context, SlidePageRoute( page: NewOrderPage( sClientId: loginProvider.oUser!.sId! ) ) ),
         child: const Icon(
           Icons.add_rounded,
           color: ColorsApp.primaryColor,
           semanticLabel: 'Add Order'
         )
-      ),
+      ) : null,
       body: bIsLoading ? Center(
         child: CircularProgressIndicator( color: ColorsApp.primaryColor )
       ) : lOrders.isEmpty ? Center(

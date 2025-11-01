@@ -15,7 +15,7 @@ class ProductsGroup {
   factory ProductsGroup.fromJson( Map<String, dynamic > json )
     => ProductsGroup(
       sProviderName: json['provider'],
-      lProducts: List<Product>.from( json['products'].map( ( x ) => Product.fromJson( x ) ) )
+      lProducts: json['products'] != null ? List<Product>.from( json['products'].map( ( x ) => Product.fromJson( x ) ) ) : null
     );
 
 }

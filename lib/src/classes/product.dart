@@ -1,25 +1,42 @@
 class Product {
 
+  final int? iId;
   final String? sName;
   final String? sImage;
-  final double? dQuantity;
   final double? dPrice;
+  final String? sDescription;
+  final String? sExpirationDate;
+
+  final double? dQuantity;
 
   Product(
     {
+      this.iId,
       this.sName,
       this.sImage,
       this.dQuantity,
-      this.dPrice
+      this.dPrice,
+      this.sDescription,
+      this.sExpirationDate
     }
   );
 
   factory Product.fromJson( Map<String, dynamic > json )
     => Product(
+      iId: json['id'],
       sName: json['name'],
       sImage: json['photo_url'],
       dQuantity: json['quantity']?.toDouble(),
-      dPrice: json['price']?.toDouble()
+      dPrice: json['price']?.toDouble(),
+      sExpirationDate: json['expiration_date'],
+      sDescription: json['description']
+    );
+  
+  factory Product.fromOrderJson( Map<String, dynamic > json )
+    => Product(
+      sName: json['product_name'],
+      sImage: json['product_image_url'],
+      dQuantity: json['quantity']?.toDouble()
     );
 
 }

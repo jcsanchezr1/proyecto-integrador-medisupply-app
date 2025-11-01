@@ -35,8 +35,8 @@ void main() {
       app.main();
       await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para el splash
 
-      const email = 'ventas@correo.com';
-      const password = 'Password123.';
+      const email = 'cliente@correo.com';
+      const password = 'AugustoCelis13*';
 
       // Esperar a que aparezcan los campos de login
       await waitForWidget(tester, find.byKey(const Key('email_field')));
@@ -79,8 +79,8 @@ void main() {
       }
 
       // Verificar que los elementos de la HomePage están presentes
-      expect(find.text('Orders'), findsOneWidget); // Título de la app bar
-      expect(find.byType(NavigationBar), findsOneWidget); // Bottom navigation bar
+      expect(find.text('My orders'), findsOneWidget); // Título de la app bar
+      expect(find.byType(FloatingActionButton), findsOneWidget); // FAB para clientes
     });
 
     testWidgets('Login fallido muestra SnackBar de error', (WidgetTester tester) async {

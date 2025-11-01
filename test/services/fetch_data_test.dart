@@ -369,7 +369,7 @@ void main() {
       );
 
       final fetchData = FetchData.withClient(mockClient);
-      final result = await fetchData.getProductsbyProvider('test_access_token');
+      final result = await fetchData.getProductsbyProvider('test_access_token', 'test_user_id');
 
       expect(result, isA<List>());
       expect(result.length, equals(2));
@@ -405,7 +405,7 @@ void main() {
       );
 
       final fetchData = FetchData.withClient(mockClient);
-      final result = await fetchData.getProductsbyProvider('test_access_token');
+      final result = await fetchData.getProductsbyProvider('test_access_token', 'test_user_id');
 
       expect(result, isA<List>());
       expect(result.length, equals(0));
@@ -419,7 +419,7 @@ void main() {
       );
 
       final fetchData = FetchData.withClient(mockClient);
-      final result = await fetchData.getProductsbyProvider('invalid_token');
+      final result = await fetchData.getProductsbyProvider('invalid_token', 'test_user_id');
 
       expect(result, isA<List>());
       expect(result.length, equals(0));
@@ -433,7 +433,7 @@ void main() {
       );
 
       final fetchData = FetchData.withClient(mockClient);
-      final result = await fetchData.getProductsbyProvider('test_access_token');
+      final result = await fetchData.getProductsbyProvider('test_access_token', 'test_user_id');
 
       expect(result, isA<List>());
       expect(result.length, equals(0));
@@ -449,7 +449,7 @@ void main() {
       final fetchData = FetchData.withClient(mockClient);
 
       expect(
-        () => fetchData.getProductsbyProvider('test_access_token'),
+        () => fetchData.getProductsbyProvider('test_access_token', 'test_user_id'),
         throwsA(isA<FormatException>()),
       );
     }
@@ -466,7 +466,7 @@ void main() {
       final fetchData = FetchData.withClient(mockClient);
 
       expect(
-        () => fetchData.getProductsbyProvider('test_access_token'),
+        () => fetchData.getProductsbyProvider('test_access_token', 'test_user_id'),
         throwsA(isA<NoSuchMethodError>()),
       );
     }

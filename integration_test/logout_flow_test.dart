@@ -23,8 +23,8 @@ Future<void> clearSharedPreferences() async {
 
 /// Función para hacer login completo y verificar que fue exitoso
 Future<void> performLoginAndVerify(WidgetTester tester) async {
-  const email = 'ventas@correo.com';
-  const password = 'Password123.';
+  const email = 'cliente@correo.com';
+  const password = 'AugustoCelis13*';
 
   await waitForWidget(tester, find.byKey(const Key('email_field')));
   await tester.enterText(find.byKey(const Key('email_field')), email);

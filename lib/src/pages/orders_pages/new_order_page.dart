@@ -5,20 +5,31 @@ import 'package:provider/provider.dart';
 import '../../classes/products_group.dart';
 
 import '../../providers/login_provider.dart';
+import '../../providers/order_provider.dart';
+
 import '../../services/fetch_data.dart';
 
 import '../../utils/colors_app.dart';
 import '../../utils/texts_util.dart';
 import '../../utils/responsive_app.dart';
+import '../../utils/slide_transition.dart';
 
 import '../../widgets/general_widgets/poppins_text.dart';
 import '../../widgets/new_order_widgets/product_card.dart';
+import 'order_summary_page.dart';
 
 class NewOrderPage extends StatefulWidget {
 
-  const NewOrderPage( { super.key = const Key('new_order_page'), this.fetchData } );
-
   final FetchData? fetchData;
+  final String sClientId;
+
+  const NewOrderPage(
+    {
+      super.key = const Key('new_order_page'),
+      this.fetchData,
+      required this.sClientId
+    }
+  );
 
   @override
   State<NewOrderPage> createState() => _NewOrderPageState();
@@ -37,7 +48,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
     final oFetchData = widget.fetchData ?? FetchData();
 
     try {
-      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken! );
+      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken!, widget.sClientId );
     } catch (e) {
       lProductsGroups = [];
     }
@@ -55,6 +66,9 @@ class _NewOrderPageState extends State<NewOrderPage> {
   @override
   Widget build( BuildContext context ) {
 
+    final orderProvider = Provider.of<OrderProvider>(context);
+    final loginPrvovider = Provider.of<LoginProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: PoppinsText(
@@ -65,13 +79,46 @@ class _NewOrderPageState extends State<NewOrderPage> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only( right: ResponsiveApp.dWidth( 8.0 ) ),
+            padding: EdgeInsets.only(
+              right: ResponsiveApp.dWidth( 12.0 ),
+              top: ResponsiveApp.dHeight( 8.0 )
+            ),
             child: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.shopping_cart_outlined,
-                color: ColorsApp.secondaryColor,
-                semanticLabel: 'Shopping Cart'
+              onPressed: orderProvider.lOrderProducts.isNotEmpty ? () => Navigator.push(
+                context,
+                SlidePageRoute(
+                  page: OrderSummaryPage( sClientId: loginPrvovider.oUser!.sRole == 'Cliente' ? loginPrvovider.oUser!.sId! : widget.sClientId )
+                )
+              ) : null,
+              icon: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    color: ColorsApp.secondaryColor,
+                    semanticLabel: 'Shopping Cart'
+                  ),
+                  orderProvider.lOrderProducts.isNotEmpty ? Positioned(
+                    right: -10.0,
+                    top: -10.0,
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: ResponsiveApp.dWidth( 20.0 ),
+                      height: ResponsiveApp.dWidth( 20.0 ),
+                      decoration: BoxDecoration(
+                        color: ColorsApp.primaryColor,
+                        borderRadius: BorderRadius.circular( 12.0 )
+                      ),
+                      child: PoppinsText(
+                        sText: orderProvider.lOrderProducts.length.toString(),
+                        dFontSize: ResponsiveApp.dSize( 11.0 ),
+                        colorText: ColorsApp.backgroundColor,
+                        fontWeight: FontWeight.w600,
+                        textAlign: TextAlign.center
+                      )
+                    )
+                  ) : SizedBox()
+                ]
               )
             )
           )
@@ -109,7 +156,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
                     ),
                     SizedBox( height: ResponsiveApp.dHeight( 24.0 ) ),
                     SizedBox(
-                      height: ResponsiveApp.dHeight( 180.0 ),
+                      height: ResponsiveApp.dHeight( 188.0 ),
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: lProductsGroups[index].lProducts!.length,

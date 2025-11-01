@@ -70,13 +70,32 @@
     },
     "orders": {
         "title": "My orders",
-        "tab": "Orders",
-        "no_orders": "You have not placed any orders yet."
+        "no_orders": "You have not placed any orders yet.",
+        "delivery": "Scheduled delivery: ",
+        "truck": "Assigned truck: ",
+        "products": "Products"
     },
     "new_order": {
         "title": "Create order",
         "availabes": "availabes",
         "availabe": "availabe",
-        "empty_state": "No products available"
+        "empty_state": "No products available",
+        "add_button": "Add",
+        "expiry": "Expires: ",
+        "success_order": "Order created successfully.",
+        "error_order": "An error occurred while creating the order. Please try again later."
+    },
+    "order_summary": {
+        "title": "Order summary",
+        "total": "Total",
+        "delivery_time": "Delivery time",
+        "finish_button": "Finish order",
+        "days": "days",
+        "units": "units",
+        "unit": "unit"
+    },
+    "clients": {
+        "title": "My clients",
+        "no_clients": "You have no clients assigned yet."
     }
 }

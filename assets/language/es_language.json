@@ -70,12 +70,32 @@
     },
     "orders": {
         "title": "Mis pedidos",
-        "no_orders": "No has realizado ningún pedido aún."
+        "no_orders": "No has realizado ningún pedido aún.",
+        "delivery": "Entrega programada: ",
+        "truck": "Camión asignado: ",
+        "products": "Productos"
     },
     "new_order": {
         "title": "Crear pedido",
         "availabes": "disponibles",
         "availabe": "disponible",
-        "empty_state": "No hay productos disponibles"
+        "empty_state": "No hay productos disponibles",
+        "add_button": "Añadir",
+        "expiry": "Vence: ",
+        "success_order": "Pedido creado exitosamente.",
+        "error_order": "Ocurrió un error al crear el pedido. Por favor, intenta más tarde."
+    },
+    "order_summary": {
+        "title": "Resumen del pedido",
+        "total": "Total",
+        "delivery_time": "Tiempo de entrega",
+        "finish_button": "Finalizar",
+        "days": "días",
+        "units": "unidades",
+        "unit": "unidad"
+    },
+    "clients": {
+        "title": "Mis clientes",
+        "no_clients": "No tienes clientes asignados aún."
     }
 }
