@@ -10,9 +10,9 @@ import '../../providers/order_provider.dart';
 import '../../services/fetch_data.dart';
 
 import '../../utils/colors_app.dart';
-import '../../utils/slide_transition.dart';
 import '../../utils/texts_util.dart';
 import '../../utils/responsive_app.dart';
+import '../../utils/slide_transition.dart';
 
 import '../../widgets/general_widgets/poppins_text.dart';
 import '../../widgets/new_order_widgets/product_card.dart';
@@ -20,9 +20,16 @@ import 'order_summary_page.dart';
 
 class NewOrderPage extends StatefulWidget {
 
-  const NewOrderPage( { super.key = const Key('new_order_page'), this.fetchData } );
-
   final FetchData? fetchData;
+  final String sClientId;
+
+  const NewOrderPage(
+    {
+      super.key = const Key('new_order_page'),
+      this.fetchData,
+      required this.sClientId
+    }
+  );
 
   @override
   State<NewOrderPage> createState() => _NewOrderPageState();
@@ -41,7 +48,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
     final oFetchData = widget.fetchData ?? FetchData();
 
     try {
-      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken!, loginPrvovider.oUser!.sId! );
+      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken!, widget.sClientId );
     } catch (e) {
       lProductsGroups = [];
     }
@@ -60,6 +67,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
   Widget build( BuildContext context ) {
 
     final orderProvider = Provider.of<OrderProvider>(context);
+    final loginPrvovider = Provider.of<LoginProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -76,7 +84,12 @@ class _NewOrderPageState extends State<NewOrderPage> {
               top: ResponsiveApp.dHeight( 8.0 )
             ),
             child: IconButton(
-              onPressed: orderProvider.lOrderProducts.isNotEmpty ? () => Navigator.push( context, SlidePageRoute(page: OrderSummaryPage()) ) : null,
+              onPressed: orderProvider.lOrderProducts.isNotEmpty ? () => Navigator.push(
+                context,
+                SlidePageRoute(
+                  page: OrderSummaryPage( sClientId: loginPrvovider.oUser!.sRole == 'Cliente' ? loginPrvovider.oUser!.sId! : widget.sClientId )
+                )
+              ) : null,
               icon: Stack(
                 clipBehavior: Clip.none,
                 children: [

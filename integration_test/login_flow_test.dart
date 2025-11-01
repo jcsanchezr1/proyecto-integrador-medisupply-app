@@ -79,8 +79,8 @@ void main() {
       }
 
       // Verificar que los elementos de la HomePage están presentes
-      expect(find.text('Orders'), findsOneWidget); // Título de la app bar
-      expect(find.byType(NavigationBar), findsOneWidget); // Bottom navigation bar
+      expect(find.text('My orders'), findsOneWidget); // Título de la app bar
+      expect(find.byType(FloatingActionButton), findsOneWidget); // FAB para clientes
     });
 
     testWidgets('Login fallido muestra SnackBar de error', (WidgetTester tester) async {

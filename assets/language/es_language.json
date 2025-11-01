@@ -93,5 +93,9 @@
         "days": "días",
         "units": "unidades",
         "unit": "unidad"
+    },
+    "clients": {
+        "title": "Mis clientes",
+        "no_clients": "No tienes clientes asignados aún."
     }
 }

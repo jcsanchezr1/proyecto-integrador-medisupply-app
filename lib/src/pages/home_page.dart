@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../providers/login_provider.dart';
 
 import '../utils/colors_app.dart';
 import '../utils/texts_util.dart';
@@ -10,14 +13,11 @@ import '../widgets/general_widgets/poppins_text.dart';
 import '../widgets/general_widgets/drawer_menu_widget.dart';
 
 import 'orders_pages/orders_page.dart';
+import 'clients_pages/clients_page.dart';
 
 class HomePage extends StatefulWidget {
   
-  const HomePage(
-    {
-      super.key = const Key('home_page')
-    }
-  );
+  const HomePage( { super.key = const Key('home_page') } );
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -28,10 +28,12 @@ class _HomePageState extends State<HomePage> {
 
   int iIndexNavigation = 0;
 
-  List<Widget> lPages = [ const OrdersPage(), Container(), Container() ];
+  List<Widget> lPages = [ const OrdersPage(), ClientsPage(), Container() ];
 
   @override
   Widget build( BuildContext context ) {
+
+    final loginProvider = Provider.of<LoginProvider>( context );
 
     return Scaffold(
       drawer: DrawerMenuWidget(),
@@ -47,7 +49,9 @@ class _HomePageState extends State<HomePage> {
           )
         ),
         title: PoppinsText(
-          sText: TextsUtil.of(context)?.getText( 'orders.title' ) ?? 'Home',
+          sText: TextsUtil.of(context)?.getText(
+            iIndexNavigation == 0 ? 'orders.title' : 'clients.title'
+          ) ?? 'Home',
           dFontSize: ResponsiveApp.dSize( 20.0 ),
           colorText: ColorsApp.secondaryColor,
           fontWeight: FontWeight.w500
@@ -56,7 +60,7 @@ class _HomePageState extends State<HomePage> {
         elevation: 0.0,
         scrolledUnderElevation: 0.0,
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: loginProvider.oUser!.sRole == 'Cliente' ? null : NavigationBar(
         onDestinationSelected: (int index) {
           setState( () => iIndexNavigation = index );
         },

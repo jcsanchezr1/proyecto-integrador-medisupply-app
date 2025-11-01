@@ -71,7 +71,7 @@ void main() {
 
       // === PASO 2: VERIFICAR ORDERS PAGE ===
       // Verificar que estamos en la pestaña Orders (debería ser la primera por defecto)
-      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('My orders'), findsOneWidget);
 
       // Verificar que el FloatingActionButton está presente (indica que estamos en OrdersPage)
       await waitForWidget(tester, find.byType(FloatingActionButton));
@@ -152,7 +152,7 @@ void main() {
       expect(find.byKey(const Key('home_page')), findsOneWidget);
 
       // === VERIFICAR CONSULTA DE PEDIDOS PARA CLIENTE ===
-      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('My orders'), findsOneWidget);
       await waitForWidget(tester, find.byType(FloatingActionButton));
       expect(find.byType(FloatingActionButton), findsOneWidget);
 

@@ -119,7 +119,7 @@ Widget _buildTestAppWithMock(FetchData mockFetchData) {
         Locale('es', 'ES'),
       ],
       locale: const Locale('en', 'US'),
-      home: NewOrderPage(fetchData: mockFetchData),
+      home: NewOrderPage(fetchData: mockFetchData, sClientId: 'test_client_id'),
     ),
   );
 }
@@ -358,8 +358,8 @@ void main() {
       // Wait for initState to complete
       await tester.pump();
 
-      // Verify that getProductsbyProvider was called with the access token and user id
-      verify(() => mockFetchData.getProductsbyProvider('test_token', 'test_user_id')).called(1);
+      // Verify that getProductsbyProvider was called with the access token and client id
+      verify(() => mockFetchData.getProductsbyProvider('test_token', 'test_client_id')).called(1);
     });
 
     testWidgets('NewOrderPage handles API errors gracefully', (WidgetTester tester) async {

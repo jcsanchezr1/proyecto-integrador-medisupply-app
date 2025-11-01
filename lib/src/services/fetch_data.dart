@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:medisupply_app/src/classes/client.dart';
 
 import '../classes/user.dart';
 import '../classes/order.dart';
@@ -217,6 +218,33 @@ class FetchData {
 
     return bSuccess;
 
+  }
+
+  Future<List<Client>> getAssignedClients( String sAccessToken, String sVendorId ) async {
+
+    List<Client> lClients = [];
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/auth/assigned-clients/$sVendorId' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      if( mResponse['data']['assigned_clients'] != null && mResponse['data']['assigned_clients'].isNotEmpty ){
+        for( var mClient in mResponse['data']['assigned_clients'] ) {
+          lClients.add( Client.fromJson( mClient ) );
+        }
+      }
+
+    }
+
+    return lClients;
+    
   }
 
 }

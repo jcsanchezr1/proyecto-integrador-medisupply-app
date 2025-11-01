@@ -14,8 +14,10 @@ import '../../widgets/new_order_widgets/oder_product_card.dart';
 import '../../widgets/new_order_widgets/footer_order_summary.dart';
 
 class OrderSummaryPage extends StatelessWidget {
-  
-  const OrderSummaryPage( { super.key } );
+
+  final String sClientId;
+
+  const OrderSummaryPage( { super.key, required this.sClientId } );
 
   @override
   Widget build( BuildContext context ) {
@@ -42,8 +44,17 @@ class OrderSummaryPage extends StatelessWidget {
             )
           ),
           FooterOrderSummary(
-            mOrder: {
-              "client_id": loginProvider.oUser!.sId,
+            mOrder: loginProvider.oUser!.sRole == 'Ventas' ? {
+              "client_id": sClientId,
+              "vendor_id": loginProvider.oUser!.sId,
+              "total_amount": orderProvider.dTotalPrice,
+              "scheduled_delivery_date": DateTime.now().add(const Duration(days: 2)).toIso8601String(),
+              "items": orderProvider.lOrderProducts.map( ( product ) => {
+                  "product_id": product.iId,
+                  "quantity": product.dQuantity
+              } ).toList()
+            } : {
+              "client_id": sClientId,
               "total_amount": orderProvider.dTotalPrice,
               "scheduled_delivery_date": DateTime.now().add(const Duration(days: 2)).toIso8601String(),
               "items": orderProvider.lOrderProducts.map( ( product ) => {

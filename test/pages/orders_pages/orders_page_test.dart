@@ -59,7 +59,7 @@ void main() {
       sName: 'Test User',
       sAccessToken: 'test_token',
       sRefreshToken: 'refresh_token',
-      sRole: 'user'
+      sRole: 'Cliente'
     );
 
     // Setup default mocks

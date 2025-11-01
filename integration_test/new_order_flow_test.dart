@@ -75,7 +75,7 @@ void main() {
 
       // === PASO 2: NAVEGAR A ORDERS PAGE ===
       // Verificar que estamos en la pestaña correcta (Orders debería ser la primera)
-      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('My orders'), findsOneWidget);
 
       // La OrdersPage debería estar visible por defecto (índice 0 del NavigationBar)
       // Verificar que el FloatingActionButton está presente

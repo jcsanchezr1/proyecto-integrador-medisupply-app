@@ -70,7 +70,6 @@
     },
     "orders": {
         "title": "My orders",
-        "tab": "Orders",
         "no_orders": "You have not placed any orders yet.",
         "delivery": "Scheduled delivery: ",
         "truck": "Assigned truck: ",
@@ -94,5 +93,9 @@
         "days": "days",
         "units": "units",
         "unit": "unit"
+    },
+    "clients": {
+        "title": "My clients",
+        "no_clients": "You have no clients assigned yet."
     }
 }

@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/pages/home_page.dart';
 import 'package:medisupply_app/src/pages/orders_pages/orders_page.dart';
+import 'package:medisupply_app/src/pages/clients_pages/clients_page.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
 import 'package:medisupply_app/src/utils/colors_app.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
@@ -169,15 +170,15 @@ void main() {
       // Initially should show OrdersPage
       expect(find.byType(OrdersPage), findsOneWidget);
 
-      // Change to second tab (index 1) - should show Container
+      // Change to second tab (index 1) - should show ClientsPage
       await tester.tap(find.byIcon(Icons.person_outline).first);
       await tester.pumpAndSettle();
 
       // OrdersPage should no longer be visible
       expect(find.byType(OrdersPage), findsNothing);
 
-      // Should show a Container (empty)
-      expect(find.byType(Container), findsAtLeastNWidgets(1));
+      // Should show ClientsPage
+      expect(find.byType(ClientsPage), findsOneWidget);
     });
 
     testWidgets('HomePage uses correct key', (WidgetTester tester) async {

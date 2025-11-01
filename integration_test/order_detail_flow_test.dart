@@ -62,7 +62,7 @@ void main() {
       expect(find.byKey(const Key('home_page')), findsOneWidget);
 
       // === PASO 2: NAVEGAR A ORDERS PAGE ===
-      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('My orders'), findsOneWidget);
       await waitForWidget(tester, find.byType(FloatingActionButton));
       expect(find.byType(FloatingActionButton), findsOneWidget);
 
@@ -142,7 +142,7 @@ void main() {
         // Verificar que volvemos a OrdersPage
         expect(find.byType(FloatingActionButton), findsOneWidget,
             reason: 'Deberíamos volver a OrdersPage con el FAB visible');
-        expect(find.text('Orders'), findsOneWidget,
+        expect(find.text('My orders'), findsOneWidget,
             reason: 'Deberíamos estar de vuelta en la pestaña Orders');
       } else {
         // Si no hay BackButton, intentar usar el leading del AppBar
@@ -154,7 +154,7 @@ void main() {
 
           // Verificar que volvemos a OrdersPage
           expect(find.byType(FloatingActionButton), findsOneWidget);
-          expect(find.text('Orders'), findsOneWidget);
+          expect(find.text('My orders'), findsOneWidget);
         }
       }
     });

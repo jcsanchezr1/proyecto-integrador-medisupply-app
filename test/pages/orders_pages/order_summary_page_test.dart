@@ -115,8 +115,8 @@ Widget _buildTestApp({
         Locale('es', 'ES'),
       ],
       locale: const Locale('en', 'US'),
-      home: const OrderSummaryPage(),
-    ),
+      home: const OrderSummaryPage(sClientId: 'test_client_id'),
+    )
   );
 }
 
@@ -276,7 +276,7 @@ void main() {
       final footerWidget = tester.widget<FooterOrderSummary>(footerFinder);
 
       // Verify the order data structure
-      expect(footerWidget.mOrder['client_id'], equals('test_user_id'));
+      expect(footerWidget.mOrder['client_id'], equals('test_client_id'));
       expect(footerWidget.mOrder['total_amount'], isA<double>());
       expect(footerWidget.mOrder['scheduled_delivery_date'], isA<String>());
       expect(footerWidget.mOrder['items'], isA<List>());
@@ -442,7 +442,7 @@ void main() {
     });
 
     testWidgets('OrderSummaryPage constructor works correctly', (WidgetTester tester) async {
-      const orderSummaryPage = OrderSummaryPage();
+      const orderSummaryPage = OrderSummaryPage(sClientId: 'test_client_id');
 
       expect(orderSummaryPage, isA<OrderSummaryPage>());
       expect(orderSummaryPage.key, isNull);
