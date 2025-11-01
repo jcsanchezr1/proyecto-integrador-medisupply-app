@@ -66,6 +66,8 @@ void main() {
     when(mockLoginProvider.oUser).thenReturn(testUser);
     // Default stub for getOrders - returns empty list
     when(mockFetchData.getOrders(any, any, any)).thenAnswer((_) async => []);
+    // Default stub for getProductsbyProvider - returns empty list
+    when(mockFetchData.getProductsbyProvider(any, any)).thenAnswer((_) async => []);
   });
 
   tearDown(() {

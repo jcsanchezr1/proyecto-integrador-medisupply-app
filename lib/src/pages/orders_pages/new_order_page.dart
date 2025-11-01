@@ -41,7 +41,7 @@ class _NewOrderPageState extends State<NewOrderPage> {
     final oFetchData = widget.fetchData ?? FetchData();
 
     try {
-      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken! );
+      lProductsGroups = await oFetchData.getProductsbyProvider( loginPrvovider.oUser!.sAccessToken!, loginPrvovider.oUser!.sId! );
     } catch (e) {
       lProductsGroups = [];
     }

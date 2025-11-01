@@ -148,9 +148,10 @@ class MockFetchData extends _i1.Mock implements _i4.FetchData {
   @override
   _i6.Future<List<_i8.ProductsGroup>> getProductsbyProvider(
     String? sAccessToken,
+    String? sUserId,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#getProductsbyProvider, [sAccessToken]),
+            Invocation.method(#getProductsbyProvider, [sAccessToken, sUserId]),
             returnValue: _i6.Future<List<_i8.ProductsGroup>>.value(
               <_i8.ProductsGroup>[],
             ),
@@ -168,6 +169,17 @@ class MockFetchData extends _i1.Mock implements _i4.FetchData {
             returnValue: _i6.Future<List<_i9.Order>>.value(<_i9.Order>[]),
           )
           as _i6.Future<List<_i9.Order>>);
+
+  @override
+  _i6.Future<bool> createOrder(
+    String? sAccessToken,
+    Map<String, dynamic>? mOrder,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#createOrder, [sAccessToken, mOrder]),
+            returnValue: _i6.Future<bool>.value(false),
+          )
+          as _i6.Future<bool>);
 }
 
 /// A class which mocks [LoginProvider].

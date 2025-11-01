@@ -145,12 +145,12 @@ class FetchData {
 
   }
 
-  Future<List<ProductsGroup>> getProductsbyProvider( String sAccessToken ) async {
+  Future<List<ProductsGroup>> getProductsbyProvider( String sAccessToken, String sUserId ) async {
 
     List<ProductsGroup> lProductsGroups = [];
 
     final response = await client.get(
-      Uri.parse( '$baseUrl/inventory/providers/products' ),
+      Uri.parse( '$baseUrl/inventory/providers/products?userId=$sUserId' ),
       headers: {
         'Authorization' : 'Bearer $sAccessToken'
       }
