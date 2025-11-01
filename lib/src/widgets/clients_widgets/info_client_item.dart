@@ -30,7 +30,7 @@ class InfoClientItem extends StatelessWidget {
           Icon(
             iconData,
             color: ColorsApp.primaryColor,
-            semanticLabel: sInfo
+            semanticLabel: iconData.codePoint.toString()
           ),
           SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ),
           Expanded(
