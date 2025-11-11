@@ -97,5 +97,12 @@
     "clients": {
         "title": "Mis clientes",
         "no_clients": "No tienes clientes asignados aún."
+    },
+    "visits": {
+        "title": "Visitas programadas",
+        "no_visits": "No tienes visitas programadas.",
+        "count_clients": "clientes",
+        "count_client": "cliente",
+        "date_filter": "Selecciona una fecha"
     }
 }

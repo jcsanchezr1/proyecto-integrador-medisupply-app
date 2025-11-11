@@ -2,10 +2,11 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:medisupply_app/src/classes/client.dart';
 
 import '../classes/user.dart';
+import '../classes/visit.dart';
 import '../classes/order.dart';
+import '../classes/client.dart';
 import '../classes/products_group.dart';
 
 import 'package:http/http.dart' as http;
@@ -244,6 +245,31 @@ class FetchData {
     }
 
     return lClients;
+    
+  }
+
+  Future<List<Visit>> getVisitsByDate( String sAccessToken, String sUserId, String sDate ) async {
+
+    List<Visit> lVisits = [];
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/sellers/$sUserId/scheduled-visits?date=$sDate' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      for( var mVisit in mResponse['data'] ) {
+        lVisits.add( Visit.fromJson( mVisit ) );
+      }
+
+    }
+
+    return lVisits;
     
   }
 

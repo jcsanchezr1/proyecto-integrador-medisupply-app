@@ -39,7 +39,11 @@ class ClientDetailPage extends StatelessWidget {
               child: FadeInImage(
                 placeholder: AssetImage('assets/images/client_placeholder.png'),
                 image: NetworkImage( oClient.sLogoUrl ?? '' ),
-                imageErrorBuilder: (context, error, stackTrace) => Image.asset('assets/images/client_placeholder.png' ),
+                imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                  'assets/images/client_placeholder.png',
+                  width: ResponsiveApp.dWidth( 360.0 ),
+                  height: ResponsiveApp.dWidth( 360.0 )
+                ),
                 width: ResponsiveApp.dWidth( 360.0 ),
                 height: ResponsiveApp.dWidth( 360.0 ),
                 fit: BoxFit.cover
@@ -64,7 +68,11 @@ class ClientDetailPage extends StatelessWidget {
                 child: FadeInImage(
                   placeholder: AssetImage('assets/images/client_placeholder.png'),
                   image: NetworkImage( oClient.sLogoUrl ?? '' ),
-                  imageErrorBuilder: (context, error, stackTrace) => Image.asset('assets/images/client_placeholder.png' ),
+                  imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/images/client_placeholder.png',
+                    width: ResponsiveApp.dHeight( 120.0 ),
+                    height: ResponsiveApp.dHeight( 120.0 )
+                  ),
                   width: ResponsiveApp.dHeight( 120.0 ),
                   height: ResponsiveApp.dHeight( 120.0 ),
                   fit: BoxFit.cover

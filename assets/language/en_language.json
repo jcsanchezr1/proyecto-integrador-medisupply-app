@@ -97,5 +97,12 @@
     "clients": {
         "title": "My clients",
         "no_clients": "You have no clients assigned yet."
+    },
+    "visits": {
+        "title": "Scheduled visits",
+        "no_visits": "You have no scheduled visits.",
+        "count_clients": "clients",
+        "count_client": "client",
+        "date_filter": "Select a date"
     }
 }

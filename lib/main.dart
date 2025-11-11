@@ -126,7 +126,8 @@ class _MyAppState extends State<MyApp> {
             cursorColor: ColorsApp.secondaryColor,
             selectionColor: ColorsApp.primaryColor.withValues( alpha: 0.2 ),
             selectionHandleColor: ColorsApp.primaryColor
-          )
+          ),
+          colorScheme: ColorScheme.light( primary: ColorsApp.primaryColor ),
         ),
         locale: _currentLocale,
         localizationsDelegates: [
