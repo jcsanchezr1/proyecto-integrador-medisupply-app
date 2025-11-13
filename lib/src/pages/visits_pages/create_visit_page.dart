@@ -23,7 +23,9 @@ import '../../widgets/create_visit_widgets/clients_multi_select.dart';
 
 class CreateVisitPage extends StatefulWidget {
 
-  const CreateVisitPage( { super.key } );
+  final FetchData? oFetchData;
+
+  const CreateVisitPage( { super.key, this.oFetchData } );
 
   @override
   State<CreateVisitPage> createState() => _CreateVisitPageState();
@@ -33,8 +35,15 @@ class CreateVisitPage extends StatefulWidget {
 class _CreateVisitPageState extends State<CreateVisitPage> {
 
   final controller = TextEditingController();
-  final oFetchData = FetchData();
+  late final FetchData oFetchData;
 
+  @override
+  void initState() {
+    super.initState();
+    oFetchData = widget.oFetchData ?? FetchData();
+    getClients();
+  }
+  
   getClients() async {
 
     final loginProvider = Provider.of<LoginProvider>( context, listen: false );
@@ -105,12 +114,6 @@ class _CreateVisitPageState extends State<CreateVisitPage> {
 
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getClients();
-  }
-  
   @override
   Widget build( BuildContext context ) {
 

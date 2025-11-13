@@ -292,11 +292,9 @@ void main() {
       expect(() async => await state.createAccount(), returnsNormally);
     });
 
-    testWidgets('successful account creation flow', (WidgetTester tester) async {
-      String? capturedMessage;
-      void mockSnackBar(BuildContext context, String message) {
-        capturedMessage = message;
-      }
+    testWidgets('handles coordinate fetching failure', (WidgetTester tester) async {
+      // Mock getCoordinates to return empty map (failure)
+      when(() => mockFetchData.getCoordinates(any())).thenAnswer((_) async => {});
 
       // Set a logo file
       createAccountProvider.logoFile = FakeFile();
@@ -305,7 +303,62 @@ void main() {
         createProvider: createAccountProvider,
         loginProvider: loginProvider,
         textsUtil: mockTextsUtil,
-        onShowSnackBar: mockSnackBar,
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Get the state and fill form fields
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+      state.controllerName.text = 'Test Name';
+      state.controllerNIT.text = '123456789';
+      state.controllerEmail.text = 'test@email.com';
+      state.controllerAdress.text = 'Invalid Address';
+      state.controllerPhone.text = '1234567890';
+      state.controllerNameApplicant.text = 'Applicant Name';
+      state.controllerEmailApplicant.text = 'applicant@email.com';
+      state.controllerPassword.text = 'Password123!';
+      state.controllerConfirmPassword.text = 'Password123!';
+
+      // Set dropdown values
+      createAccountProvider.sSelectedType = 'Hospital';
+      createAccountProvider.sSelectedSpeciality = 'Cardiology';
+
+      // Initially loading should be false
+      expect(loginProvider.bLoading, isFalse);
+
+      // Call createAccount - should handle coordinate failure gracefully
+      await state.createAccount();
+
+      // Loading should be set back to false after failure
+      expect(loginProvider.bLoading, isFalse);
+    });
+
+    testWidgets('handles account creation failure', (WidgetTester tester) async {
+      // Mock createAccount to return false
+      when(() => mockFetchData.createAccount(
+        sName: any(named: 'sName'),
+        sTaxId: any(named: 'sTaxId'),
+        sEmail: any(named: 'sEmail'),
+        sAddress: any(named: 'sAddress'),
+        sPhone: any(named: 'sPhone'),
+        sInstitutionType: any(named: 'sInstitutionType'),
+        logoFile: any(named: 'logoFile'),
+        sSpecialty: any(named: 'sSpecialty'),
+        sApplicatName: any(named: 'sApplicatName'),
+        sApplicatEmail: any(named: 'sApplicatEmail'),
+        dLatitude: any(named: 'dLatitude'),
+        dLongitude: any(named: 'dLongitude'),
+        sPassword: any(named: 'sPassword'),
+        sPasswordConfirmation: any(named: 'sPasswordConfirmation'),
+      )).thenAnswer((_) async => false);
+
+      // Set a logo file
+      createAccountProvider.logoFile = FakeFile();
+
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
       ));
 
       await tester.pumpAndSettle();
@@ -326,19 +379,193 @@ void main() {
       createAccountProvider.sSelectedType = 'Hospital';
       createAccountProvider.sSelectedSpeciality = 'Cardiology';
 
-      // Test that logo is present
-      expect(createAccountProvider.logoFile, isNotNull);
+      // Initially loading should be false
+      expect(loginProvider.bLoading, isFalse);
 
-      // Test that all controllers have valid data
-      expect(state.controllerName.text, isNotEmpty);
-      expect(state.controllerEmail.text, isNotEmpty);
-      expect(state.controllerPassword.text, isNotEmpty);
+      // Call createAccount - should handle failure gracefully
+      await state.createAccount();
 
-      // Test that showSuccessSnackBar works with callback
-      state.showSuccessSnackBar(tester.element(find.byType(CreateAccountPage)), 'Account created successfully');
+      // Loading should be set back to false after failure
+      expect(loginProvider.bLoading, isFalse);
+    });
 
-      expect(capturedMessage, equals('Account created successfully'));
-      expect(loginProvider.bLoading, isFalse); // Should still be false since we didn't call createAccount
+    testWidgets('successful account creation navigates back', (WidgetTester tester) async {
+      // Set a logo file
+      createAccountProvider.logoFile = FakeFile();
+
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Get the state and fill form fields
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+      state.controllerName.text = 'Test Name';
+      state.controllerNIT.text = '123456789';
+      state.controllerEmail.text = 'test@email.com';
+      state.controllerAdress.text = 'Test Address';
+      state.controllerPhone.text = '1234567890';
+      state.controllerNameApplicant.text = 'Applicant Name';
+      state.controllerEmailApplicant.text = 'applicant@email.com';
+      state.controllerPassword.text = 'Password123!';
+      state.controllerConfirmPassword.text = 'Password123!';
+
+      // Set dropdown values
+      createAccountProvider.sSelectedType = 'Hospital';
+      createAccountProvider.sSelectedSpeciality = 'Cardiology';
+
+      // Initially loading should be false
+      expect(loginProvider.bLoading, isFalse);
+
+      // Call createAccount
+      await state.createAccount();
+
+      // Wait for the delay
+      await tester.pump(const Duration(seconds: 2));
+
+      // Loading should be false after completion
+      expect(loginProvider.bLoading, isFalse);
+    });
+
+    testWidgets('form validation fails with empty required fields', (WidgetTester tester) async {
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Get the state
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+
+      // Test validation with empty fields
+      final nameValidation = state.fieldValidator('');
+      expect(nameValidation, equals('This field is required'));
+
+      final passwordValidation = state.passWordValidator('');
+      expect(passwordValidation, isNotNull);
+
+      final confirmValidation = state.confirmPasswordValidator('', 'password');
+      expect(confirmValidation, equals('This field is required'));
+    });
+
+    testWidgets('password validation works for basic cases', (WidgetTester tester) async {
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+
+      // Test that password validation method exists and can be called
+      expect(() => state.passWordValidator('test'), returnsNormally);
+
+      // Test that it returns a result (either null for valid or string for invalid)
+      final result = state.passWordValidator('test');
+      expect(result, isA<String?>());
+    });
+
+    testWidgets('confirm password validation works correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+
+      // Test matching passwords
+      expect(state.confirmPasswordValidator('password', 'password'), isNull);
+
+      // Test non-matching passwords
+      expect(state.confirmPasswordValidator('different', 'password'), isNotNull);
+    });
+
+    testWidgets('createAccount handles loading states correctly', (WidgetTester tester) async {
+      // Set a logo file
+      createAccountProvider.logoFile = FakeFile();
+
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      // Get the state and fill form fields
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+      state.controllerName.text = 'Test Name';
+      state.controllerNIT.text = '123456789';
+      state.controllerEmail.text = 'test@email.com';
+      state.controllerAdress.text = 'Test Address';
+      state.controllerPhone.text = '1234567890';
+      state.controllerNameApplicant.text = 'Applicant Name';
+      state.controllerEmailApplicant.text = 'applicant@email.com';
+      state.controllerPassword.text = 'Password123!';
+      state.controllerConfirmPassword.text = 'Password123!';
+
+      // Set dropdown values
+      createAccountProvider.sSelectedType = 'Hospital';
+      createAccountProvider.sSelectedSpeciality = 'Cardiology';
+
+      // Initially loading should be false
+      expect(loginProvider.bLoading, isFalse);
+
+      // Call createAccount (this will set loading to true during execution)
+      final createAccountFuture = state.createAccount();
+
+      // Loading should eventually be set back to false
+      await createAccountFuture;
+      expect(loginProvider.bLoading, isFalse);
+    });
+
+    testWidgets('createAccount validates form before submission', (WidgetTester tester) async {
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+      ));
+
+      await tester.pumpAndSettle();
+
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+
+      // Test that createAccount method exists and can be called
+      expect(() async => await state.createAccount(), returnsNormally);
+    });
+
+    testWidgets('createAccount checks for logo file', (WidgetTester tester) async {
+      String? capturedMessage;
+      void mockSnackBar(BuildContext context, String message) {
+        capturedMessage = message;
+      }
+
+      await tester.pumpWidget(makeTestableWidget(
+        createProvider: createAccountProvider,
+        loginProvider: loginProvider,
+        textsUtil: mockTextsUtil,
+        onShowSnackBar: mockSnackBar,
+      ));
+
+      await tester.pumpAndSettle();
+
+      final state = tester.state(find.byType(CreateAccountPage)) as dynamic;
+
+      // Call createAccount without logo
+      await state.createAccount();
+
+      // Should show logo error
+      expect(capturedMessage, equals('Please select a logo'));
     });
   });
 

@@ -7,6 +7,8 @@ import 'dart:io';
 import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/classes/order.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
+import 'package:medisupply_app/src/classes/visit.dart';
+import 'package:medisupply_app/src/classes/client.dart';
 
 void main() {
   test(
@@ -745,6 +747,444 @@ void main() {
 
       final fetchDataCliente = FetchData.withClient(mockClientCliente);
       await fetchDataCliente.getOrders('token', 'user_id', 'Cliente');
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients devuelve lista de clientes asignados cuando API responde 200', () async {
+      final mockResponse = {
+        'data': {
+          'assigned_clients': [
+            {
+              'id': 'client1',
+              'name': 'Hospital',
+              'address': 'Calle 123',
+              'phone': '1234567890',
+              'email': 'test@test.com'
+            },
+            {
+              'id': 'client2',
+              'name': 'Clinica',
+              'address': 'Carrera 89',
+              'phone': '0987654321',
+              'email': 'info@test.com'
+            }
+          ]
+        }
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/auth/assigned-clients/test_vendor_id'), true);
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getAssignedClients('test_access_token', 'test_vendor_id');
+
+      expect(result, isA<List<Client>>());
+      expect(result.length, equals(2));
+
+      final client1 = result[0];
+      expect(client1.sClientId, equals('client1'));
+      expect(client1.sName, equals('Hospital'));
+      expect(client1.sAddress, equals('Calle 123'));
+      expect(client1.sPhone, equals('1234567890'));
+      expect(client1.sEmail, equals('test@test.com'));
+
+      final client2 = result[1];
+      expect(client2.sClientId, equals('client2'));
+      expect(client2.sName, equals('Clinica'));
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients devuelve lista vacía cuando assigned_clients es null', () async {
+      final mockResponse = {
+        'data': {
+          'assigned_clients': null
+        }
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getAssignedClients('test_access_token', 'test_vendor_id');
+
+      expect(result, isA<List<Client>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients devuelve lista vacía cuando assigned_clients está vacío', () async {
+      final mockResponse = {
+        'data': {
+          'assigned_clients': []
+        }
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getAssignedClients('test_access_token', 'test_vendor_id');
+
+      expect(result, isA<List<Client>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients devuelve lista vacía cuando API falla', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Unauthorized', 401)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getAssignedClients('invalid_token', 'test_vendor_id');
+
+      expect(result, isA<List<Client>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients devuelve lista vacía cuando status != 200', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Internal Server Error', 500)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getAssignedClients('test_access_token', 'test_vendor_id');
+
+      expect(result, isA<List<Client>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getAssignedClients maneja JSON malformado', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Invalid JSON', 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getAssignedClients('test_access_token', 'test_vendor_id'),
+        throwsA(isA<FormatException>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate devuelve lista de visitas cuando API responde 200', () async {
+      final mockResponse = {
+        'data': [
+          {
+            'id': '1',
+            'date': '15-11-2025',
+            'count_clients': 2
+          },
+          {
+            'id': '2',
+            'date': '15-11-2025',
+            'count_clients': 1
+          }
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/sellers/test_user_id/scheduled-visits?date=15-11-2025'), true);
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          return http.Response(jsonEncode(mockResponse), 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getVisitsByDate('test_access_token', 'test_user_id', '15-11-2025');
+
+      expect(result, isA<List<Visit>>());
+      expect(result.length, equals(2));
+
+      final visit1 = result[0];
+      expect(visit1.sId, equals('1'));
+      expect(visit1.sDate, equals('15-11-2025'));
+      expect(visit1.iCountClients, equals(2));
+
+      final visit2 = result[1];
+      expect(visit2.sId, equals('2'));
+      expect(visit2.iCountClients, equals(1));
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate devuelve lista vacía cuando data está vacío', () async {
+      final mockResponse = {'data': []};
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getVisitsByDate('test_access_token', 'test_user_id', '15-11-2025');
+
+      expect(result, isA<List<Visit>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate devuelve lista vacía cuando API falla', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Unauthorized', 401)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getVisitsByDate('invalid_token', 'test_user_id', '15-11-2025');
+
+      expect(result, isA<List<Visit>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate devuelve lista vacía cuando status != 200', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Internal Server Error', 500)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.getVisitsByDate('test_access_token', 'test_user_id', '15-11-2025');
+
+      expect(result, isA<List<Visit>>());
+      expect(result.length, equals(0));
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate maneja JSON malformado', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Invalid JSON', 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getVisitsByDate('test_access_token', 'test_user_id', '15-11-2025'),
+        throwsA(isA<FormatException>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.getVisitsByDate maneja respuesta sin campo data', () async {
+      final mockResponse = {'status': 'success'};
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response(jsonEncode(mockResponse), 200)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+
+      expect(
+        () => fetchData.getVisitsByDate('test_access_token', 'test_user_id', '15-11-2025'),
+        throwsA(isA<TypeError>()),
+      );
+    }
+  );
+
+  test(
+    'FetchData.createVisit devuelve true cuando API responde 201', () async {
+      final visitData = {
+        'date': '15-11-2025',
+        'clients': [
+          {'client_id': 'client1'},
+          {'client_id': 'client2'}
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/sellers/test_user_id/scheduled-visits'), true);
+          expect(request.method, 'POST');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          expect(request.headers['Content-Type'], contains('application/json'));
+          expect(request.body, equals(jsonEncode(visitData)));
+          return http.Response('', 201);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createVisit('test_access_token', 'test_user_id', visitData);
+
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.createVisit devuelve false cuando API responde con error', () async {
+      final visitData = {
+        'date': '15-11-2025',
+        'clients': [{'client_id': 'client1'}]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Bad Request', 400)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createVisit('test_access_token', 'test_user_id', visitData);
+
+      expect(result, isFalse);
+    }
+  );
+
+  test(
+    'FetchData.createVisit maneja diferentes códigos de estado de error', () async {
+      final visitData = {
+        'date': '15-11-2025',
+        'clients': [{'client_id': 'client1'}]
+      };
+
+      final testCases = [400, 401, 403, 409, 422, 500];
+
+      for (final statusCode in testCases) {
+        final mockClient = MockClient(
+          ( request ) async => http.Response('Error', statusCode)
+        );
+
+        final fetchData = FetchData.withClient(mockClient);
+        final result = await fetchData.createVisit('test_access_token', 'test_user_id', visitData);
+
+        expect(result, isFalse, reason: 'Should return false for status code $statusCode');
+      }
+    }
+  );
+
+  test(
+    'FetchData.createVisit incluye headers correctos en la petición', () async {
+      final visitData = {
+        'date': '15-11-2025',
+        'clients': [{'client_id': 'client1'}]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.headers['Authorization'], equals('Bearer test_token'));
+          expect(request.headers['Content-Type'], contains('application/json'));
+          expect(request.url.toString().contains('/sellers/test_user/scheduled-visits'), true);
+          return http.Response('', 201);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createVisit('test_token', 'test_user', visitData);
+
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.createVisit maneja datos de visita complejos', () async {
+      final complexVisitData = {
+        'date': '20-11-2025',
+        'clients': [
+          {'client_id': 'client1'},
+          {'client_id': 'client2'},
+          {'client_id': 'client3'}
+        ],
+        'notes': 'Visita de seguimiento trimestral'
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          final decodedBody = jsonDecode(request.body);
+          expect(decodedBody['date'], equals('20-11-2025'));
+          expect(decodedBody['clients'], hasLength(3));
+          expect(decodedBody['notes'], equals('Visita de seguimiento trimestral'));
+          return http.Response('', 201);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createVisit('test_token', 'test_user', complexVisitData);
+
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.createOrder incluye headers y body correctos', () async {
+      final orderData = {
+        'client_id': 'client123',
+        'vendor_id': 'vendor456',
+        'products': [
+          {
+            'product_id': 'prod1',
+            'quantity': 2,
+            'price': 75.50
+          }
+        ]
+      };
+
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/orders/create'), true);
+          expect(request.method, 'POST');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          expect(request.headers['Content-Type'], contains('application/json'));
+          expect(request.body, equals(jsonEncode(orderData)));
+          return http.Response('', 201);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createOrder('test_access_token', orderData);
+
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.createOrder devuelve false cuando API responde con error', () async {
+      final orderData = {'client_id': 'client123', 'products': []};
+
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Bad Request', 400)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      final result = await fetchData.createOrder('test_access_token', orderData);
+
+      expect(result, isFalse);
+    }
+  );
+
+  test(
+    'FetchData.createOrder maneja diferentes códigos de estado de error', () async {
+      final orderData = {'client_id': 'client123', 'products': []};
+      final testCases = [400, 401, 403, 409, 422, 500];
+
+      for (final statusCode in testCases) {
+        final mockClient = MockClient(
+          ( request ) async => http.Response('Error', statusCode)
+        );
+
+        final fetchData = FetchData.withClient(mockClient);
+        final result = await fetchData.createOrder('test_access_token', orderData);
+
+        expect(result, isFalse, reason: 'Should return false for status code $statusCode');
+      }
     }
   );
 }
