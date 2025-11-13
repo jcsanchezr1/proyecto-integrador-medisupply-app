@@ -12,6 +12,8 @@ class Client {
   final String? sSpeciality;
   final String? sApplicantName;
   final String? sApplicantEmail;
+  final double? dLatitude;
+  final double? dLongitude;
   final bool? bEnabled;
 
   Client(
@@ -28,7 +30,9 @@ class Client {
       this.sSpeciality,
       this.sApplicantName,
       this.sApplicantEmail,
-      this.bEnabled
+      this.bEnabled,
+      this.dLatitude,
+      this.dLongitude
     }
   );
 
@@ -46,7 +50,9 @@ class Client {
       sSpeciality: json['specialty'],
       sApplicantName: json['applicant_name'], 
       sApplicantEmail: json['applicant_email'],
-      bEnabled: json['enabled']
+      bEnabled: json['enabled'],
+      dLatitude: json['latitude'],
+      dLongitude: json['longitude']
     );
 
 }

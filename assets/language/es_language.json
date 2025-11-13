@@ -117,5 +117,8 @@
         "search": "Buscar cliente",
         "clients": "Clientes",
         "empty_fields": "Por favor, selecciona al menos un cliente y una fecha."
+    },
+    "visit_detail": {
+        "error": "No se pudo cargar la ruta. Intenta más tarde."
     }
 }

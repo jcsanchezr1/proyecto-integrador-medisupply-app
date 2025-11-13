@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -19,6 +21,13 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    val localPropertiesFile = rootProject.file("gradle.properties.local")
+    val localProperties = Properties()
+
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { localProperties.load(it) }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.medisupply_app"
@@ -28,6 +37,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
+        resValue("string", "google_maps_api_key", mapsApiKey)
     }
 
     buildTypes {

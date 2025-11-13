@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../classes/visit.dart';
 
-import '../../utils/colors_app.dart';
-import '../../utils/responsive_app.dart';
+import '../../pages/visits_pages/visit_detail_page.dart';
 
+import '../../utils/colors_app.dart';
 import '../../utils/texts_util.dart';
+import '../../utils/responsive_app.dart';
+import '../../utils/slide_transition.dart';
+
 import '../general_widgets/poppins_text.dart';
 
 class VisitCard extends StatelessWidget {
@@ -25,7 +28,10 @@ class VisitCard extends StatelessWidget {
   Widget build( BuildContext context ) {
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () => Navigator.push(
+        context,
+        SlidePageRoute( page: VisitDetailPage( oVisit: oVisit ) )
+      ),
       child: Container(
         color: ColorsApp.backgroundColor,
         margin: EdgeInsets.symmetric(

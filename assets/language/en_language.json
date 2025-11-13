@@ -117,5 +117,8 @@
         "search": "Search client",
         "clients": "Clients",
         "empty_fields": "Please select at least one client and a date."
+    },
+    "visit_detail": {
+        "error": "Could not load the route. Please try again later."
     }
 }
