@@ -12,10 +12,13 @@ import '../../services/fetch_data.dart';
 import '../../utils/colors_app.dart';
 import '../../utils/texts_util.dart';
 import '../../utils/responsive_app.dart';
+import '../../utils/slide_transition.dart';
 
 import '../../widgets/visits_widgets/date_filter.dart';
 import '../../widgets/visits_widgets/visit_card.dart';
 import '../../widgets/general_widgets/poppins_text.dart';
+
+import 'create_visit_page.dart';
 
 class VisitsPage extends StatefulWidget {
 
@@ -47,7 +50,11 @@ class _VisitsPageState extends State<VisitsPage> {
         sDate
       );
 
-      lVisits.sort( ( a, b ) => a.sDate.compareTo( b.sDate ) );
+      lVisits.sort((a, b) {
+        final dateA = DateFormat('dd-MM-yyyy').parse(a.sDate);
+        final dateB = DateFormat('dd-MM-yyyy').parse(b.sDate);
+        return dateA.compareTo(dateB);
+      });
 
     } catch (e) {
       lVisits = [];
@@ -69,7 +76,16 @@ class _VisitsPageState extends State<VisitsPage> {
   Widget build( BuildContext context ) => Scaffold(
     floatingActionButton: FloatingActionButton(
       backgroundColor: ColorsApp.backgroundColor,
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(
+          context,
+          SlidePageRoute( page: CreateVisitPage() )
+        ).then((bCreated) {
+          if(bCreated != null && bCreated) {
+            getVisitsByDate();
+          }
+        });
+      },
       child: const Icon(
         Icons.add_rounded,
         color: ColorsApp.primaryColor,

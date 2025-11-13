@@ -104,5 +104,18 @@
         "count_clients": "clientes",
         "count_client": "cliente",
         "date_filter": "Selecciona una fecha"
+    },
+    "new_visit": {
+        "title": "Crear visita",
+        "select_clients": "Clientes a visitar",
+        "select_date": "Fecha de la visita",
+        "create_button": "Crear visita",
+        "success_visit": "Visita creada exitosamente.",
+        "error_visit": "Ocurrió un error al crear la visita. Por favor, intenta más tarde.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "search": "Buscar cliente",
+        "clients": "Clientes",
+        "empty_fields": "Por favor, selecciona al menos un cliente y una fecha."
     }
 }

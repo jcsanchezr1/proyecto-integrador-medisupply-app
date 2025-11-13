@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: ColorsApp.backgroundColor,
         elevation: 0.0,
-        scrolledUnderElevation: 0.0,
+        scrolledUnderElevation: 0.0
       ),
       bottomNavigationBar: loginProvider.oUser!.sRole == 'Cliente' ? null : NavigationBar(
         onDestinationSelected: (int index) {

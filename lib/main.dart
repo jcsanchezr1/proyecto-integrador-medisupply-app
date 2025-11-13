@@ -16,6 +16,7 @@ import 'package:medisupply_app/src/utils/responsive_app.dart';
 
 import 'src/providers/order_provider.dart';
 import 'src/providers/login_provider.dart';
+import 'src/providers/create_visit_provider.dart';
 import 'src/providers/create_account_provider.dart';
 
 Locale _getDeviceLocale() {
@@ -114,7 +115,8 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider( create: ( _ ) => LoginProvider() ),
         ChangeNotifierProvider( create: ( _ ) => CreateAccountProvider() ),
-        ChangeNotifierProvider( create: ( _ ) => OrderProvider() )
+        ChangeNotifierProvider( create: ( _ ) => OrderProvider() ),
+        ChangeNotifierProvider( create: ( _ ) => CreateVisitProvider() )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

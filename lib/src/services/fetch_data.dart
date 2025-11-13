@@ -273,4 +273,25 @@ class FetchData {
     
   }
 
+  Future<bool> createVisit( String sAccessToken, String sUserId, Map<String, dynamic> mVisit ) async {
+
+    bool bSuccess = false;
+
+    final response = await client.post(
+      Uri.parse( '$baseUrl/sellers/$sUserId/scheduled-visits' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken',
+        'Content-Type' : 'application/json'
+      },
+      body: jsonEncode( mVisit )
+    );
+
+    if( response.statusCode == 201 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
+  }
+
 }

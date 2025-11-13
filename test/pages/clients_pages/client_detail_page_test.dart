@@ -70,6 +70,11 @@ class MockTextsUtil implements TextsUtil {
   String formatNumber(double dNumber) {
     return dNumber.toString(); // Simple mock implementation
   }
+
+  @override
+  String largeFormatLocalizedDate(BuildContext context, String sDateString) {
+    return sDateString; // Simple mock implementation
+  }
 }
 
 void main() {

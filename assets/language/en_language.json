@@ -104,5 +104,18 @@
         "count_clients": "clients",
         "count_client": "client",
         "date_filter": "Select a date"
+    },
+    "new_visit": {
+        "title": "Create visit",
+        "select_clients": "Clients to visit",
+        "select_date": "Date of the visit",
+        "create_button": "Create visit",
+        "success_visit": "Visit created successfully.",
+        "error_visit": "An error occurred while creating the visit. Please try again later.",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "search": "Search client",
+        "clients": "Clients",
+        "empty_fields": "Please select at least one client and a date."
     }
 }
