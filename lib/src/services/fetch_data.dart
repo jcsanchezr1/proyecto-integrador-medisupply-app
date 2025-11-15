@@ -116,7 +116,7 @@ class FetchData {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse( '$baseUrl/auth/user' ),
+      Uri.parse( '$baseUrl/auth/user' )
     );
 
     request.fields.addAll( {
@@ -379,6 +379,45 @@ class FetchData {
 
   List<LatLng> decodePolylineForTesting( String sEncoded ) {
     return _decodePolyline(sEncoded);
+  }
+
+  Future<bool> uploadVisitFindings(
+    String sAccessToken,
+    String sUserId,
+    String sVisitId,
+    String sClientId,
+    String sFindings,
+    File imageFile
+  ) async {
+
+    bool bSuccess = false;
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse( '$baseUrl/sellers/$sUserId/route/$sVisitId/client/$sClientId' ),
+    );
+
+    request.fields.addAll( {
+      'find' : sFindings
+    } );
+
+    request.files.add( await http.MultipartFile.fromPath(
+      'file',
+      imageFile.path
+    ) );
+    
+    request.headers.addAll( {
+      'Authorization' : 'Bearer $sAccessToken'
+    } );
+
+    final response = await client.send( request );
+
+    if( response.statusCode == 200 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
   }
 
 }

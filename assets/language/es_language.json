@@ -119,6 +119,13 @@
         "empty_fields": "Por favor, selecciona al menos un cliente y una fecha."
     },
     "visit_detail": {
-        "error": "No se pudo cargar la ruta. Intenta más tarde."
+        "error": "No se pudo cargar la ruta. Intenta más tarde.",
+        "findings_label": "Hallazgos",
+        "findings_hint": "Escribe los hallazgos tras la visita...",
+        "evidence_label": "Evidencia",
+        "upload_button": "Subir archivo",
+        "register_button": "Registrar visita",
+        "success_register": "Visita registrada exitosamente.",
+        "error_register": "Ocurrió un error al registrar la visita. Por favor, intenta más tarde."
     }
 }

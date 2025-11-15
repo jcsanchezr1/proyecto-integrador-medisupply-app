@@ -119,6 +119,13 @@
         "empty_fields": "Please select at least one client and a date."
     },
     "visit_detail": {
-        "error": "Could not load the route. Please try again later."
+        "error": "Could not load the route. Please try again later.",
+        "findings_label": "Findings",
+        "findings_hint": "Write the findings after the visit...",
+        "evidence_label": "Evidence",
+        "upload_button": "Upload file",
+        "register_button": "Register visit",
+        "success_register": "Visit registered successfully.",
+        "error_register": "An error occurred while registering the visit. Please try again later."
     }
 }

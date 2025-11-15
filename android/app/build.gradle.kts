@@ -38,7 +38,7 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: ""
+        val mapsApiKey: String = localProperties.getProperty("API_KEY_MAPS") ?: ""
         resValue("string", "google_maps_api_key", mapsApiKey)
     }
 

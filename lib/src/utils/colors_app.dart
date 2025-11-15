@@ -18,5 +18,6 @@ class ColorsApp {
   static const sucessColor = Color(0xff28D094);
   static const transitColor = Color(0xffFF6900);
   static const shadowColor = Color(0xffE9E9E9);
+  static const hintColor = Color(0xffC4C4C4);
 
 }

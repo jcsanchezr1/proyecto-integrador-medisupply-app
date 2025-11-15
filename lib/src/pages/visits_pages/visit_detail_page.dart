@@ -18,6 +18,7 @@ import '../../utils/responsive_app.dart';
 
 import '../../widgets/general_widgets/poppins_text.dart';
 import '../../widgets/general_widgets/snackbar_widget.dart';
+import '../../widgets/visits_widgets/create_visit_form.dart';
 
 class VisitDetailPage extends StatefulWidget {
 
@@ -111,7 +112,7 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
         Marker(
           markerId: MarkerId( oClient.sClientId! ),
           position: LatLng( oClient.dLatitude!, oClient.dLongitude! ),
-          infoWindow: InfoWindow( title: oClient.sName! )
+          onTap: () => _showClientBottomSheet(oClient)
         )
       );
     }
@@ -132,6 +133,20 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
     
   }
 
+  _showClientBottomSheet(Client oClient) {
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CreateVisitForm(
+        oClient: oClient,
+        sVisitId: widget.oVisit.sId
+      )
+    );
+
+  }
+  
   @override
   void initState() {
     super.initState();
