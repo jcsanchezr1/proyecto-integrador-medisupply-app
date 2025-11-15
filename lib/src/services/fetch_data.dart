@@ -328,7 +328,7 @@ class FetchData {
     
     final url = '$baseUrlMapsDirections?origin=$origin&destination=$destination&waypoints=$waypoints&key=${dotenv.env['API_KEY_MAPS']}';
 
-    final response = await http.get( Uri.parse( url ) );
+    final response = await client.get( Uri.parse( url ) );
 
     if (response.statusCode == 200) {
 
@@ -375,6 +375,10 @@ class FetchData {
       lPolyline.add(LatLng(iLat / 1E5, iLng / 1E5));
     }
     return lPolyline;
+  }
+
+  List<LatLng> decodePolylineForTesting( String sEncoded ) {
+    return _decodePolyline(sEncoded);
   }
 
 }

@@ -74,7 +74,9 @@ class _VisitsPageState extends State<VisitsPage> {
 
   @override
   Widget build( BuildContext context ) => Scaffold(
+    key: const Key('visits_page'),
     floatingActionButton: FloatingActionButton(
+      key: const Key('create_visit_fab'),
       backgroundColor: ColorsApp.backgroundColor,
       onPressed: () {
         Navigator.push(

@@ -51,6 +51,8 @@ class _CreateVisitPageState extends State<CreateVisitPage> {
     
     final lClients = await oFetchData.getAssignedClients( loginProvider.oUser!.sAccessToken!, loginProvider.oUser!.sId! );
 
+    if (!mounted) return;
+
     createVisitProvider.setClients( lClients );
 
     final items = lClients.map((client) => MultiSelectItem<Client>( client, client.sName! )).toList();
@@ -118,6 +120,7 @@ class _CreateVisitPageState extends State<CreateVisitPage> {
   Widget build( BuildContext context ) {
 
     return Scaffold(
+      key: const Key('create_visit_page'),
       appBar: AppBar(
         title: PoppinsText(
           sText: TextsUtil.of(context)!.getText( 'new_visit.title' ),
@@ -135,6 +138,7 @@ class _CreateVisitPageState extends State<CreateVisitPage> {
           DateVisit(),
           SizedBox( height: ResponsiveApp.dHeight( 40.0 ) ),
           MainButton(
+            key: const Key('create_visit_button'),
             sLabel: TextsUtil.of(context)!.getText( 'new_visit.create_button' ),
             onPressed: createVisit
           )

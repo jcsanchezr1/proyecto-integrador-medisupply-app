@@ -87,7 +87,7 @@ class MockTextsUtil extends TextsUtil {
     mLocalizedStrings = {
       'new_visit': {
         'title': 'Create Visit',
-        'create_button': 'Create Visit',
+        'create_button': 'Create',
         'success_visit': 'Visit created successfully',
         'error_visit': 'Error creating visit',
         'empty_fields': 'Please fill all fields',
@@ -165,7 +165,8 @@ void main() {
       // Assert
       expect(find.byType(Scaffold), findsOneWidget);
       expect(find.byType(AppBar), findsOneWidget);
-      expect(find.text('Create Visit'), findsNWidgets(2)); // Title and button
+      expect(find.text('Create Visit'), findsOneWidget); // Title in app bar
+      expect(find.text('Create'), findsOneWidget); // Button text
       expect(find.byType(MainButton), findsOneWidget);
     });
 
@@ -416,7 +417,8 @@ void main() {
       expect(find.byType(MainButton), findsOneWidget);
 
       // Check that the main button contains the correct text
-      expect(find.text('Create Visit'), findsNWidgets(2)); // Title and button
+      expect(find.text('Create Visit'), findsOneWidget); // Title in app bar
+      expect(find.text('Create'), findsOneWidget); // Button text
     });
 
     testWidgets('app bar has correct title and styling', (WidgetTester tester) async {
@@ -436,7 +438,7 @@ void main() {
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect(appBar.backgroundColor, ColorsApp.backgroundColor);
       expect(appBar.scrolledUnderElevation, 0.0);
-      expect(find.text('Create Visit'), findsNWidgets(2)); // Title in app bar
+      expect(find.text('Create Visit'), findsOneWidget); // Title in app bar
     });
   });
 }

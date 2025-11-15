@@ -109,7 +109,7 @@
         "title": "Create visit",
         "select_clients": "Clients to visit",
         "select_date": "Date of the visit",
-        "create_button": "Create visit",
+        "create_button": "Create",
         "success_visit": "Visit created successfully.",
         "error_visit": "An error occurred while creating the visit. Please try again later.",
         "cancel": "Cancel",

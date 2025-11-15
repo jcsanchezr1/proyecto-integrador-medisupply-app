@@ -22,11 +22,13 @@ import '../../widgets/general_widgets/snackbar_widget.dart';
 class VisitDetailPage extends StatefulWidget {
 
   final Visit oVisit;
+  final FetchData? fetchData; // For testing
   
   const VisitDetailPage(
     {
       super.key,
-      required this.oVisit
+      required this.oVisit,
+      this.fetchData
     }
   );
 
@@ -38,7 +40,7 @@ class VisitDetailPage extends StatefulWidget {
 class _VisitDetailPageState extends State<VisitDetailPage> {
 
   late GoogleMapController _mapController;
-  final oFetchData = FetchData();
+  late final FetchData oFetchData;
 
   bool bLoading = true;
   VisitDetail oVisitDetail = VisitDetail();
@@ -75,7 +77,7 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
     if( oVisitDetail.sId == null ) {
       if( !mounted ) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        snackBarWidget( sMessage: TextsUtil.of(context)!.getText( 'visit_detail.error' ) ),
+        snackBarWidget( sMessage: (TextsUtil.of(context) ?? Provider.of<TextsUtil>(context, listen: false)).getText( 'visit_detail.error' ) ),
       );
       setState( () => bLoading = false );
       return;
@@ -133,6 +135,7 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
   @override
   void initState() {
     super.initState();
+    oFetchData = widget.fetchData ?? FetchData();
     getRoute();
   }
 
@@ -140,9 +143,10 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
   Widget build( BuildContext context ) {
 
     return Scaffold(
+      key: const Key('visit_detail_page'),
       appBar: AppBar(
         title: PoppinsText(
-          sText: TextsUtil.of(context)!.formatLocalizedDate(
+          sText: (TextsUtil.of(context) ?? Provider.of<TextsUtil>(context, listen: false)).formatLocalizedDate(
             context,
             DateFormat( "yyyy-MM-dd" ).format( DateFormat( "dd-MM-yyyy" ).parse( widget.oVisit.sDate ) )
           ),

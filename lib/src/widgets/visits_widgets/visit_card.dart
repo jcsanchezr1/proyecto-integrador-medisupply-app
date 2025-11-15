@@ -28,6 +28,7 @@ class VisitCard extends StatelessWidget {
   Widget build( BuildContext context ) {
 
     return GestureDetector(
+      key: Key('visit_card_${oVisit.sId}'),
       onTap: () => Navigator.push(
         context,
         SlidePageRoute( page: VisitDetailPage( oVisit: oVisit ) )
