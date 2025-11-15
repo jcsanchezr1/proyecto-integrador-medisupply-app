@@ -3,47 +3,46 @@ name: CI - Integración continua
 on:
   push:
     branches:
-      - '**'  # Se ejecuta en cualquier rama
+      - '**'
+
 jobs:
   build-and-test:
     if: contains(github.event.head_commit.message, '[PIPELINE]')
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar el código
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
 
-      # 2. Instalar Flutter
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.5'
-      
-      # 3. Crear .env temporal
+
+      # Crear gradle.properties.local
+      - name: Crear gradle.properties.local temporal
+        run: |
+          echo "API_KEY_MAPS=${{ secrets.MAPS_API_KEY }}" > android/gradle.properties.local
+
+      # Crear .env temporal
       - name: Crear .env temporal
         run: |
-          echo "API_KEY=${{ secrets.MAPS_API_KEY }}" > .env
+          echo "API_KEY_MAPS=${{ secrets.MAPS_API_KEY }}" > .env
 
-      # 4. Instalar dependencias
       - name: Instalar dependencias
         run: flutter pub get
 
-      # 5. Ejecutar tests
       - name: Ejecutar tests
         run: flutter test
 
-      # 6. Hacer commit automático de cambios en pubspec.lock
       - name: Commit local changes (pubspec.lock)
         run: |
           git add pubspec.lock
           git commit -m "Update pubspec.lock from CI" || echo "No changes to commit"
 
-      # 7. Merge automático a develop si todo pasa
       - name: Merge a develop
         run: |
           git config user.name "CI Bot"
           git config user.email "ci@bot.com"
-          # Empujar los commits de la rama actual directamente a develop
           git push origin HEAD:develop
