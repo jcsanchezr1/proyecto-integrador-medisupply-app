@@ -15,12 +15,14 @@ class VisitCard extends StatelessWidget {
 
   final Visit oVisit;
   final int iIndex;
+  final bool testMode; // For testing - enables automatic bottom sheet opening
 
   const VisitCard(
     {
       super.key,
       required this.oVisit,
-      required this.iIndex
+      required this.iIndex,
+      this.testMode = false
     }
   );
 
@@ -31,7 +33,7 @@ class VisitCard extends StatelessWidget {
       key: Key('visit_card_${oVisit.sId}'),
       onTap: () => Navigator.push(
         context,
-        SlidePageRoute( page: VisitDetailPage( oVisit: oVisit ) )
+        SlidePageRoute( page: VisitDetailPage( oVisit: oVisit, testMode: testMode ) )
       ),
       child: Container(
         color: ColorsApp.backgroundColor,

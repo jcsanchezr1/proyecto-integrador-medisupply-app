@@ -1822,4 +1822,223 @@ void main() {
       expect(result.isNotEmpty, isTrue);
     }
   );
+
+  test(
+    'FetchData.uploadVisitFindings devuelve true cuando API responde 200', () async {
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.url.toString().contains('/sellers/test_user_id/route/test_visit_id/client/test_client_id'), true);
+          expect(request.method, 'POST');
+          expect(request.headers['Authorization'], equals('Bearer test_access_token'));
+          expect(request.headers['Content-Type'], contains('multipart/form-data'));
+          return http.Response('', 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      // Create a temporary test file
+      final tempDir = Directory.systemTemp;
+      final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+      final result = await fetchData.uploadVisitFindings(
+        'test_access_token',
+        'test_user_id',
+        'test_visit_id',
+        'test_client_id',
+        'Test findings',
+        testFile
+      );
+
+      // Clean up
+      await testFile.delete();
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings devuelve false cuando API responde con error', () async {
+      final mockClient = MockClient(
+        ( request ) async => http.Response('Bad Request', 400)
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      // Create a temporary test file
+      final tempDir = Directory.systemTemp;
+      final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+      final result = await fetchData.uploadVisitFindings(
+        'test_access_token',
+        'test_user_id',
+        'test_visit_id',
+        'test_client_id',
+        'Test findings',
+        testFile
+      );
+
+      // Clean up
+      await testFile.delete();
+      expect(result, isFalse);
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings maneja diferentes códigos de estado de error', () async {
+      final testCases = [400, 401, 403, 409, 422, 500];
+      // Create a temporary test file
+      final tempDir = Directory.systemTemp;
+      final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+      for (final statusCode in testCases) {
+        final mockClient = MockClient(
+          ( request ) async => http.Response('Error', statusCode)
+        );
+
+        final fetchData = FetchData.withClient(mockClient);
+        final result = await fetchData.uploadVisitFindings(
+          'test_access_token',
+          'test_user_id',
+          'test_visit_id',
+          'test_client_id',
+          'Test findings',
+          testFile
+        );
+
+        expect(result, isFalse, reason: 'Should return false for status code $statusCode');
+      }
+
+      // Clean up
+      await testFile.delete();
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings incluye headers correctos en la petición', () async {
+      final mockClient = MockClient(
+        ( request ) async {
+          expect(request.headers['Authorization'], equals('Bearer test_token'));
+          expect(request.headers['Content-Type'], contains('multipart/form-data'));
+          expect(request.url.toString().contains('/sellers/test_user/route/test_visit/client/test_client'), true);
+          return http.Response('', 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      // Create a temporary test file
+      final tempDir = Directory.systemTemp;
+      final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+      final result = await fetchData.uploadVisitFindings(
+        'test_token',
+        'test_user',
+        'test_visit',
+        'test_client',
+        'Findings text',
+        testFile
+      );
+
+      // Clean up
+      await testFile.delete();
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings incluye archivo y campos correctamente', () async {
+      final mockClient = MockClient(
+        ( request ) async {
+          // Verificar que es multipart
+          expect(request.headers['Content-Type'], contains('multipart/form-data'));
+          // Verificar que contiene el archivo (esto es limitado con MockClient)
+          expect(request.body, contains('file'));
+          return http.Response('', 200);
+        }
+      );
+
+      final fetchData = FetchData.withClient(mockClient);
+      // Create a temporary test file
+      final tempDir = Directory.systemTemp;
+      final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+      final result = await fetchData.uploadVisitFindings(
+        'test_access_token',
+        'test_user_id',
+        'test_visit_id',
+        'test_client_id',
+        'Detailed findings about the visit',
+        testFile
+      );
+
+      // Clean up
+      await testFile.delete();
+      expect(result, isTrue);
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings maneja diferentes tipos de archivo', () async {
+      final fileExtensions = ['.jpg', '.png', '.jpeg', '.gif'];
+
+      for (final extension in fileExtensions) {
+        final mockClient = MockClient(
+          ( request ) async => http.Response('', 200)
+        );
+
+        final fetchData = FetchData.withClient(mockClient);
+        // Create a temporary test file with different extension
+        final tempDir = Directory.systemTemp;
+        final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}$extension');
+        await testFile.writeAsBytes([1, 2, 3, 4, 5]); // Write some dummy data
+
+        final result = await fetchData.uploadVisitFindings(
+          'test_access_token',
+          'test_user_id',
+          'test_visit_id',
+          'test_client_id',
+          'Test findings',
+          testFile
+        );
+
+        // Clean up
+        await testFile.delete();
+        expect(result, isTrue, reason: 'Should handle $extension files');
+      }
+    }
+  );
+
+  test(
+    'FetchData.uploadVisitFindings maneja diferentes tamaños de archivo', () async {
+      final fileSizes = [0, 1024, 1024 * 1024]; // 0 bytes, 1KB, 1MB
+
+      for (final size in fileSizes) {
+        final mockClient = MockClient(
+          ( request ) async => http.Response('', 200)
+        );
+
+        final fetchData = FetchData.withClient(mockClient);
+        // Create a temporary test file with different sizes
+        final tempDir = Directory.systemTemp;
+        final testFile = File('${tempDir.path}/test_image_${DateTime.now().millisecondsSinceEpoch}_$size.jpg');
+        final data = List<int>.filled(size, 42); // Fill with dummy data
+        await testFile.writeAsBytes(data);
+
+        final result = await fetchData.uploadVisitFindings(
+          'test_access_token',
+          'test_user_id',
+          'test_visit_id',
+          'test_client_id',
+          'Test findings',
+          testFile
+        );
+
+        // Clean up
+        await testFile.delete();
+        expect(result, isTrue, reason: 'Should handle files of size $size bytes');
+      }
+    }
+  );
 }

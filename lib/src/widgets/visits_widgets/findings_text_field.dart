@@ -28,6 +28,7 @@ class _FindingsTextFieldState extends State<FindingsTextField> {
   Widget build( BuildContext context ) {
 
     return TextFormField(
+      key: const Key('findings_text_field'),
       controller: widget.controller,
       maxLines: 8,
       style: GoogleFonts.poppins(

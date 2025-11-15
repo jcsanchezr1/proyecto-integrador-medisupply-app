@@ -24,12 +24,14 @@ class VisitDetailPage extends StatefulWidget {
 
   final Visit oVisit;
   final FetchData? fetchData; // For testing
+  final bool testMode; // For testing - allows direct form opening
   
   const VisitDetailPage(
     {
       super.key,
       required this.oVisit,
-      this.fetchData
+      this.fetchData,
+      this.testMode = false
     }
   );
 
@@ -151,7 +153,14 @@ class _VisitDetailPageState extends State<VisitDetailPage> {
   void initState() {
     super.initState();
     oFetchData = widget.fetchData ?? FetchData();
-    getRoute();
+    getRoute().then((_) {
+      // En modo test, abrir automáticamente el formulario con el primer cliente
+      if (widget.testMode && oVisitDetail.lClients != null && oVisitDetail.lClients!.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showClientBottomSheet(oVisitDetail.lClients!.first);
+        });
+      }
+    });
   }
 
   @override
