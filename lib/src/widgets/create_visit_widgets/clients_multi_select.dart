@@ -28,7 +28,6 @@ class _ClientsMultiSelectState extends State<ClientsMultiSelect> {
     final createVisitProvider = Provider.of<CreateVisitProvider>( context );
 
     return Container(
-      height: ResponsiveApp.dHeight( 48.0 ),
       margin: EdgeInsets.symmetric(
         horizontal: ResponsiveApp.dWidth( 24.0 ),
         vertical: ResponsiveApp.dHeight( 12.0 )

@@ -125,7 +125,8 @@ class _CreateVisitFormState extends State<CreateVisitForm> {
                       sText: widget.oClient.sName ?? '',
                       dFontSize: ResponsiveApp.dSize( 18.0 ),
                       fontWeight: FontWeight.w500,
-                      colorText: ColorsApp.secondaryColor
+                      colorText: ColorsApp.secondaryColor,
+                      iMaxLines: 2
                     )
                   ),
                   SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ),
@@ -174,7 +175,7 @@ class _CreateVisitFormState extends State<CreateVisitForm> {
               SizedBox( height: ResponsiveApp.dHeight( 24.0 ) ),
               ButtonFilePicker(
                 sLabel: TextsUtil.of(context)!.getText('visit_detail.evidence_label'),
-                lAllowedExtensions: ['jpg', 'png']
+                lAllowedExtensions: ['mp4']
               ),
               SizedBox( height: ResponsiveApp.dHeight( 40.0 ) ),
               MainButton(

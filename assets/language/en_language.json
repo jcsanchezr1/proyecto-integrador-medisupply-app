@@ -1,6 +1,7 @@
 {
     "transversal" : {
-        "upload_button" : "Upload file"
+        "upload_button" : "Upload file",
+        "error_file" : "The selected file exceeds the maximum size of 30MB."
     },
     "login" : {
         "title" : "Welcome!",

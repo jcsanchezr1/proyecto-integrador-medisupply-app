@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -16,7 +17,6 @@ import 'package:http/http.dart' as http;
 class FetchData {
 
   final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
-  //final baseUrl = 'http://192.168.18.23:8082';
   final baseUrlMaps = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
   final baseUrlMapsDirections = 'https://maps.googleapis.com/maps/api/directions/json';
 
@@ -387,7 +387,7 @@ class FetchData {
     String sVisitId,
     String sClientId,
     String sFindings,
-    File imageFile
+    File videoFile
   ) async {
 
     bool bSuccess = false;
@@ -403,7 +403,8 @@ class FetchData {
 
     request.files.add( await http.MultipartFile.fromPath(
       'file',
-      imageFile.path
+      videoFile.path,
+      contentType: MediaType('video', 'mp4')
     ) );
     
     request.headers.addAll( {
