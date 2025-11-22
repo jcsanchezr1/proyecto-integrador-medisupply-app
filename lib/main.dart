@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -16,6 +17,7 @@ import 'package:medisupply_app/src/utils/responsive_app.dart';
 
 import 'src/providers/order_provider.dart';
 import 'src/providers/login_provider.dart';
+import 'src/providers/create_visit_provider.dart';
 import 'src/providers/create_account_provider.dart';
 
 Locale _getDeviceLocale() {
@@ -46,6 +48,8 @@ Future<Locale> _getInitialLocale() async {
 void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
   
   Locale deviceLocale = await _getInitialLocale();
 
@@ -114,7 +118,8 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider( create: ( _ ) => LoginProvider() ),
         ChangeNotifierProvider( create: ( _ ) => CreateAccountProvider() ),
-        ChangeNotifierProvider( create: ( _ ) => OrderProvider() )
+        ChangeNotifierProvider( create: ( _ ) => OrderProvider() ),
+        ChangeNotifierProvider( create: ( _ ) => CreateVisitProvider() )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -126,7 +131,8 @@ class _MyAppState extends State<MyApp> {
             cursorColor: ColorsApp.secondaryColor,
             selectionColor: ColorsApp.primaryColor.withValues( alpha: 0.2 ),
             selectionHandleColor: ColorsApp.primaryColor
-          )
+          ),
+          colorScheme: ColorScheme.light( primary: ColorsApp.primaryColor ),
         ),
         locale: _currentLocale,
         localizationsDelegates: [

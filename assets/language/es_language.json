@@ -1,6 +1,7 @@
 {
     "transversal" : {
-        "upload_button" : "Subir archivo"
+        "upload_button" : "Subir archivo",
+        "error_file" : "El archivo seleccionado excede el tamaño máximo de 30MB."
     },
     "login" : {
         "title" : "¡Bienvenido!",
@@ -97,5 +98,35 @@
     "clients": {
         "title": "Mis clientes",
         "no_clients": "No tienes clientes asignados aún."
+    },
+    "visits": {
+        "title": "Visitas programadas",
+        "no_visits": "No tienes visitas programadas.",
+        "count_clients": "clientes",
+        "count_client": "cliente",
+        "date_filter": "Selecciona una fecha"
+    },
+    "new_visit": {
+        "title": "Crear visita",
+        "select_clients": "Clientes a visitar",
+        "select_date": "Fecha de la visita",
+        "create_button": "Crear",
+        "success_visit": "Visita creada exitosamente.",
+        "error_visit": "Ocurrió un error al crear la visita. Por favor, intenta más tarde.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "search": "Buscar cliente",
+        "clients": "Clientes",
+        "empty_fields": "Por favor, selecciona al menos un cliente y una fecha."
+    },
+    "visit_detail": {
+        "error": "No se pudo cargar la ruta. Intenta más tarde.",
+        "findings_label": "Hallazgos",
+        "findings_hint": "Escribe los hallazgos tras la visita...",
+        "evidence_label": "Evidencia",
+        "upload_button": "Subir archivo",
+        "register_button": "Registrar visita",
+        "success_register": "Visita registrada exitosamente.",
+        "error_register": "Ocurrió un error al registrar la visita. Por favor, intenta más tarde."
     }
 }

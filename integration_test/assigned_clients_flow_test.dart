@@ -37,7 +37,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para splash
 
       // === PASO 1: LOGIN COMO USUARIO DE VENTAS ===
-      const email = 'ventas@correo.com';
+      const email = 'sergio.celis@gmail.com';
       const password = 'AugustoCelis13*';
 
       // Esperar campos de login
@@ -97,7 +97,7 @@ void main() {
 
       // Verificar que se muestra lista de clientes O mensaje de vacío
       final hasClients = find.byType(ClientCard).evaluate().isNotEmpty;
-      final hasEmptyMessage = find.textContaining('No Clients Assigned').evaluate().isNotEmpty;
+      final hasEmptyMessage = find.textContaining('No tienes clientes asignados').evaluate().isNotEmpty;
 
       expect(hasClients || hasEmptyMessage, isTrue,
         reason: 'Debería mostrar clientes asignados o mensaje de que no hay clientes asignados');
@@ -146,8 +146,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // Login como usuario de ventas
-      const email = 'ventas@correo.com';
-      const password = 'AugustoCelis13*';
+      const email = 'medisupply05@gmail.com';
+      const password = 'Admin123456';
 
       await waitForWidget(tester, find.byKey(const Key('email_field')));
       await tester.enterText(find.byKey(const Key('email_field')), email);

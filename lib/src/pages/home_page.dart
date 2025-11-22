@@ -13,6 +13,7 @@ import '../widgets/general_widgets/poppins_text.dart';
 import '../widgets/general_widgets/drawer_menu_widget.dart';
 
 import 'orders_pages/orders_page.dart';
+import 'visits_pages/visits_page.dart';
 import 'clients_pages/clients_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   int iIndexNavigation = 0;
 
-  List<Widget> lPages = [ const OrdersPage(), ClientsPage(), Container() ];
+  List<Widget> lPages = [ const OrdersPage(), ClientsPage(), VisitsPage() ];
 
   @override
   Widget build( BuildContext context ) {
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
         ),
         title: PoppinsText(
           sText: TextsUtil.of(context)?.getText(
-            iIndexNavigation == 0 ? 'orders.title' : 'clients.title'
+            iIndexNavigation == 0 ? 'orders.title' : iIndexNavigation == 1 ? 'clients.title' : 'visits.title'
           ) ?? 'Home',
           dFontSize: ResponsiveApp.dSize( 20.0 ),
           colorText: ColorsApp.secondaryColor,
@@ -58,7 +59,7 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: ColorsApp.backgroundColor,
         elevation: 0.0,
-        scrolledUnderElevation: 0.0,
+        scrolledUnderElevation: 0.0
       ),
       bottomNavigationBar: loginProvider.oUser!.sRole == 'Cliente' ? null : NavigationBar(
         onDestinationSelected: (int index) {

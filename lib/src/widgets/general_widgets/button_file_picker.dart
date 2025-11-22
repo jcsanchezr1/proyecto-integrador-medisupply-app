@@ -17,6 +17,7 @@ class ButtonFilePicker extends StatefulWidget {
 
   final String sLabel;
   final List<String> lAllowedExtensions;
+
   final Future<FilePickerResult?> Function({
     FileType type,
     List<String>? allowedExtensions,
@@ -39,6 +40,9 @@ class ButtonFilePicker extends StatefulWidget {
 class _ButtonFilePickerState extends State<ButtonFilePicker> {
 
   File? selectedImage;
+  String sExtension = '';
+  bool bErrorVideo = false;
+  bool bLoading = false;
 
   @override
   Widget build( BuildContext context ) {
@@ -53,58 +57,82 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              PoppinsText(
-                sText: widget.sLabel, 
-                dFontSize: ResponsiveApp.dSize( 13.0 ),
-                colorText: ColorsApp.textColor
-              ),
-              SizedBox( height: ResponsiveApp.dHeight( 8.0 ) ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsApp.sucessColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular( 12.0 )
+              children: [
+                PoppinsText(
+                  sText: widget.sLabel, 
+                  dFontSize: ResponsiveApp.dSize( 13.0 ),
+                  colorText: ColorsApp.textColor
+                ),
+                SizedBox( height: ResponsiveApp.dHeight( 8.0 ) ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorsApp.sucessColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular( 12.0 )
+                    )
+                  ),
+                  onPressed: () async {
+                    setState( () {
+                      bErrorVideo = false;
+                      bLoading = true;
+                    } );
+                    final result = widget.filePickerCallback != null
+                      ? await widget.filePickerCallback!(
+                          type: FileType.custom,
+                          allowedExtensions: widget.lAllowedExtensions
+                        )
+                      : await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: widget.lAllowedExtensions
+                        );
+                    if ( result != null && result.files.isNotEmpty && result.files.first.path != null ) {
+                      if( result.files.first.size > 30 * 1024 * 1024 ) {
+                        setState( () {
+                          bErrorVideo = true;
+                          bLoading = false;
+                        } );
+                        return;
+                      }
+                      sExtension = result.files.first.extension ?? '';
+                      setState( () {
+                        selectedImage = File( result.files.first.path! );
+                        bLoading = false;
+                      } );
+                      createAccountProvider.logoFile = selectedImage!;
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.upload_rounded,
+                        color: ColorsApp.secondaryTextColor
+                      ),
+                      SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ), 
+                      Flexible(
+                        child: PoppinsText(
+                          sText: TextsUtil.of( context )?.getText( 'transversal.upload_button' ) ?? 'Upload',
+                          colorText: ColorsApp.secondaryTextColor,
+                          dFontSize: ResponsiveApp.dSize( 14.0 ),
+                          fontWeight: FontWeight.w500
+                        )
+                      )
+                    ]
                   )
                 ),
-                onPressed: () async {
-                  final result = widget.filePickerCallback != null
-                    ? await widget.filePickerCallback!(
-                        type: FileType.custom,
-                        allowedExtensions: widget.lAllowedExtensions
-                      )
-                    : await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: widget.lAllowedExtensions
-                      );
-                  if ( result != null && result.files.isNotEmpty && result.files.first.path != null ) {
-                    setState( () => selectedImage = File( result.files.first.path! ) );
-                    createAccountProvider.logoFile = selectedImage!;
-                  }
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.upload_rounded,
-                      color: ColorsApp.secondaryTextColor
-                    ),
-                    SizedBox( width: ResponsiveApp.dWidth( 8.0 ) ), 
-                    Flexible(
-                      child: PoppinsText(
-                        sText: TextsUtil.of( context )?.getText( 'transversal.upload_button' ) ?? 'Upload',
-                         colorText: ColorsApp.secondaryTextColor,
-                         dFontSize: ResponsiveApp.dSize( 14.0 ),
-                         fontWeight: FontWeight.w500
-                      ),
-                    )
-                  ]
+                Visibility(
+                  visible: bErrorVideo,
+                  child: PoppinsText(
+                    sText: TextsUtil.of( context )?.getText( 'transversal.error_file' ),
+                    dFontSize: ResponsiveApp.dSize( 12.0 ),
+                    colorText: ColorsApp.errorColor,
+                    iMaxLines: 2
+                  )
                 )
-              )
-            ]
+              ]
+            )
           ),
-        ),
-          if (selectedImage?.path != null) Container(
+          bLoading ? CircularProgressIndicator( color: ColorsApp.primaryColor ) : (selectedImage?.path != null) ? Container(
             margin: EdgeInsets.only( left: ResponsiveApp.dWidth( 16.0 ) ),
             clipBehavior: Clip.antiAlias,
             width: ResponsiveApp.dWidth( 64.0 ),
@@ -112,11 +140,14 @@ class _ButtonFilePickerState extends State<ButtonFilePicker> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular( 12.0 ),
             ),
-            child: Image.file(  
+            child: sExtension == 'mp4' ? Image.asset(
+              'assets/images/video-placeholder.png',
+              fit: BoxFit.cover
+            ) : Image.file(  
               selectedImage!,
               fit: BoxFit.cover
             )
-          ) else SizedBox()
+          ) : SizedBox()
         ]
       )
     );

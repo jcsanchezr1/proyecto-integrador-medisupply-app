@@ -16,6 +16,8 @@ class MockFilePicker {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
   }) async {
+    // Simulate async delay like real file picker
+    await Future.delayed(const Duration(milliseconds: 100));
     return mockResult;
   }
 }
@@ -39,7 +41,10 @@ void main() {
       providers: [
         ChangeNotifierProvider<CreateAccountProvider>.value(value: provider),
         Provider<TextsUtil>.value(value: TextsUtil(const Locale('es'))..mLocalizedStrings = {
-          'transversal': {'upload_button': 'Subir archivo'}
+          'transversal': {
+            'upload_button': 'Subir archivo',
+            'error_file': 'The selected file exceeds the maximum size of 30MB.'
+          }
         }),
       ],
       child: MaterialApp(
@@ -168,7 +173,8 @@ void main() {
 
       // Tap the upload button
       await tester.tap(find.byType(ElevatedButton));
-      await tester.pumpAndSettle();
+      await tester.pump(); // Process the tap
+      await tester.pump(const Duration(milliseconds: 200)); // Wait for async operation
 
       // No image should be shown
       expect(find.byType(Image), findsNothing);
@@ -186,7 +192,8 @@ void main() {
 
       // Tap the upload button
       await tester.tap(find.byType(ElevatedButton));
-      await tester.pumpAndSettle();
+      await tester.pump(); // Process the tap
+      await tester.pump(const Duration(milliseconds: 200)); // Wait for async operation
 
       // No image should be shown
       expect(find.byType(Image), findsNothing);

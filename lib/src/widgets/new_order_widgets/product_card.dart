@@ -18,8 +18,9 @@ import '../general_widgets/poppins_text.dart';
 class ProductCard extends StatelessWidget {
 
   final Product oProduct;
+  final VoidCallback? onTap;
 
-  const ProductCard( { super.key, required this.oProduct } );
+  const ProductCard( { super.key, required this.oProduct, this.onTap } );
 
   @override
   Widget build( BuildContext context ) {
@@ -27,6 +28,22 @@ class ProductCard extends StatelessWidget {
     final orderProvider = Provider.of<OrderProvider>( context );
 
     return GestureDetector(
+      onTap: onTap ?? () {
+
+        final existingProduct = orderProvider.lOrderProducts.firstWhere(
+          (item) => item.iId == oProduct.iId,
+          orElse: () => Product()
+        );
+
+        if (existingProduct.sName != null) {
+          orderProvider.dQuantity = existingProduct.dQuantity ?? 1.0;
+        } else {
+          orderProvider.resetQuantity();
+        }
+
+        Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) );
+
+      },
       child: Padding(
         padding: EdgeInsets.only( right: 24.0 ),
         child: SizedBox(
@@ -49,7 +66,7 @@ class ProductCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   placeholder: const AssetImage( 'assets/images/placeholder.png' ),
                   imageErrorBuilder: (context, error, stackTrace) => Image.asset( 'assets/images/placeholder.png', fit: BoxFit.cover ),
-                  image: NetworkImage( oProduct.sImage ?? '' )
+                  image: (oProduct.sImage != null && oProduct.sImage!.isNotEmpty) ? NetworkImage(oProduct.sImage!) : AssetImage('assets/images/placeholder.png')
                 )
               ),
               SizedBox( height: ResponsiveApp.dHeight( 1.0 ) ),
@@ -76,23 +93,7 @@ class ProductCard extends StatelessWidget {
             ]
           )
         )
-      ),
-      onTap: () {
-
-        final existingProduct = orderProvider.lOrderProducts.firstWhere(
-          (item) => item.iId == oProduct.iId,
-          orElse: () => Product()
-        );
-
-        if (existingProduct.sName != null) {
-          orderProvider.dQuantity = existingProduct.dQuantity ?? 1.0;
-        } else {
-          orderProvider.resetQuantity();
-        }
-
-        Navigator.push( context, SlidePageRoute( page: ProductDetailPage( oProduct: oProduct ) ) );
-
-      }
+      )
     );
   
   }

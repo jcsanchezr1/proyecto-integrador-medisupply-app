@@ -81,6 +81,29 @@ class TextsUtil {
     }
   }
 
+  String largeFormatLocalizedDate( BuildContext context, String sDateString ) {
+    try {
+      DateTime date;
+
+      if (RegExp(r'^\d{2}-\d{2}-\d{4}$').hasMatch(sDateString)) {
+        date = DateFormat('dd-MM-yyyy').parse(sDateString);
+      } else {
+        date = DateTime.parse(sDateString);
+      }
+
+      final textsUtil = TextsUtil.of(context);
+      final languageCode = textsUtil?.locale.languageCode ?? Localizations.localeOf(context).languageCode;
+
+      final formatter = DateFormat('MMMM dd, yyyy', languageCode);
+
+      final formatted = formatter.format(date);
+      return formatted[0].toUpperCase() + formatted.substring(1);
+      
+    } catch (e) {
+      return sDateString;
+    }
+  }
+
   Color getStatusColor(String sStatus) {
     switch (sStatus.toLowerCase()) {
       case 'recibido':

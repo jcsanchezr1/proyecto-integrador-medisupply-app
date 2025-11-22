@@ -50,8 +50,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   decoration: BoxDecoration( borderRadius: BorderRadius.circular( 16.0 ) ),
                   child: FadeInImage(
                     placeholder: AssetImage('assets/images/placeholder.png'),
-                    image: NetworkImage(widget.oProduct.sImage ?? ''),
-                    imageErrorBuilder: (context, error, stackTrace) => Image.asset('assets/images/placeholder.png'),
+                    image: (widget.oProduct.sImage != null && widget.oProduct.sImage!.isNotEmpty) ? NetworkImage(widget.oProduct.sImage!) : AssetImage('assets/images/placeholder.png'),
+                    imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/placeholder.png',
+                      width: ResponsiveApp.dWidth( 312.0 ),
+                      height: ResponsiveApp.dWidth( 312.0 )
+                    ),
                     width: ResponsiveApp.dWidth( 312.0 ),
                     height: ResponsiveApp.dWidth( 312.0 ),
                     fit: BoxFit.cover

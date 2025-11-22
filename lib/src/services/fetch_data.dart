@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:medisupply_app/src/classes/client.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../classes/user.dart';
+import '../classes/visit.dart';
 import '../classes/order.dart';
+import '../classes/client.dart';
+import '../classes/visit_detail.dart';
 import '../classes/products_group.dart';
 
 import 'package:http/http.dart' as http;
@@ -13,8 +17,8 @@ import 'package:http/http.dart' as http;
 class FetchData {
 
   final baseUrl = 'https://medisupply-gateway-gw-d7fde8rj.uc.gateway.dev';
-  //final baseUrl = 'http://192.168.18.23:8082';
   final baseUrlMaps = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
+  final baseUrlMapsDirections = 'https://maps.googleapis.com/maps/api/directions/json';
 
   final http.Client client;
 
@@ -112,7 +116,7 @@ class FetchData {
 
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse( '$baseUrl/auth/user' ),
+      Uri.parse( '$baseUrl/auth/user' )
     );
 
     request.fields.addAll( {
@@ -245,6 +249,176 @@ class FetchData {
 
     return lClients;
     
+  }
+
+  Future<List<Visit>> getVisitsByDate( String sAccessToken, String sUserId, String sDate ) async {
+
+    List<Visit> lVisits = [];
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/sellers/$sUserId/scheduled-visits?date=$sDate' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      for( var mVisit in mResponse['data'] ) {
+        lVisits.add( Visit.fromJson( mVisit ) );
+      }
+
+    }
+
+    return lVisits;
+    
+  }
+
+  Future<bool> createVisit( String sAccessToken, String sUserId, Map<String, dynamic> mVisit ) async {
+
+    bool bSuccess = false;
+
+    final response = await client.post(
+      Uri.parse( '$baseUrl/sellers/$sUserId/scheduled-visits' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken',
+        'Content-Type' : 'application/json'
+      },
+      body: jsonEncode( mVisit )
+    );
+
+    if( response.statusCode == 201 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
+  }
+
+  Future<VisitDetail> getVisitDetail( String sAccessToken, String sUserId, String sVisitId ) async {
+
+    VisitDetail oVisitDetail = VisitDetail();
+
+    final response = await client.get(
+      Uri.parse( '$baseUrl/sellers/$sUserId/route/$sVisitId' ),
+      headers: {
+        'Authorization' : 'Bearer $sAccessToken'
+      }
+    );
+
+    if( response.statusCode == 200 ) {
+
+      final mResponse = jsonDecode( utf8.decode( response.bodyBytes ) );
+
+      oVisitDetail = VisitDetail.fromJson( mResponse['data'] );
+
+    }
+
+    return oVisitDetail;
+    
+  }
+
+  Future<List<LatLng>> getRoute( List<Client> lClients ) async {
+
+    final origin = '4.693549628123178, -74.10477902136584';
+    final destination = '4.693549628123178, -74.10477902136584';
+    final waypoints = lClients.map((c) => '${c.dLatitude},${c.dLongitude}').join('|');
+    
+    final url = '$baseUrlMapsDirections?origin=$origin&destination=$destination&waypoints=$waypoints&key=${dotenv.env['API_KEY_MAPS']}';
+
+    final response = await client.get( Uri.parse( url ) );
+
+    if (response.statusCode == 200) {
+
+      final data = json.decode(response.body);
+      final points = data['routes'][0]['overview_polyline']['points'];
+
+      return _decodePolyline(points);
+
+    } else {
+
+      throw Exception('Error al obtener ruta');
+
+    }
+    
+  }
+
+  List<LatLng> _decodePolyline( String sEncoded ) {
+
+    List<LatLng> lPolyline = [];
+    
+    int iIndex = 0, iLen = sEncoded.length;
+    int iLat = 0, iLng = 0;
+
+    while ( iIndex < iLen ) {
+      int b, shift = 0, result = 0;
+      do {
+        b = sEncoded.codeUnitAt(iIndex++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      iLat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = sEncoded.codeUnitAt(iIndex++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      iLng += dlng;
+
+      lPolyline.add(LatLng(iLat / 1E5, iLng / 1E5));
+    }
+    return lPolyline;
+  }
+
+  List<LatLng> decodePolylineForTesting( String sEncoded ) {
+    return _decodePolyline(sEncoded);
+  }
+
+  Future<bool> uploadVisitFindings(
+    String sAccessToken,
+    String sUserId,
+    String sVisitId,
+    String sClientId,
+    String sFindings,
+    File videoFile
+  ) async {
+
+    bool bSuccess = false;
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse( '$baseUrl/sellers/$sUserId/route/$sVisitId/client/$sClientId' ),
+    );
+
+    request.fields.addAll( {
+      'find' : sFindings
+    } );
+
+    request.files.add( await http.MultipartFile.fromPath(
+      'file',
+      videoFile.path,
+      contentType: MediaType('video', 'mp4')
+    ) );
+    
+    request.headers.addAll( {
+      'Authorization' : 'Bearer $sAccessToken'
+    } );
+
+    final response = await client.send( request );
+
+    if( response.statusCode == 200 ) {
+      bSuccess = true;
+    }
+
+    return bSuccess;
+
   }
 
 }
