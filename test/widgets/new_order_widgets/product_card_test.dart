@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,15 +24,66 @@ const List<int> _kTransparentPng = <int>[
 ];
 
 // Mock classes
-class MockOrderProvider extends Mock implements OrderProvider {
+class MockOrderProvider implements OrderProvider {
+  final List<Product> _mockProducts = [];
+  double _dQuantity = 1.0;
+  bool resetQuantityCalled = false;
+  double? dQuantitySet;
+
   @override
-  List<Product> get lOrderProducts => [];
+  List<Product> get lOrderProducts => _mockProducts;
 
   @override
   double get dTotalPrice => 0.0;
 
   @override
-  double get dQuantity => 1.0;
+  double get dQuantity => _dQuantity;
+
+  @override
+  void addProduct(Product oProduct) {}
+
+  @override
+  void removeProduct(Product oProduct) {}
+
+  @override
+  void clearOrders() {}
+
+  @override
+  set dQuantity(double value) {
+    dQuantitySet = value;
+    _dQuantity = value;
+  }
+
+  @override
+  void decreaseQuantity() {}
+
+  @override
+  void increaseQuantity() {}
+
+  @override
+  void resetQuantity() {
+    resetQuantityCalled = true;
+    _dQuantity = 1.0;
+  }
+
+  @override
+  bool get hasListeners => false;
+
+  @override
+  void addListener(VoidCallback listener) {}
+
+  @override
+  void dispose() {}
+
+  @override
+  void notifyListeners() {}
+
+  @override
+  void removeListener(VoidCallback listener) {}
+
+  void addMockProduct(Product product) {
+    _mockProducts.add(product);
+  }
 }
 
 class MockTextsUtil extends TextsUtil {
@@ -88,7 +138,7 @@ void _setupAssetMock() {
   );
 }
 
-Widget _buildTestApp(Product product, {OrderProvider? orderProvider}) {
+Widget _buildTestApp(Product product, {OrderProvider? orderProvider, VoidCallback? onTap}) {
   return MultiProvider(
     providers: [
       Provider<TextsUtil>(
@@ -110,7 +160,7 @@ Widget _buildTestApp(Product product, {OrderProvider? orderProvider}) {
       ],
       locale: const Locale('en', 'US'),
       home: Scaffold(
-        body: ProductCard(oProduct: product),
+        body: ProductCard(oProduct: product, onTap: onTap),
       ),
     ),
   );
@@ -240,13 +290,67 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap on the product card
-      await tester.tap(find.byType(GestureDetector), warnIfMissed: false);
+      final gestureDetector = find.byType(GestureDetector);
+      await tester.tapAt(tester.getCenter(gestureDetector));
       await tester.pumpAndSettle();
 
       // Verify that navigation occurred (Navigator.push was called)
       // Since we can't easily mock Navigator in this setup, we verify the tap doesn't crash
       // and the widget remains stable
       expect(find.text('Navigation Test'), findsOneWidget);
+    });
+
+    testWidgets('ProductCard tap calls resetQuantity when product not in order', (WidgetTester tester) async {
+      final orderProvider = OrderProvider();
+      final product = Product(
+        iId: 1,
+        sName: 'New Product',
+        sImage: 'https://example.com/image.jpg',
+        dQuantity: 5.0,
+        dPrice: 25.00
+      );
+
+      await tester.pumpWidget(_buildTestApp(product, orderProvider: orderProvider));
+      await tester.pumpAndSettle();
+
+      // Tap on the product card
+      await tester.tap(find.byType(GestureDetector), warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      // Verify resetQuantity was called since product is not in order
+      expect(orderProvider.dQuantity, 1.0);
+    });
+
+    testWidgets('ProductCard tap sets quantity when product already in order', (WidgetTester tester) async {
+      final orderProvider = OrderProvider();
+      final product = Product(
+        iId: 1,
+        sName: 'Existing Product',
+        sImage: 'https://example.com/image.jpg',
+        dQuantity: 5.0,
+        dPrice: 25.00
+      );
+
+      // Add the product to the order
+      final existingProduct = Product(
+        iId: 1,
+        sName: 'Existing Product',
+        sImage: 'https://example.com/image.jpg',
+        dQuantity: 3.0, // Different quantity
+        dPrice: 25.00
+      );
+      orderProvider.dQuantity = 3.0; // Set the quantity before adding
+      orderProvider.addProduct(existingProduct);
+
+      await tester.pumpWidget(_buildTestApp(product, orderProvider: orderProvider));
+      await tester.pumpAndSettle();
+
+      // Tap on the product card
+      await tester.tap(find.byType(GestureDetector), warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      // Verify dQuantity was set to the existing product's quantity
+      expect(orderProvider.dQuantity, 3.0);
     });
   });
 }

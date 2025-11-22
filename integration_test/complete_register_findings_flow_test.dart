@@ -92,8 +92,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 5)); // Más tiempo para splash
 
       // === PASO 1: LOGIN ===
-      const email = 'ventas@correo.com';
-      const password = 'AugustoCelis13*';
+      const email = 'medisupply05@gmail.com';
+      const password = 'Admin123456';
 
       // Esperar campos de login
       await waitForWidget(tester, find.byKey(const Key('email_field')));

@@ -45,7 +45,7 @@ class ClientCard extends StatelessWidget {
               borderRadius: BorderRadius.circular( 8.0 ),
               child: FadeInImage(
                 placeholder: AssetImage('assets/images/client_placeholder.png'),
-                image: NetworkImage( oClient.sLogoUrl ?? '' ),
+                image: (oClient.sLogoUrl != null && oClient.sLogoUrl!.isNotEmpty) ? NetworkImage(oClient.sLogoUrl!) : AssetImage('assets/images/client_placeholder.png'),
                 imageErrorBuilder: (context, error, stackTrace) => Image.asset(
                   'assets/images/client_placeholder.png',
                   width: ResponsiveApp.dHeight( 48.0 ),

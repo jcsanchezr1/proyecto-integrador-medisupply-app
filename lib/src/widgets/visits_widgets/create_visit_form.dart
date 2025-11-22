@@ -24,12 +24,14 @@ class CreateVisitForm extends StatefulWidget {
 
   final Client oClient;
   final String sVisitId;
+  final FetchData? oFetchData;
 
   const CreateVisitForm(
     {
       super.key,
       required this.oClient,
-      required this.sVisitId
+      required this.sVisitId,
+      this.oFetchData
     }
   );
 
@@ -41,7 +43,13 @@ class CreateVisitForm extends StatefulWidget {
 class _CreateVisitFormState extends State<CreateVisitForm> {
 
   final controller = TextEditingController();
-  final oFetchData = FetchData();
+  late final FetchData oFetchData;
+
+  @override
+  void initState() {
+    super.initState();
+    oFetchData = widget.oFetchData ?? FetchData();
+  }
 
   registerFindings() async {
     

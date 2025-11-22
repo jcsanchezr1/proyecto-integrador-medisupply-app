@@ -51,7 +51,7 @@ class OrderProductCard extends StatelessWidget {
             ),
             child: FadeInImage(
               placeholder: AssetImage( 'assets/images/placeholder.png' ),
-              image: NetworkImage( oProduct.sImage ?? '' ),
+              image: (oProduct.sImage != null && oProduct.sImage!.isNotEmpty) ? NetworkImage(oProduct.sImage!) : AssetImage('assets/images/placeholder.png'),
               imageErrorBuilder: (context, error, stackTrace) => Image.asset( 'assets/images/placeholder.png' )
             )
           ),

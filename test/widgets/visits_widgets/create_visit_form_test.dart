@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -12,7 +13,10 @@ import 'package:medisupply_app/src/utils/texts_util.dart';
 import 'package:medisupply_app/src/widgets/visits_widgets/info_visit_item.dart';
 import 'package:medisupply_app/src/widgets/visits_widgets/findings_text_field.dart';
 import 'package:medisupply_app/src/widgets/general_widgets/main_button.dart';
+import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:medisupply_app/src/widgets/general_widgets/button_file_picker.dart';
+
+class MockFetchData extends Mock implements FetchData {}
 
 class MockLoginProvider extends Mock implements LoginProvider {}
 
@@ -23,6 +27,9 @@ class MockUser extends Mock implements User {}
 class MockTextsUtil extends TextsUtil {
   MockTextsUtil() : super(const Locale('en', 'US')) {
     mLocalizedStrings = {
+      'transversal': {
+        'error_file': 'The selected file exceeds the maximum size of 30MB.'
+      },
       'visit_detail': {
         'findings_label': 'Findings',
         'findings_hint': 'Enter findings',
@@ -49,13 +56,19 @@ class MockTextsUtil extends TextsUtil {
 void main() {
   late MockLoginProvider mockLoginProvider;
   late MockCreateAccountProvider mockCreateAccountProvider;
+  late MockFetchData mockFetchData;
   late MockTextsUtil mockTextsUtil;
   late Client mockClient;
   late MockUser mockUser;
 
+  setUpAll(() {
+    registerFallbackValue(File('dummy.mp4'));
+  });
+
   setUp(() {
     mockLoginProvider = MockLoginProvider();
     mockCreateAccountProvider = MockCreateAccountProvider();
+    mockFetchData = MockFetchData();
     mockTextsUtil = MockTextsUtil();
     MockTextsUtil._instance = mockTextsUtil;
     mockUser = MockUser();
@@ -81,12 +94,17 @@ void main() {
         Provider<TextsUtil>.value(value: mockTextsUtil),
         ChangeNotifierProvider<LoginProvider>.value(value: mockLoginProvider),
         ChangeNotifierProvider<CreateAccountProvider>.value(value: mockCreateAccountProvider),
+        Provider<FetchData>.value(value: mockFetchData),
       ],
       child: MaterialApp(
         home: Scaffold(
-          body: CreateVisitForm(
-            oClient: mockClient,
-            sVisitId: 'visit123',
+          body: SizedBox(
+            height: 800, // Ensure enough height for the widget
+            child: CreateVisitForm(
+              oClient: mockClient,
+              sVisitId: 'visit123',
+              oFetchData: mockFetchData,
+            ),
           ),
         ),
       ),
@@ -186,6 +204,7 @@ void main() {
               body: CreateVisitForm(
                 oClient: clientWithNulls,
                 sVisitId: 'visit123',
+                oFetchData: mockFetchData,
               ),
             ),
           ),
@@ -258,6 +277,107 @@ void main() {
       // Can set empty text
       await tester.enterText(find.byType(TextFormField), '');
       expect(textField.controller!.text, isEmpty);
+    });
+
+    testWidgets('register button executes registerFindings successfully', (WidgetTester tester) async {
+      // Adjust surface size to fit the widget
+      await tester.binding.setSurfaceSize(Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      // Setup successful upload
+      when(() => mockFetchData.uploadVisitFindings(
+        'test_token', 'user123', 'visit123', 'client1', any(), any()
+      )).thenAnswer((_) async => true);
+
+      // Mock file exists
+      final mockFile = File('test.mp4');
+      when(() => mockCreateAccountProvider.logoFile).thenReturn(mockFile);
+
+      await tester.pumpWidget(createTestWidget());
+
+      // Enter some findings text
+      await tester.enterText(find.byType(TextFormField), 'Test findings');
+      await tester.pump();
+
+      // Tap register button
+      await tester.tap(find.byType(MainButton));
+      await tester.pump(); // Allow async operation to start
+
+      // Verify loading state was set
+      verify(() => mockLoginProvider.bLoading = true).called(1);
+
+      // Wait for async operation to complete
+      await tester.pumpAndSettle();
+
+      // Verify uploadVisitFindings was called
+      verify(() => mockFetchData.uploadVisitFindings(
+        'test_token', 'user123', 'visit123', 'client1', 'Test findings', mockFile
+      )).called(1);
+
+      // Verify loading state was reset
+      verify(() => mockLoginProvider.bLoading = false).called(1);
+    });
+
+    testWidgets('register button shows error on failed registration', (WidgetTester tester) async {
+      // Adjust surface size to fit the widget
+      await tester.binding.setSurfaceSize(Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      // Setup failed upload
+      when(() => mockFetchData.uploadVisitFindings(
+        'test_token', 'user123', 'visit123', 'client1', any(), any()
+      )).thenAnswer((_) async => false);
+
+      // Mock file exists
+      final mockFile = File('test.mp4');
+      when(() => mockCreateAccountProvider.logoFile).thenReturn(mockFile);
+
+      await tester.pumpWidget(createTestWidget());
+
+      // Enter findings text
+      await tester.enterText(find.byType(TextFormField), 'Error findings');
+      await tester.pump();
+
+      // Tap register button
+      await tester.tap(find.byType(MainButton));
+      await tester.pumpAndSettle();
+
+      // Verify error snackbar is shown
+      expect(find.text('Error registering'), findsOneWidget);
+
+      // Verify loading states
+      verify(() => mockLoginProvider.bLoading = true).called(1);
+      verify(() => mockLoginProvider.bLoading = false).called(1);
+    });
+
+    testWidgets('register button trims findings text before sending', (WidgetTester tester) async {
+      // Adjust surface size to fit the widget
+      await tester.binding.setSurfaceSize(Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      // Setup successful upload
+      when(() => mockFetchData.uploadVisitFindings(
+        'test_token', 'user123', 'visit123', 'client1', 'Test findings with spaces', any()
+      )).thenAnswer((_) async => true);
+
+      // Mock file exists
+      final mockFile = File('test.mp4');
+      when(() => mockCreateAccountProvider.logoFile).thenReturn(mockFile);
+
+      await tester.pumpWidget(createTestWidget());
+
+      // Enter text with leading/trailing whitespace
+      await tester.enterText(find.byType(TextFormField), '  Test findings with spaces  ');
+      await tester.pump();
+
+      // Tap register button
+      await tester.tap(find.byType(MainButton));
+      await tester.pumpAndSettle();
+
+      // Verify uploadVisitFindings was called with trimmed text
+      verify(() => mockFetchData.uploadVisitFindings(
+        'test_token', 'user123', 'visit123', 'client1', 'Test findings with spaces', mockFile
+      )).called(1);
     });
   });
 }

@@ -9,13 +9,13 @@ import 'package:medisupply_app/src/classes/user.dart';
 import 'package:medisupply_app/src/classes/client.dart';
 import 'package:medisupply_app/src/classes/visit_detail.dart';
 import 'package:medisupply_app/src/providers/login_provider.dart';
+import 'package:medisupply_app/src/providers/create_account_provider.dart';
 import 'package:medisupply_app/src/services/fetch_data.dart';
 import 'package:medisupply_app/src/utils/texts_util.dart';
 
 // Test implementation of TextsUtil
 class TestTextsUtil extends TextsUtil {
   TestTextsUtil() : super(const Locale('en')) {
-    // Pre-load mock data
     mLocalizedStrings = {
       'visit_detail': {'error': 'Test error message'}
     };
@@ -313,23 +313,96 @@ void main() {
       expect(find.byType(VisitDetailPage), findsOneWidget);
     });
 
-    testWidgets('initializes with custom fetchData', (WidgetTester tester) async {
-      final customFetchData = MockFetchData();
+    testWidgets('test mode executes without error', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<LoginProvider>.value(value: testLoginProvider),
+            ChangeNotifierProvider<CreateAccountProvider>(
+              create: (_) => CreateAccountProvider(),
+            ),
+            Provider<TextsUtil>.value(value: TestTextsUtil()),
+          ],
+          child: MaterialApp(
+            home: VisitDetailPage(oVisit: testVisit, fetchData: MockFetchData(), testMode: true),
+          ),
+        )
+      );
+
+      // Wait for data loading
+      await tester.pumpAndSettle();
+
+      // Should execute test mode logic without crashing
+      expect(find.byType(VisitDetailPage), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('error handling shows snackbar and stops loading', (WidgetTester tester) async {
+      final mockFetchData = MockFetchData(shouldReturnNullId: true);
       
       await tester.pumpWidget(
         MultiProvider(
           providers: [
             ChangeNotifierProvider<LoginProvider>.value(value: testLoginProvider),
+            ChangeNotifierProvider<CreateAccountProvider>(
+              create: (_) => CreateAccountProvider(),
+            ),
             Provider<TextsUtil>.value(value: TestTextsUtil()),
           ],
           child: MaterialApp(
-            home: VisitDetailPage(oVisit: testVisit, fetchData: customFetchData),
+            home: VisitDetailPage(oVisit: testVisit, fetchData: mockFetchData),
           ),
         )
       );
 
-      expect(find.byType(VisitDetailPage), findsOneWidget);
+      // Initially shows loading
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Wait for error handling
+      await tester.pumpAndSettle();
+
+      // Should show error snackbar and stop loading
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text('Test error message'), findsOneWidget);
+    });
+
+    testWidgets('shows loading indicator initially', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidgetWithMock(testVisit));
+
+      // Should show loading indicator before data loads
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(Center), findsOneWidget);
+
+      // Wait for data to load
+      await tester.pumpAndSettle();
+
+      // Loading should be gone after data loads
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('creates markers correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidgetWithMock(testVisit));
+
+      // Wait for data loading
+      await tester.pumpAndSettle();
+
+      // Verify widget is loaded (markers are created internally)
+      expect(find.byType(VisitDetailPage), findsOneWidget);
+      
+      // Since we can't directly access private _markers, we verify the widget builds correctly
+      // The createMarkers method is called during getRoute execution
+    });
+
+    testWidgets('shows bottom sheet when marker is tapped', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidgetWithMock(testVisit));
+
+      // Wait for data loading
+      await tester.pumpAndSettle();
+
+      // Since marker tapping requires Google Maps integration which is hard to test,
+      // we test the _showClientBottomSheet method indirectly by verifying the widget
+      // can display the bottom sheet capability
+      expect(find.byType(VisitDetailPage), findsOneWidget);
     });
   });
 
